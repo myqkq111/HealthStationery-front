@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
@@ -15,5 +16,15 @@ function App() {
     </Router>
   );
 }
+=======
+// src/App.js
+import React from "react";
+import HomePage from "./pages/HomePage";
+import "./index.css"; // Tailwind CSS를 적용합니다.
+
+const App = () => {
+  return <HomePage />;
+};
+>>>>>>> 720afc72e23a8f778f17c9550833822835776c97
 
 export default App;
