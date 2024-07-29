@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {},
+=======
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -17,6 +24,7 @@ module.exports = {
         448: "112rem", // 높이 112rem (1792px)
       },
     },
+>>>>>>> 720afc72e23a8f778f17c9550833822835776c97
   },
   plugins: [],
 };

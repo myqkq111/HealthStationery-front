@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+<<<<<<< HEAD
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+=======
 /* src/index.css 또는 별도의 CSS 파일 */
 @media (max-width: 800px) {
   .banner {
@@ -10,3 +13,4 @@
 
 @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css";
+>>>>>>> 720afc72e23a8f778f17c9550833822835776c97
