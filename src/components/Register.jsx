@@ -6,7 +6,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
-  const [gender, setGender] = useState("");
+  const [fm, setFm] = useState("");
   const [tell, setTell] = useState("");
   const [mailaddr, setMailaddr] = useState("");
   const [roadaddr, setRoadaddr] = useState("");
@@ -15,7 +15,7 @@ const Register = () => {
   const [error, setError] = useState("");
 
   const handleGenderChange = (event) => {
-    setGender(event.target.value);
+    setFm(event.target.value);
   };
 
   const handleBirthDateChange = (event) => {
@@ -34,7 +34,7 @@ const Register = () => {
         email,
         password,
         name,
-        gender,
+        fm,
         tell,
         mailaddr,
         roadaddr,
@@ -114,7 +114,7 @@ const Register = () => {
                 <input
                   type="radio"
                   value="male"
-                  checked={gender === "male"}
+                  checked={fm === "male"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
                 />
@@ -124,7 +124,7 @@ const Register = () => {
                 <input
                   type="radio"
                   value="female"
-                  checked={gender === "female"}
+                  checked={fm === "female"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
                 />
