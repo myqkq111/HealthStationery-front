@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
@@ -6,22 +7,26 @@ import HomePage from "./pages/HomePage";
 import "./index.css"; // Tailwind CSS를 적용합니다.
 import MainHeader from "./components/MainHeader";
 import Header from "./components/Header";
-// import ForgotPassword from "./components/ForgotPassword";
+import Forgot from "./components/Forgot";
+import FindId from "./components/Find-id";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   return (
-    <>
+    <Router>
+      {/* MainHeader는 페이지 내에서 사용 */}
       <MainHeader />
+      {/* Header는 페이지 상단에 고정 */}
       <Header />
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/signup" element={<Register />} />
-          {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
-        </Routes>
-      </Router>
-    </>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Register />} />
+        <Route path="/forgot" element={<Forgot />} />
+        <Route path="/find-id" element={<FindId />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Routes>
+    </Router>
   );
 }
 

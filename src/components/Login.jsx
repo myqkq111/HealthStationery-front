@@ -1,35 +1,50 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // useNavigate 훅을 사용하여 페이지 이동
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:5000/member/login", {
-        email,
-        password,
+    axios
+      .post("http://localhost:5000/member/login", { email, password })
+      .then((response) => {
+        console.log("Login successful:", response.data);
+
+        // 로그인 성공 후 홈 페이지로 이동
+        navigate("/"); // 홈 페이지로 이동 ("/" 경로는 필요에 따라 조정하세요)
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+        setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
       });
-      console.log("Login successful:", response.data);
-      // 로그인 성공 후 처리 로직 추가
-    } catch (error) {
-      console.error("Login failed:", error);
-      setError("Login failed. Please check your email and password.");
-    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="mb-8 text-center">
-        <p className="text-xl font-semibold text-black">회원만의 특별한 혜택</p>
-      </div>
-      <div className="w-full max-w-md p-8 bg-white border border-gray-200 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">로그인</h2>
-        <h3 className="text-lg text-gray-600 mb-6">3초면 회원가입 가능!</h3>
+    <div className="flex flex-col items-center min-h-screen bg-gray-100 pt-20">
+      {/* 페이지 전체에 padding-top 추가 */}
+      <div className="w-full max-w-md p-8 rounded-lg bg-transparent">
+        {/* 로그인 카드 */}
+        <div className="text-center mb-8">
+          <p className="text-xl font-semibold text-black">
+            회원만의 특별한 혜택
+          </p>
+          <p className="text-md text-gray-700 mt-2">
+            가입 즉시 다양한 할인 혜택과 독점 이벤트에 참여할 수 있습니다.
+            <br />
+            지금 회원가입하고 특별한 할인 쿠폰을 받으세요!
+          </p>
+        </div>
+        <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+          로그인
+        </h2>
+        <h3 className="text-lg text-gray-600 mb-6 text-center">
+          3초면 회원가입 가능!
+        </h3>
 
         {/* 소셜 로그인 버튼들 */}
         <div className="flex flex-col gap-3 mb-6">
@@ -85,21 +100,16 @@ const Login = () => {
         </form>
 
         {/* 로그인/회원가입 링크 */}
-        <div className="flex flex-col items-center mt-6 space-y-2">
-          <Link to="/signup" className="text-blue-500 hover:underline text-lg">
+        <div className="flex justify-between mt-6 text-sm text-gray-600">
+          <Link to="/signup" className="text-blue-500 hover:underline">
             회원가입
           </Link>
           <Link
-            to="/forgot-id"
-            className="text-blue-500 hover:underline text-lg"
+            to="/forgot"
+            state={{ type: "find" }} // URL 파라미터를 state로 전달
+            className="text-blue-500 hover:underline"
           >
-            아이디 찾기
-          </Link>
-          <Link
-            to="/forgot-password"
-            className="text-blue-500 hover:underline text-lg"
-          >
-            비밀번호 찾기
+            아이디/비밀번호 찾기
           </Link>
         </div>
 
