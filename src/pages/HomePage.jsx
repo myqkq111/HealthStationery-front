@@ -10,8 +10,6 @@ import ReviewList from "../components/ReviewList";
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
-      <MainHeader />
-      <Header />
       <Banner />
       <ProductList />
       <ProductList />
