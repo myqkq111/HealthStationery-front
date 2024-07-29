@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import Banner from "../components/Banner";
 import ProductList from "../components/ProductList";
 import Footer from "../components/Footer";
+import ReviewList from "../components/ReviewList";
 
 const HomePage = () => {
   return (
@@ -15,6 +16,7 @@ const HomePage = () => {
       <ProductList />
       <ProductList />
       <ProductList />
+      <ReviewList />
       <Footer />
     </div>
   );
