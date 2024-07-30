@@ -15,7 +15,7 @@ const Header = () => {
           헬스문방구
         </a>
         <div className="flex-1 flex justify-center">
-          <a href="#home" className="text-black px-4">
+          <a href="about" className="text-black px-4">
             BRAND STORY
           </a>
           <a href="#products" className="text-black px-4">
