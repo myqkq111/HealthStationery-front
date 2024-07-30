@@ -1,17 +1,15 @@
+// src/components/ResetPassword.jsx
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-const ResetPassword = () => {
+const ResetPassword = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
     axios
       .post("http://localhost:5000/member/reset-password", {
         email,
@@ -20,7 +18,6 @@ const ResetPassword = () => {
       .then((response) => {
         console.log("Password reset successful:", response.data);
         setSuccess("비밀번호가 성공적으로 변경되었습니다.");
-        navigate("/login"); // 로그인 페이지로 이동
       })
       .catch((error) => {
         console.error("Password reset failed:", error);
@@ -31,12 +28,18 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100 pt-20">
-      <div className="w-full max-w-md p-8 rounded-lg bg-white">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg relative">
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          onClick={onClose}
+        >
+          &times;
+        </button>
         <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
           비밀번호 재설정
         </h2>
-        <p className="text-lg text-gray-600 mb-6 text-center">
+        <p className="text-sm text-gray-600 mb-6 text-center">
           가입 시 사용한 이메일 주소와 새 비밀번호를 입력하세요. 비밀번호를
           재설정해 드립니다.
         </p>
@@ -67,11 +70,11 @@ const ResetPassword = () => {
           >
             비밀번호 재설정
           </button>
+          {success && (
+            <p className="text-green-500 text-center mt-4">{success}</p>
+          )}
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
         </form>
-        {success && (
-          <p className="text-green-500 text-center mt-4">{success}</p>
-        )}
-        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
       </div>
     </div>
   );

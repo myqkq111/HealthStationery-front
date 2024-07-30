@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
@@ -8,7 +7,7 @@ import "./index.css"; // Tailwind CSS를 적용합니다.
 import MainHeader from "./components/MainHeader";
 import Header from "./components/Header";
 import Forgot from "./components/Forgot";
-import FindId from "./components/Find-id";
+import FindID from "./components/FindID";
 import ResetPassword from "./components/ResetPassword";
 
 function App() {
@@ -23,7 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/forgot" element={<Forgot />} />
-        <Route path="/find-id" element={<FindId />} />
+        <Route path="/find-id" element={<FindID />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </Router>
