@@ -1,9 +1,11 @@
+// 새 페이지가 뜨는게 아닌 기존페이지 위에 덧씌어지게 하는거임.
+
 import React from "react";
 import Modal from "react-modal";
 
 Modal.setAppElement("#root");
 
-const Modal = ({ isOpen, onClose, children }) => {
+const CustomModal = ({ isOpen, onClose, children }) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -24,4 +26,4 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
-export default Modal;
+export default CustomModal;
