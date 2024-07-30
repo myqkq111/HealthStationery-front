@@ -4,7 +4,7 @@ import { FaUser, FaShoppingCart, FaSearch } from "react-icons/fa"; // 아이콘 
 
 const MainHeader = () => {
   return (
-    <header className="bg-white text-black py-1 px-3">
+    <header className="bg-white text-black py-1 px-3 border-b border-gray-200 z-50">
       <div className="container mx-auto flex items-center justify-end space-x-3">
         <div className="flex items-center space-x-3">
           <a href="/login" className="text-xs hover:text-yellow-500">
