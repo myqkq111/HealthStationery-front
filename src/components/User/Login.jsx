@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Forgot from "./Forgot";
 import FindID from "./FindID";
@@ -13,12 +13,17 @@ const Login = () => {
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [isFindIDOpen, setIsFindIDOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false); // 로그인 상태 유지 체크박스 상태
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:5000/member/login", { email, password })
+      .post("http://localhost:8080/member/login", {
+        email,
+        password,
+        rememberMe,
+      }) // rememberMe 포함
       .then((response) => {
         console.log("Login successful:", response.data);
         navigate("/"); // 홈 페이지로 이동
@@ -105,7 +110,7 @@ const Login = () => {
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
             />
           </div>
-          <div className="w-full mb-6">
+          <div className="w-full mb-4">
             <input
               type="password"
               value={password}
@@ -114,6 +119,15 @@ const Login = () => {
               required
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
             />
+          </div>
+          <div className="flex items-center mb-6">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label className="text-gray-600">로그인 상태 유지</label>
           </div>
           <button
             type="submit"
