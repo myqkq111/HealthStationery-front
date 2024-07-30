@@ -1,21 +1,16 @@
+// src/components/Forgot.jsx
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
-const Forgot = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const handleFind = () => {
-    navigate("/find-id");
-  };
-
-  const handleReset = () => {
-    navigate("/reset-password");
-  };
-
+const Forgot = ({ onClose, onOpenFindID, onOpenResetPassword }) => {
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100 pt-20">
-      <div className="w-full max-w-md p-8 rounded-lg bg-white shadow-lg">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg relative">
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          onClick={onClose}
+        >
+          &times;
+        </button>
         <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
           아이디/비밀번호 찾기
         </h2>
@@ -24,13 +19,13 @@ const Forgot = () => {
         </p>
         <div className="flex flex-col gap-4">
           <button
-            onClick={handleFind}
+            onClick={onOpenFindID}
             className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out"
           >
             아이디 찾기
           </button>
           <button
-            onClick={handleReset}
+            onClick={onOpenResetPassword}
             className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out"
           >
             비밀번호 재설정

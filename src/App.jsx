@@ -1,15 +1,15 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Login from "./components/User/Login";
+import Register from "./components/User/Register";
 import HomePage from "./pages/HomePage";
 import "./index.css"; // Tailwind CSS를 적용합니다.
-import MainHeader from "./components/MainPage/MainHeader";
-import Header from "./components/MainPage/Header";
-import Forgot from "./components/Forgot";
-import FindId from "./components/Find-id";
-import ResetPassword from "./components/ResetPassword";
+import MainHeader from "./components/MainHeader";
+import Header from "./components/Header";
+import Forgot from "./components/User/Forgot";
+import FindID from "./components/User/FindID";
+import ResetPassword from "./components/User/ResetPassword";
+import Terms from "./components/User/Terms";
 
 function App() {
   return (
@@ -22,8 +22,9 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/forgot" element={<Forgot />} />
-        <Route path="/find-id" element={<FindId />} />
+        <Route path="/find-id" element={<FindID />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </Router>
