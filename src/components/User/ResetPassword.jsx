@@ -13,7 +13,7 @@ const ResetPassword = ({ onClose }) => {
     setSuccess(""); // Clear previous success message
 
     axios
-      .post("http://localhost:5000/api/request-temp-password", { email })
+      .post("http://localhost:8080/api/request-temp-password", { email })
       .then((response) => {
         console.log("Temporary password request successful:", response.data);
         setSuccess("임시 비밀번호가 이메일로 전송되었습니다.");
