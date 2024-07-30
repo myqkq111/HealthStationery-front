@@ -32,7 +32,7 @@ const Register = () => {
       setError("Passwords do not match");
       return;
     }
-      axios
+    axios
       .post("http://localhost:8080/member/signup", {
         email,
         password,
@@ -119,7 +119,7 @@ const Register = () => {
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
-                  value="male"
+                  value="man"
                   checked={fm === "man"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
@@ -129,7 +129,7 @@ const Register = () => {
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
-                  value="female"
+                  value="woman"
                   checked={fm === "woman"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
