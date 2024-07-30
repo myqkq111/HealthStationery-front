@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import Address from "../../openApi/Address";
 import { useNavigate } from "react-router-dom";
-import DatePicker, { registerLocale } from "react-datepicker"; // registerLocale을 추가로 import
-import { ko } from "date-fns/locale"; // 한국어 로케일을 import
+import DatePicker, { registerLocale } from "react-datepicker";
+import { ko } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 
 // 한국어 로케일을 등록합니다.
@@ -16,6 +16,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [fm, setFm] = useState("");
   const [tell, setTell] = useState("");
+  const [carrier, setCarrier] = useState(""); // 통신사 상태 추가
   const [mailaddr, setMailaddr] = useState("");
   const [roadaddr, setRoadaddr] = useState("");
   const [detailaddr, setDetailaddr] = useState("");
@@ -27,6 +28,10 @@ const Register = () => {
     setFm(event.target.value);
   };
 
+  const handleCarrierChange = (event) => {
+    setCarrier(event.target.value);
+  };
+
   const handleDateChange = (date) => {
     setBirthDate(date);
   };
@@ -34,7 +39,7 @@ const Register = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("비밀번호가 일치하지 않습니다.");
       return;
     }
     axios
@@ -44,25 +49,28 @@ const Register = () => {
         name,
         fm,
         tell,
+        carrier, // 통신사 정보 추가
         birth: birthDate ? birthDate.toISOString().split("T")[0] : "",
         mailaddr,
         roadaddr,
         detailaddr,
       })
       .then((response) => {
-        console.log("Registration successful:", response.data);
+        console.log("회원가입 성공:", response.data);
         navigate("/login");
       })
       .catch((error) => {
-        console.error("Registration failed:", error);
-        setError("Registration failed. Please try again.");
+        console.error("회원가입 실패:", error);
+        setError("회원가입 실패. 다시 시도해 주세요.");
       });
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 py-8">
       <div className="w-full max-w-lg p-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">회원가입</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          회원가입
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-gray-700 font-medium mb-2">
@@ -143,41 +151,54 @@ const Register = () => {
             <label className="block text-gray-700 font-medium mb-2">
               연락처
             </label>
-            <input
-              type="text"
-              value={tell}
-              placeholder="연락처를 입력하세요"
-              onChange={(e) => setTell(e.target.value)}
-              required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <div className="flex items-center space-x-2 mb-4">
+              <select
+                value={carrier}
+                onChange={handleCarrierChange}
+                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">통신사 선택</option>
+                <option value="skt">SKT</option>
+                <option value="kt">KT</option>
+                <option value="lg">LG U+</option>
+              </select>
+              <input
+                type="text"
+                value={tell}
+                placeholder="연락처를 입력하세요"
+                onChange={(e) => setTell(e.target.value)}
+                required
+                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">주소</label>
+            <Address
+              mailaddr={mailaddr}
+              setMailaddr={setMailaddr}
+              roadaddr={roadaddr}
+              setRoadaddr={setRoadaddr}
+              detailaddr={detailaddr}
+              setDetailaddr={setDetailaddr}
             />
           </div>
-          <Address
-            mailaddr={mailaddr}
-            setMailaddr={setMailaddr}
-            roadaddr={roadaddr}
-            setRoadaddr={setRoadaddr}
-            detailaddr={detailaddr}
-            setDetailaddr={setDetailaddr}
-          />
           <div>
             <label className="block text-gray-700 font-medium mb-2">
               생년월일
             </label>
-            <div className="flex gap-4">
-              <DatePicker
-                selected={birthDate}
-                onChange={handleDateChange}
-                dateFormat="yyyy-MM-dd"
-                className="p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholderText="날짜를 선택하세요"
-                maxDate={new Date()}
-                showYearDropdown
-                showMonthDropdown
-                dropdownMode="select"
-                locale="ko"
-              />
-            </div>
+            <DatePicker
+              selected={birthDate}
+              onChange={handleDateChange}
+              dateFormat="yyyy-MM-dd"
+              className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholderText="날짜를 선택하세요"
+              maxDate={new Date()}
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
+              locale="ko"
+            />
           </div>
           <button
             type="submit"
