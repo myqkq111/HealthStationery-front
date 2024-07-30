@@ -1,8 +1,15 @@
 // src/components/MainHeader.jsx
 import React from "react";
 import { FaUser, FaShoppingCart, FaSearch } from "react-icons/fa"; // 아이콘 라이브러리
+import { useNavigate } from "react-router-dom";
 
 const MainHeader = () => {
+  const navigate = useNavigate();
+
+  const handleSignUpClick = () => {
+    navigate("/terms"); // 약관 동의 페이지로 이동
+  };
+
   return (
     <header className="bg-white text-black py-1 px-3 border-b border-gray-200 z-50">
       <div className="container mx-auto flex items-center justify-end space-x-3">
@@ -10,9 +17,12 @@ const MainHeader = () => {
           <a href="/login" className="text-xs hover:text-yellow-500">
             로그인
           </a>
-          <a href="/signup" className="text-xs hover:text-yellow-500">
+          <button
+            onClick={handleSignUpClick}
+            className="text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
+          >
             회원가입
-          </a>
+          </button>
           <a
             href="/cart"
             className="flex items-center text-xs hover:text-yellow-500"
