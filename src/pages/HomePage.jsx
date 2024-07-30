@@ -20,8 +20,6 @@ const HomePage = () => {
       <VideoPage />
       <AboutUs />
       <GalleryPage />
-      <Footer />
-      <BottomPage />
     </div>
   );
 };
