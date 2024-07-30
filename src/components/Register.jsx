@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Address from "../openApi/Address";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
-  const [gender, setGender] = useState("");
+  const [fm, setFm] = useState("");
   const [tell, setTell] = useState("");
   const [mailaddr, setMailaddr] = useState("");
   const [roadaddr, setRoadaddr] = useState("");
@@ -15,7 +16,7 @@ const Register = () => {
   const [error, setError] = useState("");
 
   const handleGenderChange = (event) => {
-    setGender(event.target.value);
+    setFm(event.target.value);
   };
 
   const handleBirthDateChange = (event) => {
@@ -30,16 +31,17 @@ const Register = () => {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/member/signup", {
+      console.log("gd");
+      const response = await axios.post("http://localhost:8080/member/signup", {
         email,
         password,
         name,
-        gender,
+        fm,
         tell,
+        birth: `${birth.year}-${birth.month}-${birth.day}`,
         mailaddr,
         roadaddr,
         detailaddr,
-        birth: `${birth.year}-${birth.month}-${birth.day}`,
       });
       console.log("Registration successful:", response.data);
     } catch (error) {
@@ -114,7 +116,7 @@ const Register = () => {
                 <input
                   type="radio"
                   value="male"
-                  checked={gender === "male"}
+                  checked={fm === "male"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
                 />
@@ -124,7 +126,7 @@ const Register = () => {
                 <input
                   type="radio"
                   value="female"
-                  checked={gender === "female"}
+                  checked={fm === "female"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
                 />
@@ -145,7 +147,15 @@ const Register = () => {
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
+          <Address
+            mailaddr={mailaddr}
+            setMailaddr={setMailaddr}
+            roadaddr={roadaddr}
+            setRoadaddr={setRoadaddr}
+            detailaddr={detailaddr}
+            setDetailaddr={setDetailaddr}
+          />
+          {/* <div>
             <label className="block text-gray-700 font-medium mb-2">주소</label>
             <input
               type="text"
@@ -171,7 +181,7 @@ const Register = () => {
               required
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
             />
-          </div>
+          </div> */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
               생년월일
