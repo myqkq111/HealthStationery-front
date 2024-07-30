@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Address from "../openApi/Address";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
@@ -32,16 +33,16 @@ const Register = () => {
       return;
     }
     axios
-      .post("http://localhost:5000/member/signup", {
+      .post("http://localhost:8080/member/signup", {
         email,
         password,
         name,
         fm,
         tell,
+        birth: `${birth.year}-${birth.month}-${birth.day}`,
         mailaddr,
         roadaddr,
         detailaddr,
-        birth: `${birth.year}-${birth.month}-${birth.day}`,
       })
       .then((response) => {
         console.log("Registration successful:", response.data);
@@ -118,7 +119,7 @@ const Register = () => {
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
-                  value="male"
+                  value="man"
                   checked={fm === "man"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
@@ -128,7 +129,7 @@ const Register = () => {
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
-                  value="female"
+                  value="woman"
                   checked={fm === "woman"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
@@ -150,7 +151,15 @@ const Register = () => {
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
+          <Address
+            mailaddr={mailaddr}
+            setMailaddr={setMailaddr}
+            roadaddr={roadaddr}
+            setRoadaddr={setRoadaddr}
+            detailaddr={detailaddr}
+            setDetailaddr={setDetailaddr}
+          />
+          {/* <div>
             <label className="block text-gray-700 font-medium mb-2">주소</label>
             <input
               type="text"
@@ -176,7 +185,7 @@ const Register = () => {
               required
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
             />
-          </div>
+          </div> */}
           <div>
             <label className="block text-gray-700 font-medium mb-2">
               생년월일
