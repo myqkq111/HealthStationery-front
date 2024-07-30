@@ -10,6 +10,10 @@ import Forgot from "./components/User/Forgot";
 import FindID from "./components/User/FindID";
 import ResetPassword from "./components/User/ResetPassword";
 import Terms from "./components/User/Terms";
+import Footer from "./components/MainPage/Footer";
+import BottomPage from "./components/MainPage/BottomPage";
+import Shop from "./pages/Shop";
+import ProductPage from "./components/MainPage/ShopPage/ProductPage";
 
 function App() {
   return (
@@ -26,7 +30,11 @@ function App() {
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/find-id" element={<FindID />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/product/:id" component={ProductPage} />
       </Routes>
+      <Footer />
+      <BottomPage />
     </Router>
   );
 }

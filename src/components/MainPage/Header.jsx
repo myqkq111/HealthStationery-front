@@ -18,7 +18,7 @@ const Header = () => {
           <a href="about" className="text-black px-4">
             BRAND STORY
           </a>
-          <a href="#products" className="text-black px-4">
+          <a href="shop" className="text-black px-4">
             SHOP
           </a>
           <a href="#contact" className="text-black px-4">
