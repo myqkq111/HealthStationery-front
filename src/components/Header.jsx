@@ -1,9 +1,11 @@
-// src/components/Header.js
 import React from "react";
 
 const Header = () => {
   return (
-    <nav style={{ borderTop: "2px solid #e5e7eb" }} className="bg-white p-4">
+    <nav
+      style={{ borderTop: "2px solid #e5e7eb" }}
+      className="bg-white p-4 sticky top-0 z-50"
+    >
       <div className="container mx-auto flex justify-between items-center">
         <a href="/" className="text-black text-xl font-bold">
           헬스문방구
