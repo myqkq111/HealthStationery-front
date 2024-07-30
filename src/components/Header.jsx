@@ -1,6 +1,10 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 
 const Header = () => {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
   return (
     <nav
       style={{ borderTop: "2px solid #e5e7eb" }}
