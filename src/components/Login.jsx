@@ -1,4 +1,3 @@
-// src/components/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -48,6 +47,10 @@ const Login = () => {
   const handleOpenResetPassword = () => {
     setIsResetPasswordOpen(true);
     setIsForgotOpen(false);
+  };
+
+  const handleSignupClick = () => {
+    navigate("/terms");
   };
 
   return (
@@ -121,9 +124,12 @@ const Login = () => {
         </form>
 
         <div className="flex justify-between mt-6 text-sm text-gray-600">
-          <Link to="/signup" className="text-blue-500 hover:underline">
+          <button
+            onClick={handleSignupClick}
+            className="text-blue-500 hover:underline"
+          >
             회원가입
-          </Link>
+          </button>
           <button
             onClick={handleForgotClick}
             className="text-blue-500 hover:underline"
