@@ -5,8 +5,8 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import HomePage from "./pages/HomePage";
 import "./index.css"; // Tailwind CSS를 적용합니다.
-import MainHeader from "./components/MainHeader";
-import Header from "./components/Header";
+import MainHeader from "./components/MainPage/MainHeader";
+import Header from "./components/MainPage/Header";
 import Forgot from "./components/Forgot";
 import FindId from "./components/Find-id";
 import ResetPassword from "./components/ResetPassword";
