@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ const Register = () => {
   const [detailaddr, setDetailaddr] = useState("");
   const [birth, setBirth] = useState({ year: "", month: "", day: "" });
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleGenderChange = (event) => {
     setFm(event.target.value);
@@ -23,14 +25,14 @@ const Register = () => {
     setBirth((prevDate) => ({ ...prevDate, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    try {
-      const response = await axios.post("http://localhost:5000/member/signup", {
+    axios
+      .post("http://localhost:5000/member/signup", {
         email,
         password,
         name,
@@ -40,12 +42,15 @@ const Register = () => {
         roadaddr,
         detailaddr,
         birth: `${birth.year}-${birth.month}-${birth.day}`,
+      })
+      .then((response) => {
+        console.log("Registration successful:", response.data);
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.error("Registration failed:", error);
+        setError("Registration failed. Please try again.");
       });
-      console.log("Registration successful:", response.data);
-    } catch (error) {
-      console.error("Registration failed:", error);
-      setError("Registration failed. Please try again.");
-    }
   };
 
   const years = Array.from({ length: 100 }, (_, i) => 2024 - i);
@@ -114,7 +119,7 @@ const Register = () => {
                 <input
                   type="radio"
                   value="male"
-                  checked={fm === "male"}
+                  checked={fm === "man"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
                 />
@@ -124,7 +129,7 @@ const Register = () => {
                 <input
                   type="radio"
                   value="female"
-                  checked={fm === "female"}
+                  checked={fm === "woman"}
                   onChange={handleGenderChange}
                   className="form-radio text-blue-500"
                 />
