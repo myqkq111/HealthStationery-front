@@ -10,6 +10,10 @@ const MainHeader = () => {
     navigate("/terms");
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
   return (
     <header className="bg-white text-black py-2 px-3 border-b border-gray-200 top-10 inset-x-0 z-20">
       <div className="container mx-auto flex items-center justify-end space-x-3">
@@ -29,12 +33,12 @@ const MainHeader = () => {
           >
             <FaShoppingCart className="mr-1 text-sm" /> 장바구니
           </a>
-          <a
-            href="/profile"
-            className="flex items-center text-xs hover:text-yellow-500"
+          <button
+            onClick={handleProfileClick}
+            className="flex items-center text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
           >
             <FaUser className="mr-1 text-sm" /> 마이페이지
-          </a>
+          </button>
         </div>
 
         <div className="relative ml-3">
