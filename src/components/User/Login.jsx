@@ -54,6 +54,9 @@ const Login = () => {
     setIsForgotOpen(false);
   };
 
+  const handleLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+  };
   const handleSignupClick = () => {
     navigate("/terms");
   };
@@ -77,6 +80,12 @@ const Login = () => {
         <h3 className="text-lg text-gray-600 mb-6 text-center">
           3초면 회원가입 가능!
         </h3>
+
+        <div>
+          <button onClick={handleLogin} className="btn btn-primary">
+            네이버 로그인
+          </button>
+        </div>
 
         <div className="flex flex-col gap-3 mb-6">
           <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out">
