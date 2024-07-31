@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { ko } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 // 한국어 로케일을 등록합니다.
 registerLocale("ko", ko);
@@ -24,6 +26,9 @@ const Register = () => {
   const [error, setError] = useState("");
   const [emailError, setEmailError] = useState(""); // 이메일 중복 오류 상태 추가
   const [isEmailAvailable, setIsEmailAvailable] = useState(true); // 이메일 중복 여부 상태 추가
+  const [passwordStrength, setPasswordStrength] = useState(""); // 비밀번호 강도 상태 추가
+  const [passwordError, setPasswordError] = useState(""); // 비밀번호 오류 상태 추가
+  const [PasswordCheckMessage, setPasswordCheckMessage] = useState(""); // 비밀번호 확인 메세지
   const navigate = useNavigate();
 
   const handleGenderChange = (event) => {
@@ -65,6 +70,55 @@ const Register = () => {
     }
   };
 
+  const validatePassword = (password) => {
+    // 패스워드 정책 검증 로직 추가
+    const hasNumber = /[0-9]/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isNotSequential = !(
+      /(\d)\1\1/.test(password) || /(.)\1\1/.test(password)
+    );
+    const isNotKeyboardPattern = !/qwerty|asdfgh|zxcvbn|123456|654321/.test(
+      password.toLowerCase()
+    );
+
+    // 기본 검증 (길이, 숫자, 대문자, 소문자, 특수 문자)
+    if (
+      password.length >= 8 &&
+      hasNumber &&
+      hasUpperCase &&
+      hasLowerCase &&
+      hasSpecialChar &&
+      isNotSequential &&
+      isNotKeyboardPattern
+    ) {
+      setPasswordStrength("strong");
+      return true;
+    } else if (password.length >= 6) {
+      setPasswordStrength("medium");
+      return false;
+    } else {
+      setPasswordStrength("weak");
+      return false;
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    validatePassword(e.target.value);
+  };
+
+  const handlePasswordCheck = () => {
+    if (validatePassword(password)) {
+      setPasswordError("");
+      setPasswordCheckMessage("사용 가능한 비밀번호입니다.");
+    } else {
+      setPasswordError("비밀번호가 보안 정책을 준수하지 않습니다.");
+      setPasswordCheckMessage("");
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -75,6 +129,11 @@ const Register = () => {
 
     if (!isEmailAvailable) {
       setError("이메일 중복 확인이 필요합니다.");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError("비밀번호가 보안 정책을 준수하지 않습니다.");
       return;
     }
 
@@ -130,17 +189,40 @@ const Register = () => {
             </button>
           </div>
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              비밀번호
-            </label>
-            <input
-              type="password"
-              value={password}
-              placeholder="비밀번호를 입력하세요"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                비밀번호
+                <FontAwesomeIcon
+                  icon={faInfoCircle}
+                  className="ml-2 text-gray-500"
+                />
+                <span className="text-sm text-gray-600 block mt-1">
+                  (최소 8자리 이상, 대문자, 소문자, 특수문자가 혼합되어야
+                  합니다)
+                </span>
+              </label>
+              <input
+                type="password"
+                value={password}
+                placeholder="비밀번호를 입력하세요"
+                onChange={handlePasswordChange}
+                required
+                className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {passwordStrength && (
+                <div
+                  className={`mt-2 ${
+                    passwordStrength === "weak"
+                      ? "text-red-500"
+                      : passwordStrength === "medium"
+                      ? "text-yellow-500"
+                      : "text-green-500"
+                  }`}
+                >
+                  비밀번호 강도: {passwordStrength}
+                </div>
+              )}
+            </div>
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">
@@ -154,6 +236,19 @@ const Register = () => {
               required
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <button
+              type="button"
+              onClick={handlePasswordCheck}
+              className="mt-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              비밀번호 확인
+            </button>
+            {passwordError && (
+              <p className="text-red-500 mt-2">{passwordError}</p>
+            )}
+            {PasswordCheckMessage && (
+              <p className="text-green-500 mt-2">{PasswordCheckMessage}</p>
+            )}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">이름</label>
