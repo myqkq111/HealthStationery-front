@@ -2,7 +2,7 @@ import React from "react";
 
 const ShopImage = () => {
   return (
-    <div className="bg-white px-0 py-0">
+    <div className="bg-white px-0 py-0 mb-4">
       {/* 이미지 섹션 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
         <div className="relative w-full h-80 md:h-96">
