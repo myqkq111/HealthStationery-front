@@ -14,14 +14,14 @@ import Footer from "./components/MainPage/Footer";
 import BottomPage from "./components/MainPage/BottomPage";
 import Shop from "./pages/Shop";
 import ProductPage from "./components/MainPage/ShopPage/ProductPage";
+import TopBar from "./components/MainPage/TopBar";
 
 function App() {
   return (
     <Router>
-      {/* MainHeader는 페이지 내에서 사용 */}
-      <MainHeader />
-      {/* Header는 페이지 상단에 고정 */}
-      <Header />
+      <TopBar /> {/* TopBar를 페이지 상단에 표시 */}
+      <MainHeader /> {/* MainHeader를 TopBar 아래에 표시 */}
+      <Header /> {/* Header를 MainHeader 아래에 표시 */}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
@@ -31,10 +31,10 @@ function App() {
         <Route path="/find-id" element={<FindID />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/shop" element={<Shop />} />
-        <Route path="/product/:id" component={ProductPage} />
+        <Route path="/product/:id" element={<ProductPage />} />
       </Routes>
-      <Footer />
-      <BottomPage />
+      <Footer /> {/* Footer를 페이지 하단에 표시 */}
+      <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
     </Router>
   );
 }

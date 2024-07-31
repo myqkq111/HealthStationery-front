@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 
 const AboutUs = () => {
   return (
-    <div className="relative w-screen h-screen overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden">
       {/* 상단 텍스트 및 수평선 */}
-      <div className="absolute top-0 left-0 w-full text-center p-4 bg-white text-black z-20">
+      <div className="top-0 left-0 w-full text-center p-4 bg-white text-black z-20">
         <h2 className="text-3xl font-bold mb-8">헬스문방구 이야기</h2>
         <div className="flex justify-center mb-4">
           <hr className="border-t-2 border-gray-300 w-24 mx-auto" />
@@ -18,7 +18,7 @@ const AboutUs = () => {
         <img
           src="/images/AboutUs/AboutUs.JPG" // 여기에 원하는 이미지 경로를 넣으세요
           alt="쇼핑몰 소개"
-          className="w-full h-full object-contain max-w-screen-lg mx-auto"
+          className="w-full h-full object-cover max-w-screen-lg mx-auto" // object-cover로 설정하여 이미지를 잘라냄
         />
 
         {/* 중앙 검은색 반투명 사각형 및 텍스트 */}
