@@ -8,7 +8,7 @@ import MainHeader from "./components/MainPage/MainHeader";
 import Header from "./components/MainPage/Header";
 import Forgot from "./components/User/Forgot";
 import FindID from "./components/User/FindID";
-import ResetPassword from "./components/User/ResetPassword";
+import FindPW from "./components/User/ResetPassword";
 import Terms from "./components/User/Terms";
 import Footer from "./components/MainPage/Footer";
 import BottomPage from "./components/MainPage/BottomPage";
@@ -29,7 +29,7 @@ function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/find-id" element={<FindID />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/findPW" element={<FindPW />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" component={ProductPage} />
       </Routes>

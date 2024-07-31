@@ -10,7 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 registerLocale("ko", ko);
 
 const Register = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // 이메일
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
@@ -22,6 +22,8 @@ const Register = () => {
   const [detailaddr, setDetailaddr] = useState("");
   const [birthDate, setBirthDate] = useState(null);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState(""); // 이메일 중복 오류 상태 추가
+  const [isEmailAvailable, setIsEmailAvailable] = useState(true); // 이메일 중복 여부 상태 추가
   const navigate = useNavigate();
 
   const handleGenderChange = (event) => {
@@ -36,33 +38,65 @@ const Register = () => {
     setBirthDate(date);
   };
 
-  const handleSubmit = (event) => {
+  const handleEmailCheck = async () => {
+    if (email.trim() === "") return; // 이메일 입력이 비어있을 때는 체크하지 않음
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/member/checkEmail",
+        email,
+        {
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        }
+      );
+
+      if (response.data) {
+        setEmailError("이메일이 이미 등록되어 있습니다.");
+        setIsEmailAvailable(false);
+      } else {
+        setEmailError("");
+        setIsEmailAvailable(true);
+      }
+    } catch (error) {
+      console.error("이메일 중복 체크 실패:", error);
+      setEmailError("이메일 중복 체크에 실패했습니다.");
+    }
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     if (password !== confirmPassword) {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
-    axios
-      .post("http://localhost:8080/member/signup", {
-        email,
-        password,
-        name,
-        fm,
-        tell,
+
+    if (!isEmailAvailable) {
+      setError("이메일 중복 확인이 필요합니다.");
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:8080/member/signup", {
+        email, // 이메일
+        password, // 비밀번호
+        name, // 성명
+        fm, // 성별
+        tell, // 휴대전화번호
         carrier, // 통신사 정보 추가
-        birth: birthDate ? birthDate.toISOString().split("T")[0] : "",
-        mailaddr,
-        roadaddr,
-        detailaddr,
-      })
-      .then((response) => {
-        console.log("회원가입 성공:", response.data);
-        navigate("/login");
-      })
-      .catch((error) => {
-        console.error("회원가입 실패:", error);
-        setError("회원가입 실패. 다시 시도해 주세요.");
+        birth: birthDate ? birthDate.toISOString().split("T")[0] : "", // 생년월일
+        mailaddr, // 이메일주소
+        roadaddr, // 도로명주소
+        detailaddr, // 상세주소
       });
+      console.log("회원가입 성공");
+      navigate("/login");
+    } catch (error) {
+      console.error("회원가입 실패:", error);
+      setError("회원가입 실패. 다시 시도해 주세요.");
+    }
   };
 
   return (
@@ -72,18 +106,28 @@ const Register = () => {
           회원가입
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              이메일
-            </label>
-            <input
-              type="email"
-              value={email}
-              placeholder="이메일을 입력하세요"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="flex items-center">
+            <div className="flex-grow">
+              <label className="block text-gray-700 font-medium mb-2">
+                이메일
+              </label>
+              <input
+                type="email"
+                value={email}
+                placeholder="이메일을 입력하세요"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {emailError && <p className="text-red-500 mt-2">{emailError}</p>}
+            </div>
+            <button
+              type="button"
+              onClick={handleEmailCheck}
+              className="ml-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              중복 확인
+            </button>
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">
