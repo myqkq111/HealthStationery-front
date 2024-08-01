@@ -103,7 +103,7 @@ const Payment = () => {
         </div>
 
         {/* 오른쪽 섹션 */}
-        <div className="w-full lg:w-1/3 sticky lg:top-8 self-start">
+        <div className="w-full lg:w-1/3 lg:sticky lg:top-16">
           {/* 주문 요약 */}
           <div className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
             <h2 className="text-xl font-semibold mb-4">주문 요약</h2>
