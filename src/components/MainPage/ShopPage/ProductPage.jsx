@@ -1,8 +1,9 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const ProductPage = () => {
   const { id } = useParams(); // URL 파라미터에서 id 가져오기
+  const navigate = useNavigate(); // 페이지 전환을 위한 navigate 훅
 
   // 예제 데이터 (실제로는 API 호출을 통해 데이터 가져옴)
   const product = {
@@ -13,6 +14,11 @@ const ProductPage = () => {
       "상품 상세정보는 여기에 표시됩니다. 이 부분에는 상품의 자세한 설명이 들어갑니다. 예를 들어, 상품의 기능, 소재, 사용 방법 등을 기술할 수 있습니다.",
     reviews: "150",
     additionalInfo: "여기에 추가 정보나 특장점 등을 넣을 수 있습니다.",
+  };
+
+  // 바로 구매 버튼 클릭 시 호출되는 함수
+  const handleBuyNow = () => {
+    navigate("/payment", { state: { product } }); // 결제 페이지로 이동하며 상품 정보 전달
   };
 
   return (
@@ -45,6 +51,12 @@ const ProductPage = () => {
                 onClick={() => alert("장바구니에 추가되었습니다!")}
               >
                 장바구니에 추가
+              </button>
+              <button
+                className="ml-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+                onClick={handleBuyNow}
+              >
+                바로 구매
               </button>
             </div>
             <p className="text-gray-600">{product.additionalInfo}</p>

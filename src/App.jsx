@@ -16,6 +16,7 @@ import Shop from "./pages/Shop";
 import ProductPage from "./components/MainPage/ShopPage/ProductPage";
 import TopBar from "./components/MainPage/TopBar";
 import MyPage from "./components/User/Mypage";
+import Payment from "./components/MainPage/ShopPage/Payment";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/profile" element={<MyPage />} />
+        <Route path="/payment" element={<Payment />} />
       </Routes>
       <Footer /> {/* Footer를 페이지 하단에 표시 */}
       <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
