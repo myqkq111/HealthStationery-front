@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+// src/components/UpdateProfile.jsx
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import CustomModal from "./CustomModal";
 
 const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
@@ -7,11 +9,49 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
   const [address, setAddress] = useState("");
   const [birthdate, setBirthdate] = useState("");
 
+  // Modal 열릴 때 기존 정보를 가져오는 함수
+  useEffect(() => {
+    if (isOpen) {
+      // 사용자 정보를 가져오는 API 호출
+      axios
+        .get(`http://localhost:8080/member/profile/${userEmail}`)
+        .then((response) => {
+          const { name, phone, address, birthdate } = response.data;
+          setName(name || "");
+          setPhone(phone || "");
+          setAddress(address || "");
+          setBirthdate(birthdate || "");
+        })
+        .catch((error) => {
+          console.error("Error fetching profile data:", error);
+          alert("프로필 정보를 가져오는 데 실패했습니다.");
+        });
+    }
+  }, [isOpen, userEmail]);
+
   const handleSave = () => {
-    // 여기에 저장 로직을 추가하세요
-    console.log("저장 버튼 클릭");
-    console.log({ name, phone, address, birthdate });
-    onClose();
+    // 데이터 유효성 검사
+    if (!name || !phone || !address || !birthdate) {
+      alert("모든 필드를 입력해 주세요.");
+      return;
+    }
+
+    axios
+      .put("http://localhost:8080/member/update", {
+        email: userEmail,
+        name,
+        phone,
+        address,
+        birthdate,
+      })
+      .then((response) => {
+        console.log("Profile updated successfully:", response.data);
+        onClose(); // 수정 완료 후 모달 닫기
+      })
+      .catch((error) => {
+        console.error("Error updating profile:", error);
+        alert("프로필 업데이트에 실패했습니다. 다시 시도해 주세요.");
+      });
   };
 
   return (
