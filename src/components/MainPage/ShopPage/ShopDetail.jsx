@@ -1,5 +1,6 @@
 import React from "react";
 import ProductItem from "./ProductItem";
+import { Link } from "react-router-dom";
 
 const ShopDetail = () => {
   // 상품 데이터
@@ -8,9 +9,9 @@ const ShopDetail = () => {
       id: 1,
       image: "/images/products/product1.jpg",
       hoverImage: "/images/products/product1-hover.jpg", // 마우스 오버 시 보여줄 이미지 경로
-      name: "상품 이름 1",
+      name: "스트랩",
       price: "100원",
-      details: "상품 상세정보 1",
+      details: "국민스트랩! Double 논슬립 그립테크의 기술력",
       reviews: "120",
       link: "/product/1",
     },
@@ -169,16 +170,20 @@ const ShopDetail = () => {
       {/* 상품 목록 섹션 */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {products.map((product) => (
-          <ProductItem
+          <Link
             key={product.id}
-            image={product.image}
-            hoverImage={product.hoverImage} // 마우스 오버 이미지 전달
-            name={product.name}
-            price={product.price}
-            details={product.details}
-            reviews={product.reviews}
-            link={product.link}
-          />
+            to={`/product/${product.id}`}
+            state={{ product, initialImage: product.image }} // 상품 데이터를 state로 전달
+          >
+            <ProductItem
+              image={product.image}
+              hoverImage={product.hoverImage} // 마우스 오버 이미지 전달
+              name={product.name}
+              price={product.price}
+              details={product.details}
+              reviews={product.reviews}
+            />
+          </Link>
         ))}
       </div>
     </div>
