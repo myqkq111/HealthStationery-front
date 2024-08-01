@@ -1,3 +1,4 @@
+// src/components/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,14 +7,14 @@ import FindID from "./FindID";
 import ResetPassword from "./ResetPassword";
 import { createPortal } from "react-dom";
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [isFindIDOpen, setIsFindIDOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false); // 로그인 상태 유지 체크박스 상태
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -23,9 +24,12 @@ const Login = () => {
         email,
         password,
         rememberMe,
-      }) // rememberMe 포함
+      })
       .then((response) => {
         console.log("Login successful:", response.data);
+        // 로그인 성공 시 사용자 정보를 로컬 스토리지에 저장
+        localStorage.setItem("username", response.data.username);
+        onLoginSuccess(response.data.username);
         navigate("/"); // 홈 페이지로 이동
       })
       .catch((error) => {
@@ -57,6 +61,7 @@ const Login = () => {
   const handleLogin = () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/naver";
   };
+
   const handleSignupClick = () => {
     navigate("/terms");
   };
