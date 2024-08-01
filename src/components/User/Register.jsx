@@ -29,10 +29,10 @@ const Register = () => {
   const [passwordStrength, setPasswordStrength] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordCheckMessage, setPasswordCheckMessage] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [isCodeSent, setIsCodeSent] = useState(false);
-  const [verificationError, setVerificationError] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
+  // const [verificationCode, setVerificationCode] = useState("");
+  // const [isCodeSent, setIsCodeSent] = useState(false);
+  // const [verificationError, setVerificationError] = useState("");
+  // const [isVerified, setIsVerified] = useState(false);
 
   const navigate = useNavigate();
 
@@ -120,55 +120,55 @@ const Register = () => {
     }
   };
 
-  const handleSendVerificationCode = async () => {
-    if (!carrier || !tell) {
-      setVerificationError("통신사와 전화번호를 입력하세요.");
-      return;
-    }
+  // const handleSendVerificationCode = async () => {
+  //   if (!carrier || !tell) {
+  //     setVerificationError("통신사와 전화번호를 입력하세요.");
+  //     return;
+  //   }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/sendVerificationCode",
-        {
-          carrier,
-          tell,
-        }
-      );
-      if (response.data.success) {
-        setIsCodeSent(true);
-        setVerificationError("");
-      } else {
-        setVerificationError("인증 코드 발송 실패.");
-      }
-    } catch (error) {
-      console.error("인증 코드 발송 실패:", error);
-      setVerificationError("인증 코드 발송 실패.");
-    }
-  };
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:8080/sendVerificationCode",
+  //       {
+  //         carrier,
+  //         tell,
+  //       }
+  //     );
+  //     if (response.data.success) {
+  //       setIsCodeSent(true);
+  //       setVerificationError("");
+  //     } else {
+  //       setVerificationError("인증 코드 발송 실패.");
+  //     }
+  //   } catch (error) {
+  //     console.error("인증 코드 발송 실패:", error);
+  //     setVerificationError("인증 코드 발송 실패.");
+  //   }
+  // };
 
-  const handleVerifyCode = async () => {
-    if (!verificationCode) {
-      setVerificationError("인증 코드를 입력하세요.");
-      return;
-    }
+  // const handleVerifyCode = async () => {
+  //   if (!verificationCode) {
+  //     setVerificationError("인증 코드를 입력하세요.");
+  //     return;
+  //   }
 
-    try {
-      const response = await axios.post("http://localhost:8080/verifyCode", {
-        carrier,
-        tell,
-        verificationCode,
-      });
-      if (response.data.success) {
-        setIsVerified(true);
-        setVerificationError("");
-      } else {
-        setVerificationError("인증 코드가 올바르지 않습니다.");
-      }
-    } catch (error) {
-      console.error("인증 실패:", error);
-      setVerificationError("인증 실패.");
-    }
-  };
+  //   try {
+  //     const response = await axios.post("http://localhost:8080/verifyCode", {
+  //       carrier,
+  //       tell,
+  //       verificationCode,
+  //     });
+  //     if (response.data.success) {
+  //       setIsVerified(true);
+  //       setVerificationError("");
+  //     } else {
+  //       setVerificationError("인증 코드가 올바르지 않습니다.");
+  //     }
+  //   } catch (error) {
+  //     console.error("인증 실패:", error);
+  //     setVerificationError("인증 실패.");
+  //   }
+  // };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -188,10 +188,10 @@ const Register = () => {
       return;
     }
 
-    if (!isVerified) {
-      setError("전화번호 인증이 필요합니다.");
-      return;
-    }
+    // if (!isVerified) {
+    //   setError("전화번호 인증이 필요합니다.");
+    //   return;
+    // }
 
     try {
       await axios.post("http://localhost:8080/member/signup", {
