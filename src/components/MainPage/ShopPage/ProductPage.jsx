@@ -1,6 +1,71 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useLocation, Link } from "react-router-dom";
 import debounce from "lodash/debounce";
+import ProductReviewSection from "./ProductReviewSection";
+import ProductItem from "./ProductItem";
+
+const relatedProducts = [
+  {
+    id: 1,
+    image: "/images/products/product1.jpg",
+    hoverImage: "/images/products/product1-hover.jpg",
+    name: "스트랩",
+    price: "100원",
+    details: "국민스트랩! Double 논슬립 그립테크의 기술력",
+    reviews: "120",
+    link: "/product/1",
+  },
+  {
+    id: 2,
+    image: "/images/products/product2.jpg",
+    hoverImage: "/images/products/product2-hover.jpg",
+    name: "상품 이름 2",
+    price: "100원",
+    details: "상품 상세정보 2",
+    reviews: "80",
+    link: "/product/2",
+  },
+  {
+    id: 3,
+    image: "/images/products/product3.jpg",
+    hoverImage: "/images/products/product3-hover.jpg",
+    name: "상품 이름 3",
+    price: "100원",
+    details: "상품 상세정보 3",
+    reviews: "150",
+    link: "/product/3",
+  },
+  {
+    id: 4,
+    image: "/images/products/product4.jpg",
+    hoverImage: "/images/products/product4-hover.jpg",
+    name: "상품 이름 4",
+    price: "100원",
+    details: "상품 상세정보 4",
+    reviews: "200",
+    link: "/product/4",
+  },
+  {
+    id: 5,
+    image: "/images/products/product1.jpg",
+    hoverImage: "/images/products/product1-hover.jpg",
+    name: "상품 이름 5",
+    price: "100원",
+    details: "상품 상세정보 5",
+    reviews: "110",
+    link: "/product/5",
+  },
+  {
+    id: 6,
+    image: "/images/products/product2.jpg",
+    hoverImage: "/images/products/product2-hover.jpg",
+    name: "상품 이름 6",
+    price: "100원",
+    details: "상품 상세정보 6",
+    reviews: "90",
+    link: "/product/6",
+  },
+];
 
 const ProductPage = () => {
   const location = useLocation();
@@ -12,6 +77,17 @@ const ProductPage = () => {
   ); // 초기 이미지 설정
   const [fade, setFade] = useState(false);
 
+  const detailsRef = useRef(null);
+  const reviewRef = useRef(null);
+
+  const scrollToSection = (ref) => {
+    if (ref.current) {
+      window.scrollTo({
+        top: ref.current.offsetTop,
+        behavior: "smooth",
+      });
+    }
+  };
   // 썸네일 이미지 배열
   const thumbnails = [
     "/images/products/product1.jpg",
@@ -289,20 +365,169 @@ const ProductPage = () => {
           </div>
         </div>
 
-        {/* 중단바 */}
-        <div className="border border-gray-300 rounded-lg bg-white flex">
+        {/* 중단 영역 */}
+        <div className="border border-gray-300 rounded-lg bg-white flex mb-8">
           {/* 좌측 영역 */}
           <div className="flex-1 p-2 border-r border-gray-300 text-center">
-            <p className="text-gray-700 font-medium">상세정보</p>
+            <p
+              className="text-gray-700 font-medium cursor-pointer"
+              onClick={() => scrollToSection(detailsRef)}
+            >
+              상세정보
+            </p>
           </div>
 
           {/* 우측 영역 */}
           <div className="flex-1 p-2 text-center">
-            <p className="text-gray-700 font-medium">
-              구매정보{" "}
-              <span className="text-red-300 text-xs">({product.reviews})</span>
+            <p
+              className="text-gray-700 font-medium cursor-pointer"
+              onClick={() => scrollToSection(reviewRef)}
+            >
+              리뷰
             </p>
           </div>
+        </div>
+
+        {/* 이미지 */}
+        <div>
+          <div className="flex items-center justify-center" ref={detailsRef}>
+            <img
+              src="/images/products/productPage1.jpg"
+              alt="상세1"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+          <div>
+            <img
+              src="/images/products/productPage2.jpg"
+              alt="상세2"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+          <div className="flex mb-6">
+            <img
+              src="/images/products/productPage3.jpg"
+              alt="상세3"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+        </div>
+
+        {/* 표 */}
+        <div className="bg-white p-2 mb-16">
+          <div className="text-sm font-semibold mb-2">상품정보 제공고시</div>
+          <hr />
+
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">풀명 및 모델명</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              {product.name}
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">크기, 중량</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              약 130g
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">색상</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              상세페이지 참조
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">재질</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              Rubber,Nylone,Neoprene
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">제품구성</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              제로투히어로 그립테크 논슬립 헬스 스트랩 본풀
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">
+              동일모델의 출시년월
+            </div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              2018년 5월 출시
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">제조자</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              ZEROTOHERO
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">제조국</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              중국
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">
+              상품별 세부 사양
+            </div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              상세페이지 참조
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">품질보증기준</div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              소비자 분쟁해결기준(공정거래위원회 고시)및 관계법령에 따릅니다.
+            </div>
+          </div>
+          <hr />
+          <div className="flex">
+            <div className="bg-gray-100 text-sm p-2 w-1/3">
+              A/S 책임자와 전화번호
+            </div>
+            <div className="p-2 w-2/3 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+              카카오톡플러스 @헬스문방구
+            </div>
+          </div>
+          <hr />
+        </div>
+
+        {/* 상품 리뷰 섹션 */}
+        <div ref={reviewRef}>
+          <ProductReviewSection productId={product.id} />
+        </div>
+        <div className="flex mb-6">
+          <img
+            src="/images/products/productPage4.jpg"
+            alt="상세4"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {relatedProducts.map((product) => (
+            <ProductItem
+              key={product.id}
+              image={product.image}
+              hoverImage={product.hoverImage}
+              name={product.name}
+              price={product.price}
+              details={product.details}
+              reviews={product.reviews}
+              link={product.link}
+            />
+          ))}
         </div>
       </div>
     </div>
