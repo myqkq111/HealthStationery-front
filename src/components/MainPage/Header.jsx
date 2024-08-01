@@ -14,7 +14,7 @@ const Header = () => {
   return (
     <nav
       style={{ borderTop: "2px solid #e5e7eb" }}
-      className="bg-white p-0 sticky top-0 z-10"
+      className="bg-white p-0 sticky top-0 z-20"
     >
       <div className="container mx-auto flex justify-between items-center">
         {/* 브랜드 이름 */}
