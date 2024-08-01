@@ -58,8 +58,7 @@ const MyPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* 사이드바 */}
-      <div className="w-1/4 max-w-xs bg-white shadow-md rounded-lg p-4">
-        <h2 className="text-lg font-bold mb-4">마이페이지</h2>
+      <div className="w-1/4 max-w-xs bg-white shadow-md p-4">
         <ul className="space-y-2">
           <li>
             <button
@@ -69,6 +68,7 @@ const MyPage = () => {
               주문조회
             </button>
           </li>
+          <hr className="flex-1 border-t border-gray-300" />
           <li>
             <button
               onClick={() => navigate("/profile/favorites")}
@@ -77,6 +77,7 @@ const MyPage = () => {
               좋아요
             </button>
           </li>
+          <hr className="flex-1 border-t border-gray-300" />
           <li>
             <button
               onClick={() => navigate("/profile/returns")}
@@ -85,6 +86,7 @@ const MyPage = () => {
               취소/교환/반품
             </button>
           </li>
+          <hr className="flex-1 border-t border-gray-300" />
           <li>
             <button
               onClick={() => setIsModalOpen(true)}
@@ -93,6 +95,7 @@ const MyPage = () => {
               정보수정
             </button>
           </li>
+          <hr className="flex-1 border-t border-gray-300" />
           <li>
             <button
               onClick={handleDeleteAccount}
@@ -101,11 +104,12 @@ const MyPage = () => {
               회원탈퇴
             </button>
           </li>
+          <hr className="flex-1 border-t border-gray-300" />
         </ul>
       </div>
 
       {/* 콘텐츠 영역 */}
-      <div className="w-3/4 max-w-4xl p-8 bg-white rounded-lg shadow-md ml-4">
+      <div className="w-3/4 max-w-4xl p-8 bg-white shadow-md ml-4">
         <h2 className="text-2xl font-bold mb-6 text-center">회원 정보</h2>
         <p className="text-gray-600 mb-4 text-center">
           여기서 회원 정보를 관리할 수 있습니다.
