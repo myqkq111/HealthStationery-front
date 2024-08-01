@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -15,16 +14,21 @@ const Header = () => {
   return (
     <nav
       style={{ borderTop: "2px solid #e5e7eb" }}
-      className="bg-white p-4 sticky top-0 z-10"
+      className="bg-white p-0 sticky top-0 z-10"
     >
       <div className="container mx-auto flex justify-between items-center">
-        <a
-          href="/"
-          className="text-black text-xl font-bold whitespace-nowrap tracking-wide"
-        >
-          헬스문방구
-        </a>
-        <div className="flex-1 flex justify-center relative">
+        {/* 브랜드 이름 */}
+        <div className="flex items-center justify-center relative">
+          <a href="/" className="flex items-center">
+            <img
+              src="/images/banner/Header.jpg" // 이미지 파일 경로
+              alt="헬스문방구 로고" // 이미지 대체 텍스트
+              className="w-16 h-12 object-contain" // 이미지 크기 설정
+            />
+          </a>
+        </div>
+
+        <div className="flex-1 flex justify-center gap-4 relative ">
           <a
             href="/about"
             className="text-black px-4 whitespace-nowrap tracking-wide"
