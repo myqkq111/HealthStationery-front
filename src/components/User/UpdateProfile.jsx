@@ -5,7 +5,7 @@ import CustomModal from "./CustomModal";
 
 const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [tell, setTell] = useState("");
   const [address, setAddress] = useState("");
   const [birthdate, setBirthdate] = useState("");
 
@@ -16,9 +16,9 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
       axios
         .get(`http://localhost:8080/member/profile/${userEmail}`)
         .then((response) => {
-          const { name, phone, address, birthdate } = response.data;
+          const { name, tell, address, birthdate } = response.data;
           setName(name || "");
-          setPhone(phone || "");
+          setTell(tell || "");
           setAddress(address || "");
           setBirthdate(birthdate || "");
         })
@@ -31,7 +31,7 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
 
   const handleSave = () => {
     // 데이터 유효성 검사
-    if (!name || !phone || !address || !birthdate) {
+    if (!name || !tell || !address || !birthdate) {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
@@ -40,7 +40,7 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
       .put("http://localhost:8080/member/update", {
         email: userEmail,
         name,
-        phone,
+        tell,
         address,
         birthdate,
       })
@@ -98,8 +98,8 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
           <input
             id="phone"
             type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={tell}
+            onChange={(e) => setTell(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>

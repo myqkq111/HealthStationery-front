@@ -99,9 +99,7 @@ const Login = ({ onLoginSuccess }) => {
           <button className="flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out">
             <i className="fab fa-google mr-2"></i> 구글로 시작하기
           </button>
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#3b5998] hover:bg-[#2d4373] transition duration-300 ease-in-out">
-            <i className="fab fa-facebook mr-2"></i> 페이스북으로 시작하기
-          </button>
+
           <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out">
             <i className="fab fa-kakao mr-2"></i> 카카오로 시작하기
           </button>
