@@ -1,14 +1,14 @@
-// src/components/Login.jsx
+// src/components/User/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance.jsx";
 import Forgot from "./Forgot";
 import FindID from "./FindID";
 import ResetPassword from "./ResetPassword";
 import { createPortal } from "react-dom";
-import axiosInstance from "../api/AxiosInstance.jsx";
+import { useAuth } from "../contexts/AuthContext";
 
-const Login = ({ onLoginSuccess }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,58 +17,45 @@ const Login = ({ onLoginSuccess }) => {
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    axiosInstance
-      .post("/member/login", {
+    try {
+      const response = await axiosInstance.post("/member/login", {
         email,
         password,
-        // rememberMe,
-      }) // rememberMe 포함
-      .then((response) => {
-        const { token } = response.data;
-
-        // 토큰을 localStorage에 저장
-        localStorage.setItem("token", token);
-        console.log("Login successful");
-        navigate("/"); // 홈 페이지로 이동
-      })
-      .catch((error) => {
-        console.error("Login failed:", error);
-        setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
       });
+
+      const { token, username } = response.data;
+
+      // 로그인 상태 업데이트
+      login(token, username);
+
+      navigate("/"); // 홈 페이지로 이동
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
+    }
   };
 
-  const handleForgotClick = () => {
-    setIsForgotOpen(true);
-  };
-
+  const handleForgotClick = () => setIsForgotOpen(true);
   const handleCloseForgot = () => {
     setIsForgotOpen(false);
     setIsFindIDOpen(false);
     setIsResetPasswordOpen(false);
   };
-
   const handleOpenFindID = () => {
     setIsFindIDOpen(true);
     setIsForgotOpen(false);
   };
-
   const handleOpenResetPassword = () => {
     setIsResetPasswordOpen(true);
     setIsForgotOpen(false);
   };
 
-  const naverLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/naver";
-  };
-  const kakaoLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
-  };
-
-  const handleSignupClick = () => {
-    navigate("/terms");
+  const socialLogin = (provider) => {
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   };
 
   return (
@@ -93,16 +80,21 @@ const Login = ({ onLoginSuccess }) => {
 
         <div className="flex flex-col gap-3 mb-6">
           <button
-            onClick={naverLogin}
-            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out"
+            onClick={() => socialLogin("naver")}
+            className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out"
           >
             <i className="fab fa-naver mr-2"></i> 네이버로 시작하기
           </button>
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out">
+          <button
+            onClick={() => socialLogin("google")}
+            className="flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out"
+          >
             <i className="fab fa-google mr-2"></i> 구글로 시작하기
           </button>
-
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out">
+          <button
+            onClick={() => socialLogin("kakao")}
+            className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out"
+          >
             <i className="fab fa-kakao mr-2"></i> 카카오로 시작하기
           </button>
         </div>
@@ -153,7 +145,7 @@ const Login = ({ onLoginSuccess }) => {
 
         <div className="flex justify-between mt-6 text-sm text-gray-600">
           <button
-            onClick={handleSignupClick}
+            onClick={() => navigate("/terms")}
             className="text-blue-500 hover:underline"
           >
             회원가입

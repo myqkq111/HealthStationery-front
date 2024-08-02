@@ -1,30 +1,15 @@
 // src/components/MainPage/MainHeader.jsx
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { FaUser, FaShoppingCart, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const MainHeader = () => {
   const navigate = useNavigate();
-
-  // 로그인 상태와 사용자명을 추적하는 상태 추가
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState("");
-
-  useEffect(() => {
-    // 컴포넌트가 마운트될 때 로그인 상태를 확인하는 로직
-    const loggedInUser = localStorage.getItem("username");
-    if (loggedInUser) {
-      setIsAuthenticated(true);
-      setUsername(loggedInUser);
-    }
-  }, []);
+  const { isAuthenticated, logout } = useAuth();
 
   const handleLoginClick = () => {
     navigate("/login");
-  };
-
-  const handleSignUpClick = () => {
-    navigate("/terms");
   };
 
   const handleProfileClick = () => {
@@ -32,10 +17,8 @@ const MainHeader = () => {
   };
 
   const handleLogoutClick = () => {
-    // 로그아웃 로직
-    setIsAuthenticated(false);
-    setUsername("");
-    localStorage.removeItem("username");
+    logout(); // useAuth 훅을 사용하여 로그아웃
+    navigate("/"); // 로그아웃 후 홈으로 이동
   };
 
   return (
@@ -44,7 +27,7 @@ const MainHeader = () => {
         <div className="flex items-center space-x-3">
           {isAuthenticated ? (
             <>
-              <span className="text-xs">{username}</span>
+              <span className="text-xs">Username</span>
               <button
                 onClick={handleLogoutClick}
                 className="text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
@@ -61,7 +44,7 @@ const MainHeader = () => {
                 로그인
               </button>
               <button
-                onClick={handleSignUpClick}
+                onClick={() => navigate("/terms")}
                 className="text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
               >
                 회원가입
@@ -81,7 +64,6 @@ const MainHeader = () => {
             <FaUser className="mr-1 text-sm" /> 마이페이지
           </button>
         </div>
-
         <div className="relative ml-3">
           <input
             type="text"

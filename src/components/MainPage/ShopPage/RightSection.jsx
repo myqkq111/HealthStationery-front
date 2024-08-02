@@ -2,11 +2,8 @@ import React from "react";
 
 const RightSection = ({ price }) => {
   return (
-    <nav
-      style={{ borderTop: "2px solid #e5e7eb" }}
-      className="p-0 sticky top-14 z-10"
-    >
-      <div className="mb-6 bg-white p-4  shadow-sm border border-gray-200">
+    <aside className="sticky top-16 z-10">
+      <div className="mb-6 bg-white p-4">
         <h2 className="text-xl font-semibold mb-4">주문 요약</h2>
         <div className="mb-2 flex justify-between">
           <span className="text-gray-700">상품 가격:</span>
@@ -16,13 +13,14 @@ const RightSection = ({ price }) => {
           <span className="text-gray-700">배송비:</span>
           <span className="text-gray-700">3000원</span>
         </div>
+        <hr />
         <div className="mt-4 flex justify-between font-bold text-lg">
           <span>총 주문 금액:</span>
           <span>{price + 3000}</span>
         </div>
       </div>
 
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <div className="mb-6 bg-white p-4">
         <h2 className="text-xl font-semibold mb-4">결제 수단</h2>
         <div>
           <label className="block mb-2">
@@ -45,7 +43,7 @@ const RightSection = ({ price }) => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white p-4">
         <h2 className="text-xl font-semibold mb-4">약관 동의</h2>
         <div>
           <label className="block mb-2">
@@ -62,7 +60,10 @@ const RightSection = ({ price }) => {
           </label>
         </div>
       </div>
-    </nav>
+      <button className="w-full bg-red-500 text-white py-4 px-4 hover:bg-red-600 transition">
+        결제하기
+      </button>
+    </aside>
   );
 };
 
