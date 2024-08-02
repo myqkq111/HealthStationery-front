@@ -7,11 +7,18 @@ import { ko } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import { useLocation } from "react-router-dom";
 
 // 한국어 로케일을 등록합니다.
 registerLocale("ko", ko);
 
 const Register = () => {
+  // const location = useLocation();
+  // const query = new URLSearchParams(location.search);
+
+  // const email = query.get("email");
+  // const name = query.get("name");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

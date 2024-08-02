@@ -15,7 +15,6 @@ const Login = ({ onLoginSuccess }) => {
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [isFindIDOpen, setIsFindIDOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -24,14 +23,12 @@ const Login = ({ onLoginSuccess }) => {
       .post("/member/login", {
         email,
         password,
-        // rememberMe,
-      }) // rememberMe 포함
+      })
       .then((response) => {
         const { token } = response.data;
 
         // 토큰을 localStorage에 저장
         localStorage.setItem("token", token);
-        console.log("Login successful");
         navigate("/"); // 홈 페이지로 이동
       })
       .catch((error) => {
@@ -102,7 +99,10 @@ const Login = ({ onLoginSuccess }) => {
             <i className="fab fa-google mr-2"></i> 구글로 시작하기
           </button>
 
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out">
+          <button
+            onClick={kakaoLogin}
+            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out"
+          >
             <i className="fab fa-kakao mr-2"></i> 카카오로 시작하기
           </button>
         </div>
@@ -133,15 +133,6 @@ const Login = ({ onLoginSuccess }) => {
               required
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
             />
-          </div>
-          <div className="flex items-center mb-6">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label className="text-gray-600">로그인 상태 유지</label>
           </div>
           <button
             type="submit"
