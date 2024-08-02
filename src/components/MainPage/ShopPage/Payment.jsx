@@ -12,19 +12,23 @@ const Payment = () => {
   const [customMemo, setCustomMemo] = useState("");
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100 p-16">
       <h1 className="text-3xl font-bold text-center mb-8">결제하기</h1>
-      <div className="max-w-6xl mx-auto p-6 flex flex-col lg:flex-row lg:space-x-6">
-        <LeftSection
-          product={product}
-          user={user}
-          deliveryMemo={deliveryMemo}
-          setDeliveryMemo={setDeliveryMemo}
-          customMemo={customMemo}
-          setCustomMemo={setCustomMemo}
-        />
-        <div className="w-full lg:w-1/3">
-          <RightSection price={product?.price || 0} />
+      <div className="flex justify-center">
+        <div className="w-full lg:w-3/5 max-w-screen-xl p-6 flex flex-col lg:flex-row lg:space-x-1">
+          <div className="w-full lg:w-3/5">
+            <LeftSection
+              product={product}
+              user={user}
+              deliveryMemo={deliveryMemo}
+              setDeliveryMemo={setDeliveryMemo}
+              customMemo={customMemo}
+              setCustomMemo={setCustomMemo}
+            />
+          </div>
+          <div className="w-full lg:w-1/3 relative">
+            <RightSection price={product?.price || 0} />
+          </div>
         </div>
       </div>
     </div>

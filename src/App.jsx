@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/User/Login";
@@ -19,7 +20,7 @@ import MyPage from "./components/User/Mypage";
 import Payment from "./components/MainPage/ShopPage/Payment";
 import BasketPage from "./components/MainPage/ShopPage/BasketPage";
 
-function App() {
+const App = () => {
   return (
     <Router>
       <TopBar /> {/* TopBar를 페이지 상단에 표시 */}
@@ -43,6 +44,6 @@ function App() {
       <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
     </Router>
   );
-}
+};
 
 export default App;

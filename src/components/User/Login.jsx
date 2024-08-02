@@ -1,69 +1,72 @@
-// src/components/Login.jsx
+// src/components/User/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance.jsx";
 import Forgot from "./Forgot";
 import FindID from "./FindID";
 import ResetPassword from "./ResetPassword";
 import { createPortal } from "react-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-const Login = ({ onLoginSuccess }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [isFindIDOpen, setIsFindIDOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    axios
-      .post("http://localhost:8080/member/login", {
-        email,
-        password,
-        rememberMe,
-      })
-      .then((response) => {
-        console.log("Login successful:", response.data);
-        // 로그인 성공 시 사용자 정보를 로컬 스토리지에 저장
-        localStorage.setItem("username", response.data.username);
-        onLoginSuccess(response.data.username);
-        navigate("/"); // 홈 페이지로 이동
-      })
-      .catch((error) => {
-        console.error("Login failed:", error);
-        setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
-      });
+    try {
+      const response = await axiosInstance
+        .post("/member/login", {
+          email,
+          password,
+        })
+        .then((response) => {
+          const { token } = response.data;
+
+          // 토큰을 localStorage에 저장
+          localStorage.setItem("token", token);
+          navigate("/"); // 홈 페이지로 이동
+        })
+        .catch((error) => {
+          console.error("Login failed:", error);
+          setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
+        });
+
+      const { token, member } = response.data;
+
+      // 로그인 상태 업데이트
+      login(token, member);
+
+      navigate("/"); // 홈 페이지로 이동
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
+    }
   };
 
-  const handleForgotClick = () => {
-    setIsForgotOpen(true);
-  };
-
+  const handleForgotClick = () => setIsForgotOpen(true);
   const handleCloseForgot = () => {
     setIsForgotOpen(false);
     setIsFindIDOpen(false);
     setIsResetPasswordOpen(false);
   };
-
   const handleOpenFindID = () => {
     setIsFindIDOpen(true);
     setIsForgotOpen(false);
   };
-
   const handleOpenResetPassword = () => {
     setIsResetPasswordOpen(true);
     setIsForgotOpen(false);
   };
 
-  const handleLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/naver";
-  };
-
-  const handleSignupClick = () => {
-    navigate("/terms");
+  const socialLogin = (provider) => {
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   };
 
   return (
@@ -86,21 +89,24 @@ const Login = ({ onLoginSuccess }) => {
           3초면 회원가입 가능!
         </h3>
 
-        <div>
-          <button onClick={handleLogin} className="btn btn-primary">
-            네이버 로그인
-          </button>
-        </div>
-
         <div className="flex flex-col gap-3 mb-6">
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out">
+          <button
+            onClick={() => socialLogin("naver")}
+            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out"
+          >
             <i className="fab fa-naver mr-2"></i> 네이버로 시작하기
           </button>
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out">
+          <button
+            onClick={() => socialLogin("google")}
+            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out"
+          >
             <i className="fab fa-google mr-2"></i> 구글로 시작하기
           </button>
 
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out">
+          <button
+            onClick={() => socialLogin("kakao")}
+            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out"
+          >
             <i className="fab fa-kakao mr-2"></i> 카카오로 시작하기
           </button>
         </div>
@@ -132,15 +138,6 @@ const Login = ({ onLoginSuccess }) => {
               className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
             />
           </div>
-          <div className="flex items-center mb-6">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              className="mr-2 h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label className="text-gray-600">로그인 상태 유지</label>
-          </div>
           <button
             type="submit"
             className="w-full py-3 px-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition duration-300 ease-in-out"
@@ -151,7 +148,7 @@ const Login = ({ onLoginSuccess }) => {
 
         <div className="flex justify-between mt-6 text-sm text-gray-600">
           <button
-            onClick={handleSignupClick}
+            onClick={() => navigate("/terms")}
             className="text-blue-500 hover:underline"
           >
             회원가입

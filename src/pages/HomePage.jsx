@@ -6,6 +6,7 @@ import ReviewList from "../components/MainPage/ReviewPage/ReviewList";
 import VideoPage from "../components/MainPage/VideoPage";
 import AboutUs from "../components/MainPage/AboutUs";
 import GalleryPage from "../components/MainPage/GalleryPage/GalleryPage";
+import ScrollToTopButton from "../components/MainPage/ScrollToTopButton";
 
 const HomePage = () => {
   return (
@@ -18,6 +19,7 @@ const HomePage = () => {
       <VideoPage />
       <AboutUs />
       <GalleryPage />
+      <ScrollToTopButton />
     </div>
   );
 };
