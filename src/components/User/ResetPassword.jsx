@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const ResetPassword = ({ onClose }) => {
+const FindPW = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -13,14 +13,28 @@ const ResetPassword = ({ onClose }) => {
     setSuccess(""); // Clear previous success message
 
     axios
-      .post("http://localhost:8080/api/request-temp-password", { email })
+      .post("http://localhost:8080/member/findPW", email, {
+        headers: {
+          "Content-Type": "text/plain", // 요청 본문이 문자열이므로 'text/plain' 사용
+        },
+        responseType: "text", // 서버 응답을 텍스트로 처리
+      })
       .then((response) => {
-        console.log("Temporary password request successful:", response.data);
-        setSuccess("임시 비밀번호가 이메일로 전송되었습니다.");
+        console.log("Server response:", response); // 응답 전체 로그
+
+        const responseData = response.data;
+        if (responseData.includes("임시 비밀번호가 이메일로 전송되었습니다.")) {
+          setSuccess("임시 비밀번호가 이메일로 전송되었습니다.");
+        } else if (responseData.includes("이메일이 등록되어 있지 않습니다.")) {
+          setError("이메일이 등록되어 있지 않습니다.");
+        } else {
+          setError("알 수 없는 오류가 발생했습니다.");
+        }
+
         setEmail(""); // Clear the email input field
       })
       .catch((error) => {
-        console.error("Temporary password request failed:", error);
+        console.error("Temporary password request failed:", error); // 오류 로그
         setError("임시 비밀번호 요청에 실패했습니다. 이메일을 확인해 주세요.");
       });
   };
@@ -68,4 +82,4 @@ const ResetPassword = ({ onClose }) => {
   );
 };
 
-export default ResetPassword;
+export default FindPW;

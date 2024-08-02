@@ -1,3 +1,4 @@
+// src/components/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,14 +8,14 @@ import ResetPassword from "./ResetPassword";
 import { createPortal } from "react-dom";
 import axiosInstance from "../api/AxiosInstance.jsx";
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [isFindIDOpen, setIsFindIDOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false); // 로그인 상태 유지 체크박스 상태
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -65,6 +66,7 @@ const Login = () => {
   const kakaoLogin = () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
   };
+
   const handleSignupClick = () => {
     navigate("/terms");
   };
@@ -99,13 +101,8 @@ const Login = () => {
           <button className="flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out">
             <i className="fab fa-google mr-2"></i> 구글로 시작하기
           </button>
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#3b5998] hover:bg-[#2d4373] transition duration-300 ease-in-out">
-            <i className="fab fa-facebook mr-2"></i> 페이스북으로 시작하기
-          </button>
-          <button
-            onClick={kakaoLogin}
-            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out"
-          >
+
+          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out">
             <i className="fab fa-kakao mr-2"></i> 카카오로 시작하기
           </button>
         </div>
