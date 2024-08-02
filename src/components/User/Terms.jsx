@@ -15,8 +15,6 @@ const Terms = () => {
 
   const email = query.get("email");
   const name = query.get("name");
-  console.log(email);
-  console.log(name);
 
   const handleAcceptTermsChange = (event) => {
     const checked = event.target.checked;
@@ -46,7 +44,7 @@ const Terms = () => {
 
   const handleAccept = () => {
     if (isAcceptedTerms && isAcceptedPrivacy && isAcceptedAge) {
-      navigate("/signup"); // 동의 후 회원가입 페이지로 이동
+      navigate(`/signup?email=${email}&name=${name}`); // 동의 후 회원가입 페이지로 이동
     }
   };
 
