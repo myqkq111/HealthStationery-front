@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import debounce from "lodash/debounce";
 import ProductReviewSection from "./ProductReviewSection";
 import ProductItem from "./ProductItem";
+import ScrollToTopButton from "../ScrollToTopButton";
 
 const relatedProducts = [
   {
@@ -530,6 +531,7 @@ const ProductPage = () => {
           ))}
         </div>
       </div>
+      <ScrollToTopButton />
     </div>
   );
 };
