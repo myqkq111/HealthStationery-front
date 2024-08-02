@@ -6,6 +6,7 @@ import Forgot from "./Forgot";
 import FindID from "./FindID";
 import ResetPassword from "./ResetPassword";
 import { createPortal } from "react-dom";
+import axiosInstance from "../api/AxiosInstance.jsx";
 
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -19,17 +20,18 @@ const Login = ({ onLoginSuccess }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    axios
-      .post("http://localhost:8080/member/login", {
+    axiosInstance
+      .post("/member/login", {
         email,
         password,
-        rememberMe,
-      })
+        // rememberMe,
+      }) // rememberMe 포함
       .then((response) => {
-        console.log("Login successful:", response.data);
-        // 로그인 성공 시 사용자 정보를 로컬 스토리지에 저장
-        localStorage.setItem("username", response.data.username);
-        onLoginSuccess(response.data.username);
+        const { token } = response.data;
+
+        // 토큰을 localStorage에 저장
+        localStorage.setItem("token", token);
+        console.log("Login successful");
         navigate("/"); // 홈 페이지로 이동
       })
       .catch((error) => {
@@ -58,8 +60,11 @@ const Login = ({ onLoginSuccess }) => {
     setIsForgotOpen(false);
   };
 
-  const handleLogin = () => {
+  const naverLogin = () => {
     window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+  };
+  const kakaoLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
   };
 
   const handleSignupClick = () => {
@@ -86,14 +91,11 @@ const Login = ({ onLoginSuccess }) => {
           3초면 회원가입 가능!
         </h3>
 
-        <div>
-          <button onClick={handleLogin} className="btn btn-primary">
-            네이버 로그인
-          </button>
-        </div>
-
         <div className="flex flex-col gap-3 mb-6">
-          <button className="flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out">
+          <button
+            onClick={naverLogin}
+            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out"
+          >
             <i className="fab fa-naver mr-2"></i> 네이버로 시작하기
           </button>
           <button className="flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out">
