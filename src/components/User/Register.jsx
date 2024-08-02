@@ -42,6 +42,8 @@ const Register = () => {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
+    console.log(email);
+    console.log(birthDate.toISOString().split("T")[0]);
     axios
       .post("http://localhost:8080/member/signup", {
         email,
@@ -49,13 +51,14 @@ const Register = () => {
         name,
         fm,
         tell,
-        carrier, // 통신사 정보 추가
+        // carrier, // 통신사 정보 추가
         birth: birthDate ? birthDate.toISOString().split("T")[0] : "",
         mailaddr,
         roadaddr,
         detailaddr,
       })
       .then((response) => {
+        console.log(response);
         console.log("회원가입 성공:", response.data);
         navigate("/login");
       })

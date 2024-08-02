@@ -1,6 +1,7 @@
 // src/components/TermsAndConditions.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const Terms = () => {
   const [isAcceptedTerms, setIsAcceptedTerms] = useState(false);
@@ -8,6 +9,14 @@ const Terms = () => {
   const [isAcceptedAge, setIsAcceptedAge] = useState(false);
   const [isAcceptedAll, setIsAcceptedAll] = useState(false);
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+
+  const email = query.get("email");
+  const name = query.get("name");
+  console.log(email);
+  console.log(name);
 
   const handleAcceptTermsChange = (event) => {
     const checked = event.target.checked;
