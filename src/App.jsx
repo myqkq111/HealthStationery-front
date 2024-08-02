@@ -17,6 +17,7 @@ import ProductPage from "./components/MainPage/ShopPage/ProductPage";
 import TopBar from "./components/MainPage/TopBar";
 import MyPage from "./components/User/Mypage";
 import Payment from "./components/MainPage/ShopPage/Payment";
+import BasketPage from "./components/MainPage/ShopPage/BasketPage";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/find-id" element={<FindID />} />
         <Route path="/findPW" element={<FindPW />} />
+        <Route path="/basket" element={<BasketPage />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/profile" element={<MyPage />} />

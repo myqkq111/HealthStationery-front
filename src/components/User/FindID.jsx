@@ -17,7 +17,7 @@ const FindID = ({ onClose }) => {
     setError("");
 
     axios
-      .post("http://localhost:5000/member/find-id", { phoneNumber })
+      .post("http://localhost:8080/member/find-id", { phoneNumber })
       .then((response) => {
         setEmail(response.data.email);
         setLoading(false);
