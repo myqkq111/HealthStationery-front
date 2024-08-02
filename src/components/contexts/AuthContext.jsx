@@ -1,4 +1,4 @@
-// src/components/contexts/AuthContext.jsx
+// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState("");
+  const [member, setMember] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,31 +17,31 @@ export const AuthProvider = ({ children }) => {
         })
         .then((response) => {
           setIsAuthenticated(true);
-          setUsername(response.data.username);
+          setMember(response.data.member); // Assume the API returns the full member object
         })
         .catch(() => {
           localStorage.removeItem("token");
-          localStorage.removeItem("username");
+          localStorage.removeItem("member");
         });
     }
   }, []);
 
-  const login = (token, username) => {
+  const login = (token, member) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("username", username);
+    localStorage.setItem("member", JSON.stringify(member)); // Store the full member object
     setIsAuthenticated(true);
-    setUsername(username);
+    setMember(member);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    localStorage.removeItem("member");
     setIsAuthenticated(false);
-    setUsername("");
+    setMember(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, username, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, member, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

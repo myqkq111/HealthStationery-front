@@ -6,7 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const MainHeader = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, member, logout } = useAuth(); // `member`를 가져옵니다.
 
   const handleLoginClick = () => {
     navigate("/login");
@@ -27,7 +27,8 @@ const MainHeader = () => {
         <div className="flex items-center space-x-3">
           {isAuthenticated ? (
             <>
-              <span className="text-xs">Username</span>
+              <span className="text-xs">{member?.name}</span>{" "}
+              {/* member?.name으로 안전하게 접근 */}
               <button
                 onClick={handleLogoutClick}
                 className="text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
