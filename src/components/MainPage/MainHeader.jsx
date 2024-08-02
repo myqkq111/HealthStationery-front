@@ -21,6 +21,10 @@ const MainHeader = () => {
     navigate("/"); // 로그아웃 후 홈으로 이동
   };
 
+  const handleBasketClick = () => {
+    navigate("/basket");
+  };
+
   return (
     <header className="bg-white text-black py-2 px-3 border-b border-gray-200 top-10 inset-x-0 z-20">
       <div className="container mx-auto flex items-center justify-end space-x-3">
@@ -52,12 +56,13 @@ const MainHeader = () => {
               </button>
             </>
           )}
-          <a
-            href="/cart"
-            className="flex items-center text-xs hover:text-yellow-500"
+          <button
+            onClick={handleBasketClick}
+            className="flex items-center text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
           >
             <FaShoppingCart className="mr-1 text-sm" /> 장바구니
-          </a>
+          </button>
+
           <button
             onClick={handleProfileClick}
             className="flex items-center text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
