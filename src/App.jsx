@@ -18,7 +18,7 @@ import ProductPage from "./components/MainPage/ShopPage/ProductPage";
 import TopBar from "./components/MainPage/TopBar";
 import MyPage from "./components/User/Mypage";
 import Payment from "./components/MainPage/ShopPage/Payment";
-import { AuthProvider, useAuth } from "./components/contexts/AuthContext";
+import { AuthProvider } from "./components/contexts/AuthContext";
 
 const App = () => {
   return (

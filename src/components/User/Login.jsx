@@ -27,10 +27,10 @@ const Login = () => {
         password,
       });
 
-      const { token, username } = response.data;
+      const { token, member } = response.data;
 
       // 로그인 상태 업데이트
-      login(token, username);
+      login(token, member);
 
       navigate("/"); // 홈 페이지로 이동
     } catch (error) {
