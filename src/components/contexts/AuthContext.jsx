@@ -1,47 +1,48 @@
 // src/components/contexts/AuthContext.jsx
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState("");
-
+ 
   useEffect(() => {
+    //토큰 유효성 검사
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("/api/validate-token", {
+        .get("http://localhost:8080/member/validate-token", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          setIsAuthenticated(true);
-          setUsername(response.data.username);
+          if (response.data.valid) { //토큰이 유효하지 않을 경우
+            localStorage.removeItem("token");
+            localStorage.removeItem("member");
+            localStorage.removeItem("bool");
+          } 
         })
         .catch(() => {
           localStorage.removeItem("token");
-          localStorage.removeItem("username");
+          localStorage.removeItem("member");
+          localStorage.removeItem("bool");
         });
     }
   }, []);
 
-  const login = (token, username) => {
+  const login = (token, member) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("username", username);
-    setIsAuthenticated(true);
-    setUsername(username);
+    localStorage.setItem("member", member);
+    localStorage.setItem("bool",true);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    setIsAuthenticated(false);
-    setUsername("");
+    localStorage.removeItem("member");
+    localStorage.removeItem("bool");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, username, login, logout }}>
+    <AuthContext.Provider value={{ login, logout }}>
       {children}
     </AuthContext.Provider>
   );
