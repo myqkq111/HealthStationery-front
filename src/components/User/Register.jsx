@@ -158,7 +158,7 @@ const Register = () => {
 
     try {
       await axios.post("http://localhost:8080/member/signup", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "application/json" },
       });
       console.log("회원가입 성공");
       navigate("/login");
