@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/User/Login";
 import Register from "./components/User/Register";
 import HomePage from "./pages/HomePage";
-import "./index.css"; // Tailwind CSS를 적용합니다.
 import MainHeader from "./components/MainPage/MainHeader";
 import Header from "./components/MainPage/Header";
 import Forgot from "./components/User/Forgot";
@@ -20,6 +19,7 @@ import MyPage from "./components/User/Mypage";
 import Payment from "./components/MainPage/ShopPage/Payment";
 import AuthCallback from "./components/callback/AuthCallback";
 import { AuthProvider } from "./components/contexts/AuthContext";
+import AdminPage from "./pages/AdminPage";
 
 const App = () => {
   return (
@@ -31,6 +31,7 @@ const App = () => {
         <Header /> {/* Header를 MainHeader 아래에 표시 */}
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/terms" element={<Terms />} />
