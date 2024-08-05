@@ -13,6 +13,7 @@ const Terms = () => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
 
+  const cate = query.get("cate");
   const email = query.get("email");
   const name = query.get("name");
 
@@ -44,7 +45,11 @@ const Terms = () => {
 
   const handleAccept = () => {
     if (isAcceptedTerms && isAcceptedPrivacy && isAcceptedAge) {
-      navigate(`/signup?email=${email}&name=${name}`); // 동의 후 회원가입 페이지로 이동
+      if(cate){
+        navigate(`/signup?cate=${cate}&email=${email}&name=${name}`); // 동의 후 회원가입 페이지로 이동
+      }else{
+        navigate(`/signup`); // 동의 후 회원가입 페이지로 이동
+      }
     }
   };
 

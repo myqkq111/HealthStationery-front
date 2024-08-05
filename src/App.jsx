@@ -17,11 +17,13 @@ import ProductPage from "./components/MainPage/ShopPage/ProductPage";
 import TopBar from "./components/MainPage/TopBar";
 import MyPage from "./components/User/Mypage";
 import Payment from "./components/MainPage/ShopPage/Payment";
+import AuthCallback from "./components/callback/AuthCallback";
 import { AuthProvider } from "./components/contexts/AuthContext";
 import AdminPage from "./pages/AdminPage";
 
 const App = () => {
   return (
+    <>
     <AuthProvider>
       <Router>
         <TopBar /> {/* TopBar를 페이지 상단에 표시 */}
@@ -40,11 +42,18 @@ const App = () => {
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/profile" element={<MyPage />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/oauth" element={<AuthCallback />} />
         </Routes>
         <Footer /> {/* Footer를 페이지 하단에 표시 */}
         <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
       </Router>
     </AuthProvider>
+    {/* <Router>
+    <Routes>
+    <Route path="/oauth" element={<AuthCallback />} />
+      </Routes>
+    </Router> */}
+    </>
   );
 };
 
