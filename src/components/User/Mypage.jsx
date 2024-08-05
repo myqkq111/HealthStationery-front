@@ -29,7 +29,22 @@ const MyPage = () => {
   const handleDeleteAccount = async () => {
     if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
       try {
+        // 토큰가져오기
+        const cate = JSON.parse(localStorage.getItem("member")).cate;
+        const token = localStorage.getItem("token");
+
+        // 토큰이 없을시
+        if (!token) {
+          alert("로그인을 먼저 해주세요!");
+          navigate("/login");
+          return;
+        }
+
         await axios.delete("http://localhost:8080/member/deleteAccount", {
+          headers: {
+            Authorization: `Bearer ${token}`, //HT
+          },
+          data: { cate },
           withCredentials: true,
         });
         alert("회원탈퇴가 완료되었습니다.");
