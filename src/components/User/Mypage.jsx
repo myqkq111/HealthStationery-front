@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import UpdateProfile from "./UpdateProfile";
+import { useAuth } from "../contexts/AuthContext";
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -47,6 +49,8 @@ const MyPage = () => {
           data: { cate },
           withCredentials: true,
         });
+        // 회원탈퇴 성공 후 세션 클리어 및 리다이렉트
+        logout();
         alert("회원탈퇴가 완료되었습니다.");
         navigate("/login");
       } catch (error) {
