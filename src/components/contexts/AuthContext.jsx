@@ -5,7 +5,6 @@ import axios from "axios";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
- 
   useEffect(() => {
     //토큰 유효성 검사
     const token = localStorage.getItem("token");
@@ -15,11 +14,12 @@ export const AuthProvider = ({ children }) => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          if (response.data.valid) { //토큰이 유효하지 않을 경우
+          if (response.data.valid) {
+            //토큰이 유효하지 않을 경우
             localStorage.removeItem("token");
             localStorage.removeItem("member");
             localStorage.removeItem("bool");
-          } 
+          }
         })
         .catch(() => {
           localStorage.removeItem("token");
@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token, member) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("member", member);
-    localStorage.setItem("bool",true);
+    localStorage.setItem("member", JSON.stringify(member));
+    localStorage.setItem("bool", true);
   };
 
   const logout = () => {
