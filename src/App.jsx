@@ -44,7 +44,7 @@ const App = () => {
             <Route path="/profile" element={<MyPage />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/oauth" element={<AuthCallback />} />
-            <Route path="/basket" element={<BasketPage />} />
+            <Route path="/cart" element={<BasketPage />} />
           </Routes>
           <Footer /> {/* Footer를 페이지 하단에 표시 */}
           <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
