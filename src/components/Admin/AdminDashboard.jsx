@@ -7,35 +7,38 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("products");
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">관리자 대시보드</h1>
-        <div>
+    <div className="flex min-h-screen">
+      {/* 왼쪽 탭 */}
+      <div className="w-1/5 bg-gray-200 p-4 border-gray-300">
+        <div className="flex flex-col space-y-2">
           <button
             onClick={() => setActiveTab("products")}
-            className={`px-4 py-2 rounded-l-lg ${
+            className={`px-4 py-2  ${
               activeTab === "products"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
             } hover:bg-blue-700 transition duration-300`}
           >
-            상품 목록
+            상품 관리
           </button>
           <button
             onClick={() => setActiveTab("members")}
-            className={`px-4 py-2 rounded-r-lg ${
+            className={`px-4 py-2 ${
               activeTab === "members"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
             } hover:bg-blue-700 transition duration-300`}
           >
-            회원 목록
+            고객 관리
           </button>
         </div>
       </div>
 
-      {activeTab === "products" && <ProductList />}
-      {activeTab === "members" && <MemberList />}
+      {/* 오른쪽 내용 */}
+      <div className="flex-1 p-6 bg-gray-100">
+        {activeTab === "products" && <ProductList />}
+        {activeTab === "members" && <MemberList />}
+      </div>
     </div>
   );
 };

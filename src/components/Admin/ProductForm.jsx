@@ -21,7 +21,11 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         onProductUpdated(response.data);
       } else {
         // Add new product
-        const response = await axios.post("/api/products", productData);
+        const response = await axios.post(
+          "/http://localhost:8080/product/insert",
+          productData
+        );
+        console.log(productData);
         onProductUpdated(response.data);
       }
       onClose();
