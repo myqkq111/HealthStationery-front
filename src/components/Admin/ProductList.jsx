@@ -16,12 +16,13 @@ const ProductList = () => {
       .catch(() => {});
   }, []);
   // 상품 추가 또는 수정 후 업데이트
-  const handleProductUpdated = (updatedProduct) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
+  const handleProductUpdated = () => {
+    axiosInstance
+      .get("/product/selectAll")
+      .then((response) => {
+        setProducts(response.data);
+      })
+      .catch(() => {});
     setIsFormOpen(false);
   };
   // 상품 추가 버튼 클릭 핸들러

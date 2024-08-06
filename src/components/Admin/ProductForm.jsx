@@ -116,7 +116,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     );
 
     try {
-      console.log(data);
       if (product) {
         // 수정 요청
         const response = await axios.put(`/product/update`, data, {
@@ -129,13 +128,15 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
           "http://localhost:8080/product/insert",
           data,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
-        onProductUpdated(response.data);
+        onProductUpdated();
       }
-      onClose();
-      navigate("/admin");
+      // navigate("/admin");
     } catch (error) {
       console.error("Failed to save product", error);
     } finally {
