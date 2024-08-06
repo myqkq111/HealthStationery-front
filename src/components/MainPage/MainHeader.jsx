@@ -27,7 +27,9 @@ const MainHeader = () => {
         <div className="flex items-center space-x-3">
           {localStorage.getItem("bool") ? (
             <>
-              <span className="text-xs">Username</span>
+              <span className="text-xs">
+                {JSON.parse(localStorage.getItem("member")).name}
+              </span>
               <button
                 onClick={handleLogoutClick}
                 className="text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/AxiosInstance";
+import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [formData, setFormData] = useState({
@@ -116,15 +116,19 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     try {
       if (product) {
         // 수정 요청
-        const response = axiosInstance.put(`/product/update`, data, {
+        const response = await axios.put(`/product/update`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         onProductUpdated(response.data);
       } else {
         // 추가 요청
-        const response = axiosInstance.post("/product/insert", data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        const response = await axios.post(
+          "http://localhost:8080/product/insert",
+          data,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
         onProductUpdated(response.data);
       }
       onClose();

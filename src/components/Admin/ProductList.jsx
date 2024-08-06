@@ -6,7 +6,6 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedOptionIndexes, setSelectedOptionIndexes] = useState({});
-
   // 상품 목록을 가져오는 함수
   useEffect(() => {
     console.log(localStorage.getItem("member"));
@@ -17,7 +16,6 @@ const ProductList = () => {
       })
       .catch(() => {});
   }, []);
-
   // 상품 추가 또는 수정 후 업데이트
   const handleProductUpdated = (updatedProduct) => {
     setProducts((prevProducts) =>
@@ -27,19 +25,16 @@ const ProductList = () => {
     );
     setIsFormOpen(false);
   };
-
   // 상품 추가 버튼 클릭 핸들러
   const handleAddProductClick = () => {
     setSelectedProduct(null);
     setIsFormOpen(true);
   };
-
   // 수정 버튼 클릭 핸들러
   const handleEditClick = (product) => {
     setSelectedProduct(product);
     setIsFormOpen(true);
   };
-
   // 옵션 변경 핸들러
   const handleOptionChange = (productId, index) => {
     setSelectedOptionIndexes((prevIndexes) => ({
@@ -47,7 +42,6 @@ const ProductList = () => {
       [productId]: index,
     }));
   };
-
   // 삭제 버튼 클릭 핸들러
   const handleDeleteClick = (productId) => {
     axiosInstance
@@ -61,7 +55,6 @@ const ProductList = () => {
         console.error("Failed to delete product", error);
       });
   };
-
   return (
     <div className="p-6">
       <button
@@ -126,7 +119,6 @@ const ProductList = () => {
                     selectedOptionIndex >= 0
                       ? optionValues[selectedOptionIndex]
                       : "";
-
                   return (
                     <tr key={product.id} className="border-b border-gray-200">
                       <td className="px-6 py-4 text-sm text-gray-900">
