@@ -6,9 +6,14 @@ const Header = () => {
   const isHome = location.pathname === "/";
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false);
 
   const toggleDropdown = (isOpen) => {
     setIsDropdownOpen(isOpen);
+  };
+
+  const toggleContactDropdown = (isOpen) => {
+    setIsContactDropdownOpen(isOpen);
   };
 
   return (
@@ -31,7 +36,7 @@ const Header = () => {
         <div className="flex-1 flex justify-center gap-4 relative ">
           <a
             href="/about"
-            className="text-black px-4 whitespace-nowrap tracking-wide"
+            className="text-black px-4 whitespace-nowrap tracking-wide font-bold"
           >
             BRAND STORY
           </a>
@@ -42,7 +47,7 @@ const Header = () => {
           >
             <a
               href="/shop"
-              className="text-black px-4 whitespace-nowrap tracking-wide"
+              className="text-black px-4 whitespace-nowrap tracking-wide font-bold"
             >
               SHOP
             </a>
@@ -114,21 +119,53 @@ const Header = () => {
               </div>
             )}
           </div>
-          <a
-            href="#contact"
-            className="text-black px-4 whitespace-nowrap tracking-wide"
+          <div
+            className="relative"
+            onMouseEnter={() => toggleContactDropdown(true)}
+            onMouseLeave={() => toggleContactDropdown(false)}
           >
-            커뮤니티
-          </a>
+            <a
+              href="#contact"
+              className="text-black px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
+            >
+              문의게시판
+            </a>
+            {isContactDropdownOpen && (
+              <div
+                className="absolute left-0 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-20"
+                style={{ top: "100%" }}
+              >
+                <a
+                  href="/fnq"
+                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition"
+                >
+                  고객센터
+                </a>
+                <a
+                  href="/wearing-guide"
+                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition"
+                >
+                  착용법
+                </a>
+                <a
+                  href="/faq"
+                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition"
+                >
+                  FAQ
+                </a>
+                <a
+                  href="/partnership"
+                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition"
+                >
+                  제휴문의
+                </a>
+              </div>
+            )}
+          </div>
+
           <a
-            href="#contact"
-            className="text-black px-4 whitespace-nowrap tracking-wide"
-          >
-            문의게시판
-          </a>
-          <a
-            href="#contact"
-            className="text-black px-4 whitespace-nowrap tracking-wide"
+            href="#review"
+            className="text-black px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
           >
             솔직구매후기
           </a>
