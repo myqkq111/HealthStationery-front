@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [formData, setFormData] = useState({
@@ -17,6 +17,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [sizeOptions, setSizeOptions] = useState([]); // 사이즈 옵션 배열
   const [colorOptions, setColorOptions] = useState([]); // 색상 옵션 배열
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -115,13 +116,13 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     try {
       if (product) {
         // 수정 요청
-        const response = await axios.put(`/product/update`, data, {
+        const response = axiosInstance.put(`/product/update`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         onProductUpdated(response.data);
       } else {
         // 추가 요청
-        const response = await axios.post("/product/insert", data, {
+        const response = axiosInstance.post("/product/insert", data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         onProductUpdated(response.data);

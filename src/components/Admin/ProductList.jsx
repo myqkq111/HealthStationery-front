@@ -9,6 +9,7 @@ const ProductList = () => {
 
   // 상품 목록을 가져오는 함수
   useEffect(() => {
+    console.log(localStorage.getItem("member"));
     axiosInstance
       .get("/product/selectAll")
       .then((response) => {

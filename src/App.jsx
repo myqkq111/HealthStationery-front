@@ -22,6 +22,7 @@ import { AuthProvider } from "./components/contexts/AuthContext";
 import AdminPage from "./pages/AdminPage";
 import BasketPage from "./components/MainPage/ShopPage/BasketPage";
 import FNQ from "./components/MainPage/FNQPage/fnqpage.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
 
 const App = () => {
   return (
@@ -33,7 +34,14 @@ const App = () => {
           <Header /> {/* Header를 MainHeader 아래에 표시 */}
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
+              }
+            />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Register />} />
             <Route path="/terms" element={<Terms />} />
