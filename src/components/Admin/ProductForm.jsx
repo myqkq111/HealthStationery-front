@@ -34,15 +34,18 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       });
 
       // 옵션 이름과 값이 있을 때만 처리
-      if (product.optionName) {
-        const sizeIndex = product.optionName.indexOf("size");
-        if (sizeIndex !== -1 && product.optionValue[sizeIndex]) {
-          setSizeOptions(product.optionValue[sizeIndex].split(","));
+      if (product.strOptionName && product.strOptionValue) {
+        const optionNames = product.strOptionName.split(",");
+        const optionValues = product.strOptionValue.split("|");
+
+        const sizeIndex = optionNames.indexOf("size");
+        if (sizeIndex !== -1) {
+          setSizeOptions(optionValues[sizeIndex].split("|"));
         }
 
-        const colorIndex = product.optionName.indexOf("color");
-        if (colorIndex !== -1 && product.optionValue[colorIndex]) {
-          setColorOptions(product.optionValue[colorIndex].split(","));
+        const colorIndex = optionNames.indexOf("color");
+        if (colorIndex !== -1) {
+          setColorOptions(optionValues[colorIndex].split("|"));
         }
       }
     }
