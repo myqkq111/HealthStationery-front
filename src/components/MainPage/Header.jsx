@@ -125,7 +125,7 @@ const Header = () => {
             onMouseLeave={() => toggleContactDropdown(false)}
           >
             <a
-              href="#contact"
+              href="/fnq"
               className="text-black px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
             >
               문의게시판
