@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          if (response.data.valid) {
+          if (!response.data.valid) {
             //토큰이 유효하지 않을 경우
             localStorage.removeItem("token");
             localStorage.removeItem("member");

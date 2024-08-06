@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
@@ -96,6 +97,8 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const token = localStorage.getItem("token");
+
     const data = new FormData();
     data.append("cate", formData.cate);
     data.append("name", formData.name);
@@ -118,6 +121,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     );
 
     try {
+      console.log(data);
       if (product) {
         const response = await axios.put(`/api/products/${product.id}`, data, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -132,7 +136,10 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
           "http://localhost:8080/product/insert",
           data,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              // Authorization: `Bearer ${token}`,
+            },
           }
         );
         if (typeof onProductUpdated === "function") {
