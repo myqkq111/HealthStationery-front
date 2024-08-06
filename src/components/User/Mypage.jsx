@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import UpdateProfile from "./UpdateProfile";
 import { useAuth } from "../contexts/AuthContext";
-
+import axiosInstance from "../api/AxiosInstance";
+import { update } from "lodash";
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,29 +12,32 @@ const MyPage = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { logout } = useAuth();
-
-  // useEffect(() => {
-  //   const fetchUserInfo = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "http://localhost:8080/member/getUserInfo",
-  //         {
-  //           withCredentials: true,
-  //         }
-  //       );
-  //       setUserInfo(response.data);
-  //     } catch (error) {
-  //       console.error("사용자 정보 조회 실패:", error);
-  //     }
-  //   };
-
-  //   fetchUserInfo();
-  // }, []);
-
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("member"));
+    if (user) {
+      // 로컬 스토리지에서 가져온 사용자 정보를 상태로 설정
+      console.log(user);
+      console.log(user.name);
+      setUserInfo(user);
+    } else {
+      // 서버에서 사용자 정보를 가져와야 할 경우
+      axiosInstance
+        .get("/member/getUserInfo", {
+          withCredentials: true,
+        })
+        .then((response) => {
+          // 서버에서 가져온 사용자 정보를 상태로 설정하고 로컬 스토리지에도 저장
+          setUserInfo(response.data);
+          localStorage.setItem("member", JSON.stringify(response.data));
+        })
+        .catch((error) => {
+          console.error("사용자 정보 조회 실패:", error);
+        });
+    }
+  }, []);
   const handleDeleteAccount = async () => {
     setIsPasswordConfirmOpen(true); // 비밀번호 확인 모달을 엽니다.
   };
-
   const handlePasswordConfirm = async () => {
     try {
       // 비밀번호 확인 요청
@@ -42,7 +46,12 @@ const MyPage = () => {
       const email = JSON.parse(localStorage.getItem("member")).email;
       const response = await axios.post(
         "http://localhost:8080/member/confirmPassword",
-        { password, cate, email }
+        { password, cate, email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (response.data) {
         // 비밀번호 확인 성공 후 회원 탈퇴 요청
@@ -54,7 +63,6 @@ const MyPage = () => {
             data: { cate },
             withCredentials: true,
           });
-
           logout();
           alert("회원탈퇴가 완료되었습니다.");
           navigate("/login");
@@ -70,21 +78,12 @@ const MyPage = () => {
       setPassword(""); // 비밀번호 입력 초기화
     }
   };
-
-  const handleUpdate = async (updatedInfo) => {
-    try {
-      await axios.put("http://localhost:8080/member/updateInfo", updatedInfo, {
-        withCredentials: true,
-      });
-      alert("회원 정보가 업데이트되었습니다.");
-      setIsModalOpen(false);
-      setUserInfo((prev) => ({ ...prev, ...updatedInfo }));
-    } catch (error) {
-      console.error("회원 정보 업데이트 실패:", error);
-      alert("회원 정보 업데이트에 실패했습니다.");
-    }
+  const handleUpdate = (updatedInfo) => {
+    setUserInfo((prev) => ({ ...prev, ...updatedInfo }));
+    setIsModalOpen(false);
+    console.log(updatedInfo);
+    alert("회원 정보가 업데이트되었습니다.");
   };
-
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* 사이드바 */}
@@ -137,14 +136,12 @@ const MyPage = () => {
           <hr className="flex-1 border-t border-gray-300" />
         </ul>
       </div>
-
       {/* 콘텐츠 영역 */}
       <div className="w-3/4 max-w-4xl p-8 bg-white shadow-md ml-4">
         <h2 className="text-2xl font-bold mb-6 text-center">회원 정보</h2>
         <p className="text-gray-600 mb-4 text-center">
           여기서 회원 정보를 관리할 수 있습니다.
         </p>
-
         {/* 회원 정보 표시 */}
         {userInfo ? (
           <div className="mb-6 border-t border-gray-200 pt-4">
@@ -160,7 +157,7 @@ const MyPage = () => {
               </div>
               <div className="flex justify-between text-gray-700">
                 <span className="font-medium">연락처:</span>
-                <span>{userInfo.phone}</span>
+                <span>{userInfo.tell}</span>
               </div>
               <div className="flex justify-between text-gray-700">
                 <span className="font-medium">주소:</span>
@@ -178,7 +175,6 @@ const MyPage = () => {
           </p>
         )}
       </div>
-
       {/* 수정 모달 */}
       <UpdateProfile
         isOpen={isModalOpen}
@@ -186,7 +182,6 @@ const MyPage = () => {
         userInfo={userInfo || {}}
         onUpdate={handleUpdate}
       />
-
       {/* 비밀번호 확인 모달 */}
       {isPasswordConfirmOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
@@ -228,5 +223,4 @@ const MyPage = () => {
     </div>
   );
 };
-
 export default MyPage;

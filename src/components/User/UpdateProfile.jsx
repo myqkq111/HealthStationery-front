@@ -1,51 +1,59 @@
-// src/components/UpdateProfile.jsx
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 import CustomModal from "./CustomModal";
-
-const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
+import Address from "../../openApi/Address";
+// import { useAuth } from "../contexts/AuthContext";
+const UpdateProfile = ({ isOpen, onClose, onSave }) => {
+  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [tell, setTell] = useState("");
   const [address, setAddress] = useState("");
+  const [mailaddr, setMailaddr] = useState("");
+  const [roadaddr, setRoadaddr] = useState("");
+  const [detailaddr, setDetailaddr] = useState("");
   const [birthdate, setBirthdate] = useState("");
-
+  // const user = useAuth();
+  const handleAddressSelect = (selectedAddress) => {
+    setRoadaddr(selectedAddress.roadAddress || "");
+    setMailaddr(selectedAddress.jibunAddress || "");
+  };
   // Modal 열릴 때 기존 정보를 가져오는 함수
   useEffect(() => {
     if (isOpen) {
-      // 사용자 정보를 가져오는 API 호출
-      axios
-        .get(`http://localhost:8080/member/profile/${userEmail}`)
-        .then((response) => {
-          const { name, tell, address, birthdate } = response.data;
-          setName(name || "");
-          setTell(tell || "");
-          setAddress(address || "");
-          setBirthdate(birthdate || "");
-        })
-        .catch((error) => {
-          console.error("Error fetching profile data:", error);
-          alert("프로필 정보를 가져오는 데 실패했습니다.");
-        });
+      // localStorage에서 사용자 정보 가져오기
+      const user = JSON.parse(localStorage.getItem("member"));
+      console.log(user);
+      if (user) {
+        const { email, name, tell, mailaddr, roadaddr, detailaddr, birth } =
+          user;
+        setEmail(email || "");
+        setName(name || "");
+        setTell(tell || "");
+        setMailaddr(mailaddr || "");
+        setRoadaddr(roadaddr || "");
+        setDetailaddr(detailaddr || "");
+        setBirthdate(birth || "");
+      }
     }
-  }, [isOpen, userEmail]);
-
+  }, [isOpen]);
   const handleSave = () => {
     // 데이터 유효성 검사
-    if (!name || !tell || !address || !birthdate) {
+    if (!name || !tell || !roadaddr || !detailaddr) {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
-
-    axios
-      .put("http://localhost:8080/member/update", {
-        email: userEmail,
-        name,
-        tell,
-        address,
-        birthdate,
-      })
+    const updateInfo = {
+      email,
+      name,
+      tell,
+      address: `${roadaddr} ${detailaddr}`,
+      mailaddr,
+    };
+    axiosInstance
+      .put("/member/update", updateInfo)
       .then((response) => {
         console.log("Profile updated successfully:", response.data);
+        onSave(updateInfo); //수정된 정보를 MyPage에 전달
         onClose(); // 수정 완료 후 모달 닫기
       })
       .catch((error) => {
@@ -53,10 +61,8 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
         alert("프로필 업데이트에 실패했습니다. 다시 시도해 주세요.");
       });
   };
-
   return (
     <CustomModal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">회원 정보 수정</h2>
       <div className="space-y-4">
         <div>
           <label
@@ -68,9 +74,10 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
           <input
             id="email"
             type="text"
-            value={userEmail}
-            readOnly
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            value={JSON.parse(localStorage.getItem("member")).email}
+            readOnly // 읽기 전용으로 설정
+            placeholder="이메일" // placeholder로 표시
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm bg-gray-100 text-gray-500 focus:outline-none sm:text-sm"
           />
         </div>
         <div>
@@ -105,16 +112,14 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
         </div>
         <div>
           <label
-            htmlFor="address"
+            htmlFor="roadaddr"
             className="block text-sm font-medium text-gray-700"
           >
             주소
           </label>
-          <input
-            id="address"
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+          <Address
+            value={roadaddr}
+            onChange={handleAddressSelect}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
@@ -127,10 +132,11 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
           </label>
           <input
             id="birthdate"
-            type="date"
+            type="text"
             value={birthdate}
-            onChange={(e) => setBirthdate(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            readOnly // 읽기 전용으로 설정
+            placeholder="생년월일" // placeholder로 표시
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm bg-gray-100 text-gray-500 focus:outline-none sm:text-sm"
           />
         </div>
         <button
@@ -143,5 +149,4 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
     </CustomModal>
   );
 };
-
 export default UpdateProfile;

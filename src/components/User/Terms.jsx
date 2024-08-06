@@ -46,7 +46,11 @@ const Terms = () => {
 
   const handleAccept = () => {
     if (isAcceptedTerms && isAcceptedPrivacy && isAcceptedAge) {
-      navigate(`/signup?cate=${cate}&email=${email}&name=${name}`); // 동의 후 회원가입 페이지로 이동
+      if (cate) {
+        navigate(`/signup?cate=${cate}&email=${email}&name=${name}`);
+      } else {
+        navigate(`/signup`); // 동의 후 회원가입 페이지로 이동
+      }
     }
   };
 
