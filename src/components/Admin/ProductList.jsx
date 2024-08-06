@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import ProductForm from "./ProductForm"; // ProductForm 임포트
 import axiosInstance from "../api/AxiosInstance";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedOptionIndexes, setSelectedOptionIndexes] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   // 상품 목록을 가져오는 함수
   useEffect(() => {
-    console.log(localStorage.getItem("member"));
     axiosInstance
       .get("/product/selectAll")
       .then((response) => {
@@ -18,6 +20,14 @@ const ProductList = () => {
       })
       .catch(() => {});
   }, []);
+
+  // 페이지네이션에 필요한 데이터 추출
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   // 상품 추가 또는 수정 후 업데이트
   const handleProductUpdated = () => {
@@ -64,6 +74,11 @@ const ProductList = () => {
       });
   };
 
+  // 페이지 변경 핸들러
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   // 스크롤 제어 함수
   useEffect(() => {
     document.body.style.overflow = isFormOpen ? "hidden" : "auto";
@@ -72,8 +87,14 @@ const ProductList = () => {
     };
   }, [isFormOpen]);
 
+  // 페이지네이션 버튼 생성
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
   return (
-    <div className="p-6">
+    <div className="p-6 ">
       <button
         onClick={handleAddProductClick}
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
@@ -83,47 +104,47 @@ const ProductList = () => {
       <div>
         <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-            <thead className="bg-gray-100 border-b border-gray-200">
+          <table className="min-w-full bg-white border  border-gray-200 rounded-lg shadow-md">
+            <thead className="bg-gray-100 border-b  border-gray-200 ">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   상품명
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   카테고리
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   가격
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   재고
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   상품설명
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   옵션
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   옵션 값
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
                   작업
                 </th>
               </tr>
             </thead>
             <tbody>
-              {products.length === 0 ? (
+              {currentProducts.length === 0 ? (
                 <tr>
                   <td
                     colSpan="8"
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-4 py-4 text-center text-gray-500"
                   >
                     데이터가 없습니다.
                   </td>
                 </tr>
               ) : (
-                products.map((product) => {
+                currentProducts.map((product) => {
                   const optionNames = product.strOptionName
                     ? product.strOptionName.split(",")
                     : [];
@@ -138,22 +159,22 @@ const ProductList = () => {
                       : "";
                   return (
                     <tr key={product.id} className="border-b border-gray-200">
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900">
                         {product.name}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900">
                         {product.cate}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-right text-gray-900">
                         {product.price}원
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900">
                         {product.inven}개
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900">
                         {product.content}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900">
                         <select
                           onChange={(e) =>
                             handleOptionChange(product.id, e.target.value)
@@ -171,21 +192,21 @@ const ProductList = () => {
                           ))}
                         </select>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-4 w-48 text-sm text-center text-gray-900">
                         {selectedOptionValue}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900 flex space-x-2">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => handleEditClick(product)}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                          className="text-blue-500  hover:text-blue-700 mr-2"
                         >
-                          수정
+                          <FaEdit />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(product.id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                          className="text-red-500  hover:text-red-700"
                         >
-                          삭제
+                          <FaTrashAlt />
                         </button>
                       </td>
                     </tr>
@@ -194,6 +215,26 @@ const ProductList = () => {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="flex justify-center mt-4">
+          <nav>
+            <ul className="flex flex-wrap gap-2">
+              {pageNumbers.map((number) => (
+                <li key={number}>
+                  <button
+                    onClick={() => handlePageChange(number)}
+                    className={`px-3 py-1 border rounded ${
+                      number === currentPage
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-blue-500"
+                    }`}
+                  >
+                    {number}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </div>
       {isFormOpen && (
@@ -206,4 +247,5 @@ const ProductList = () => {
     </div>
   );
 };
+
 export default ProductList;
