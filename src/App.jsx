@@ -21,6 +21,7 @@ import AuthCallback from "./components/callback/AuthCallback";
 import { AuthProvider } from "./components/contexts/AuthContext";
 import AdminPage from "./pages/AdminPage";
 import BasketPage from "./components/MainPage/ShopPage/BasketPage";
+import FNQ from "./components/MainPage/FNQPage/fnqpage.jsx";
 
 const App = () => {
   return (
@@ -45,6 +46,7 @@ const App = () => {
             <Route path="/payment" element={<Payment />} />
             <Route path="/oauth" element={<AuthCallback />} />
             <Route path="/cart" element={<BasketPage />} />
+            <Route path="/fnq" element={<FNQ />} />
           </Routes>
           <Footer /> {/* Footer를 페이지 하단에 표시 */}
           <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
