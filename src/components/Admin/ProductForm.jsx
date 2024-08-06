@@ -19,6 +19,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (product) {
@@ -115,11 +116,20 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
 
     try {
       if (product) {
+        console.log(product.id);
+        console.log(token);
         // 수정 요청
-        const response = await axios.put(`/product/update`, data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        onProductUpdated(response.data);
+        const response = await axios.put(
+          `http://localhost:8080/product/update/${product.id}`,
+          data,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        onProductUpdated();
       } else {
         // 추가 요청
         const response = await axios.post(
