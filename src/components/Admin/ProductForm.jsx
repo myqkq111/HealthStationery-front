@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [formData, setFormData] = useState({
@@ -91,6 +92,8 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const token = localStorage.getItem("token");
+
     const data = new FormData();
     data.append("cate", formData.cate);
     data.append("name", formData.name);
@@ -113,6 +116,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     );
 
     try {
+      console.log(data);
       if (product) {
         // 수정 요청
         const response = await axios.put(`/product/update`, data, {
@@ -121,9 +125,13 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         onProductUpdated(response.data);
       } else {
         // 추가 요청
-        const response = await axios.post("/product/insert", data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        const response = await axios.post(
+          "http://localhost:8080/product/insert",
+          data,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
         onProductUpdated(response.data);
       }
       onClose();

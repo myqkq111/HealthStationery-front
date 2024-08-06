@@ -3,6 +3,7 @@
 // 이용약관
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const Terms = () => {
   const [isAcceptedTerms, setIsAcceptedTerms] = useState(false);
@@ -10,6 +11,12 @@ const Terms = () => {
   const [isAcceptedAge, setIsAcceptedAge] = useState(false);
   const [isAcceptedAll, setIsAcceptedAll] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const query = new URLSearchParams(location.search);
+  const cate = query.get("cate");
+  const email = query.get("email");
+  const name = query.get("name");
 
   const handleAcceptTermsChange = (event) => {
     const checked = event.target.checked;
@@ -39,7 +46,7 @@ const Terms = () => {
 
   const handleAccept = () => {
     if (isAcceptedTerms && isAcceptedPrivacy && isAcceptedAge) {
-      navigate("/signup"); // 동의 후 회원가입 페이지로 이동
+      navigate(`/signup?cate=${cate}&email=${email}&name=${name}`); // 동의 후 회원가입 페이지로 이동
     }
   };
 
