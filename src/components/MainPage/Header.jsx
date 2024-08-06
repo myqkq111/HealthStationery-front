@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
 
 const Header = () => {
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false);
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
@@ -18,7 +17,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [colorOptions, setColorOptions] = useState([]); // 색상 옵션 배열
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -114,46 +112,35 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       data.append("contentImage", file)
     );
 
-    try {
-      if (product) {
-        console.log(product.id);
-        console.log(token);
-        // 수정 요청
-        const response = await axios.put(
-          `http://localhost:8080/product/update/${product.id}`,
-          data,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        onProductUpdated();
-      } else {
-        // 추가 요청
-        const response = await axios.post(
-          "http://localhost:8080/product/insert",
-          data,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        onProductUpdated();
-      }
-      // navigate("/admin");
-    } catch (error) {
-      console.error("Failed to save product", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    const url = product
+      ? `http://localhost:8080/product/update/${product.id}` // 상품 아이디를 URL에 포함시킴
+      : "http://localhost:8080/product/insert";
+
+    const headers = {
+      "Content-Type": "multipart/form-data",
+      ...(product && { Authorization: `Bearer ${token}` }), // 상품이 있을 때만 Authorization 헤더 추가
+    };
+
+    const request = product
+      ? axios.put(url, data, { headers }) // 수정 요청
+      : axios.post(url, data, { headers }); // 추가 요청
+
+    request
+      .then((response) => {
+        // 상품이 수정된 경우 response.data가 있을 수 있고, 상품이 추가된 경우 response.data가 없을 수 있으므로
+        // response.data가 없으면 undefined를 전달
+        onProductUpdated(response.data || undefined);
+      })
+      .catch((error) => {
+        console.error("Failed to save product", error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-700 bg-opacity-60 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-700 bg-opacity-60 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-md max-h-[80vh] overflow-y-auto">
         <h2 className="text-2xl font-semibold mb-4">
           {product ? "상품 수정" : "상품 추가"}

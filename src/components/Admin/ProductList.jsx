@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import ProductForm from "./ProductForm"; // ProductForm 임포트
 import axiosInstance from "../api/AxiosInstance";
+
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedOptionIndexes, setSelectedOptionIndexes] = useState({});
+
   // 상품 목록을 가져오는 함수
   useEffect(() => {
     console.log(localStorage.getItem("member"));
@@ -16,6 +18,7 @@ const ProductList = () => {
       })
       .catch(() => {});
   }, []);
+
   // 상품 추가 또는 수정 후 업데이트
   const handleProductUpdated = () => {
     axiosInstance
@@ -26,16 +29,19 @@ const ProductList = () => {
       .catch(() => {});
     setIsFormOpen(false);
   };
+
   // 상품 추가 버튼 클릭 핸들러
   const handleAddProductClick = () => {
     setSelectedProduct(null);
     setIsFormOpen(true);
   };
+
   // 수정 버튼 클릭 핸들러
   const handleEditClick = (product) => {
     setSelectedProduct(product);
     setIsFormOpen(true);
   };
+
   // 옵션 변경 핸들러
   const handleOptionChange = (productId, index) => {
     setSelectedOptionIndexes((prevIndexes) => ({
@@ -43,10 +49,11 @@ const ProductList = () => {
       [productId]: index,
     }));
   };
+
   // 삭제 버튼 클릭 핸들러
   const handleDeleteClick = (productId) => {
     axiosInstance
-      .delete(`/product/delete`)
+      .delete(`/product/delete/${productId}`)
       .then(() => {
         setProducts((prevProducts) =>
           prevProducts.filter((product) => product.id !== productId)
@@ -56,6 +63,15 @@ const ProductList = () => {
         console.error("Failed to delete product", error);
       });
   };
+
+  // 스크롤 제어 함수
+  useEffect(() => {
+    document.body.style.overflow = isFormOpen ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto"; // Cleanup
+    };
+  }, [isFormOpen]);
+
   return (
     <div className="p-6">
       <button

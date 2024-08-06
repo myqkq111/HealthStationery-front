@@ -31,7 +31,7 @@ const App = () => {
         <Router>
           <TopBar /> {/* TopBar를 페이지 상단에 표시 */}
           <MainHeader /> {/* MainHeader를 TopBar 아래에 표시 */}
-          <Header /> {/* Header를 MainHeader 아래에 표시 */}
+          <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route

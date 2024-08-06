@@ -1,5 +1,5 @@
 // src/components/contexts/AuthContext.jsx
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import axios from "axios";
 
 // 인증 상태를 관리하는 컨텍스트 생성

@@ -6,7 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const MainHeader = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { logout } = useAuth();
 
   const handleLoginClick = () => {
     navigate("/login");
