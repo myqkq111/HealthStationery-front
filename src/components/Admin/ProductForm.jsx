@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import axiosInstance from "../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +17,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [sizeOptions, setSizeOptions] = useState([]); // 사이즈 옵션 배열
   const [colorOptions, setColorOptions] = useState([]); // 색상 옵션 배열
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,8 +91,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    const token = localStorage.getItem("token");
 
     const data = new FormData();
     data.append("cate", formData.cate);
