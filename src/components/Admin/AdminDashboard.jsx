@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import ProductList from "./ProductList";
 import MemberList from "./MemberList";
+import OrderList from "./OrderList";
+import BoardList from "./BoardList";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("products");
@@ -31,6 +33,26 @@ const AdminDashboard = () => {
           >
             고객 관리
           </button>
+          <button
+            onClick={() => setActiveTab("orbers")}
+            className={`px-4 py-2 ${
+              activeTab === "orbers"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700"
+            } hover:bg-blue-700 transition duration-300`}
+          >
+            주문 관리
+          </button>
+          <button
+            onClick={() => setActiveTab("boards")}
+            className={`px-4 py-2 ${
+              activeTab === "boards"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700"
+            } hover:bg-blue-700 transition duration-300`}
+          >
+            게시판 관리
+          </button>
         </div>
       </div>
 
@@ -38,6 +60,8 @@ const AdminDashboard = () => {
       <div className="flex-1 p-6 bg-gray-100">
         {activeTab === "products" && <ProductList />}
         {activeTab === "members" && <MemberList />}
+        {activeTab === "orbers" && <OrderList />}
+        {activeTab === "boards" && <BoardList />}
       </div>
     </div>
   );
