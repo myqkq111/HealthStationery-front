@@ -126,13 +126,15 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
           "http://localhost:8080/product/insert",
           data,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
-        onProductUpdated(response.data);
+        onProductUpdated();
       }
-      onClose();
-      navigate("/admin");
+      // navigate("/admin");
     } catch (error) {
       console.error("Failed to save product", error);
     } finally {
