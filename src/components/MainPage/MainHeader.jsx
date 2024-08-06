@@ -25,7 +25,7 @@ const MainHeader = () => {
     <header className="bg-white text-black py-2 px-3 border-b border-gray-200 top-10 inset-x-0 z-20">
       <div className="container mx-auto flex items-center justify-end space-x-3">
         <div className="flex items-center space-x-3">
-          {localStorage.getItem("bool")? (
+          {localStorage.getItem("bool") ? (
             <>
               <span className="text-xs">Username</span>
               <button

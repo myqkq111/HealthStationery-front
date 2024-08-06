@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [formData, setFormData] = useState({
@@ -33,22 +33,17 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         optionValue: product.optionValue || [],
       });
 
-      const sizeIndex = product.optionName.indexOf("size");
-      if (sizeIndex !== -1) {
-        setSizeOptions(
-          product.optionValue[sizeIndex]
-            ? product.optionValue[sizeIndex].split(",")
-            : []
-        );
-      }
+      // 옵션 이름과 값이 있을 때만 처리
+      if (product.optionName) {
+        const sizeIndex = product.optionName.indexOf("size");
+        if (sizeIndex !== -1 && product.optionValue[sizeIndex]) {
+          setSizeOptions(product.optionValue[sizeIndex].split(","));
+        }
 
-      const colorIndex = product.optionName.indexOf("color");
-      if (colorIndex !== -1) {
-        setColorOptions(
-          product.optionValue[colorIndex]
-            ? product.optionValue[colorIndex].split(",")
-            : []
-        );
+        const colorIndex = product.optionName.indexOf("color");
+        if (colorIndex !== -1 && product.optionValue[colorIndex]) {
+          setColorOptions(product.optionValue[colorIndex].split(","));
+        }
       }
     }
   }, [product]);
@@ -119,27 +114,17 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
 
     try {
       if (product) {
-        const response = await axios.put(`/api/products/${product.id}`, data, {
+        // 수정 요청
+        const response = await axios.put(`/product/update`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        if (typeof onProductUpdated === "function") {
-          onProductUpdated(response.data);
-        } else {
-          console.error("onProductUpdated is not a function");
-        }
+        onProductUpdated(response.data);
       } else {
-        const response = await axios.post(
-          "http://localhost:8080/product/insert",
-          data,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-        if (typeof onProductUpdated === "function") {
-          onProductUpdated(response.data);
-        } else {
-          console.error("onProductUpdated is not a function");
-        }
+        // 추가 요청
+        const response = await axios.post("/product/insert", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        onProductUpdated(response.data);
       }
       onClose();
       navigate("/admin");
