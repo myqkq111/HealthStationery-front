@@ -20,23 +20,26 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-      const response = await axiosInstance
-        .post("/member/login", {
-          email,
-          password,
-        })
-        .then((response) => {
-          const { token, member } = response.data;
 
-          // 로그인 상태 업데이트
-          login(token, member);
+    try {
+      // Perform login request
+      const response = await axiosInstance.post("/member/login", {
+        email,
+        password,
+      });
 
-          navigate("/"); // 홈 페이지로 이동
-        })
-        .catch((error) => {
-          console.error("Login failed:", error);
-          setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
-        });
+      // 토큰이랑 사용자정보 추출
+      const { token, member } = response.data;
+
+      // 로그인 업데이트
+      login(token, member);
+
+      // 메인으로 전환
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
+    }
   };
 
   const handleForgotClick = () => setIsForgotOpen(true);

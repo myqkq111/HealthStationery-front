@@ -70,7 +70,7 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
             type="text"
             value={userEmail}
             readOnly
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div>
@@ -85,7 +85,7 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div>
@@ -100,7 +100,7 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
             type="text"
             value={tell}
             onChange={(e) => setTell(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div>
@@ -115,7 +115,7 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div>
@@ -130,12 +130,12 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
             type="date"
             value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <button
           onClick={handleSave}
-          className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out"
+          className="w-full py-2 px-4 bg-blue-500 text-white hover:bg-blue-600 transition duration-300 ease-in-out"
         >
           저장
         </button>

@@ -2,57 +2,72 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import UpdateProfile from "./UpdateProfile";
+import { useAuth } from "../contexts/AuthContext";
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPasswordConfirmOpen, setIsPasswordConfirmOpen] = useState(false);
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/member/getUserInfo",
-          {
-            withCredentials: true,
-          }
-        );
-        setUserInfo(response.data);
-      } catch (error) {
-        console.error("사용자 정보 조회 실패:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUserInfo = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:8080/member/getUserInfo",
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       setUserInfo(response.data);
+  //     } catch (error) {
+  //       console.error("사용자 정보 조회 실패:", error);
+  //     }
+  //   };
 
-    fetchUserInfo();
-  }, []);
+  //   fetchUserInfo();
+  // }, []);
 
   const handleDeleteAccount = async () => {
-    if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
-      try {
-        // 토큰가져오기
-        const cate = JSON.parse(localStorage.getItem("member")).cate;
-        const token = localStorage.getItem("token");
+    setIsPasswordConfirmOpen(true); // 비밀번호 확인 모달을 엽니다.
+  };
 
-        // 토큰이 없을시
-        if (!token) {
-          alert("로그인을 먼저 해주세요!");
+  const handlePasswordConfirm = async () => {
+    try {
+      // 비밀번호 확인 요청
+      const token = localStorage.getItem("token");
+      const cate = JSON.parse(localStorage.getItem("member")).cate;
+      const email = JSON.parse(localStorage.getItem("member")).email;
+      const response = await axios.post(
+        "http://localhost:8080/member/confirmPassword",
+        { password, cate, email }
+      );
+      if (response.data) {
+        // 비밀번호 확인 성공 후 회원 탈퇴 요청
+        if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
+          await axios.delete("http://localhost:8080/member/deleteAccount", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            data: { cate },
+            withCredentials: true,
+          });
+
+          logout();
+          alert("회원탈퇴가 완료되었습니다.");
           navigate("/login");
-          return;
         }
-
-        await axios.delete("http://localhost:8080/member/deleteAccount", {
-          headers: {
-            Authorization: `Bearer ${token}`, //HT
-          },
-          data: { cate },
-          withCredentials: true,
-        });
-        alert("회원탈퇴가 완료되었습니다.");
-        navigate("/login");
-      } catch (error) {
-        console.error("회원탈퇴 실패:", error);
-        alert("회원탈퇴에 실패했습니다.");
+      } else {
+        alert("비밀번호가 맞지 않습니다.");
       }
+    } catch (error) {
+      console.error("비밀번호 확인 실패:", error);
+      alert("비밀번호 확인 중 오류가 발생했습니다.");
+    } finally {
+      setIsPasswordConfirmOpen(false);
+      setPassword(""); // 비밀번호 입력 초기화
     }
   };
 
@@ -171,6 +186,45 @@ const MyPage = () => {
         userInfo={userInfo || {}}
         onUpdate={handleUpdate}
       />
+
+      {/* 비밀번호 확인 모달 */}
+      {isPasswordConfirmOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
+          <div className="bg-white p-6 max-w-md w-full relative">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900">
+              비밀번호 확인
+            </h3>
+            <p className="text-gray-600 mb-6">
+              회원탈퇴를 진행하려면 현재 비밀번호를 입력해 주세요.
+            </p>
+            <input
+              type="password"
+              placeholder="현재 비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-4 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-300 ease-in-out mb-4"
+            />
+            <p className="text-red-600 mb-4">
+              가입된 회원정보가 모두 삭제됩니다. 탈퇴 후 같은 계정으로 재가입 시
+              기존에 적립된 적립금은 적용되지 않습니다. 정말 탈퇴하시겠습니까?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handlePasswordConfirm}
+                className="py-2 px-4 bg-blue-600 text-white hover:bg-blue-700 transition duration-300 ease-in-out"
+              >
+                확인
+              </button>
+              <button
+                onClick={() => setIsPasswordConfirmOpen(false)}
+                className="py-2 px-4 bg-gray-300 text-gray-800 hover:bg-gray-400 transition duration-300 ease-in-out"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

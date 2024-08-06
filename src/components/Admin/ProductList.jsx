@@ -5,11 +5,7 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
-  const [optionValues, setOptionValues] = useState({});
-
-  const token = localStorage.getItem("token");
-
+  const [selectedOptionIndexes, setSelectedOptionIndexes] = useState({});
   // 상품 목록을 가져오는 함수
   useEffect(() => {
     axiosInstance
@@ -33,34 +29,30 @@ const ProductList = () => {
     setSelectedProduct(null);
     setIsFormOpen(true);
   };
-  // 상품 수정 버튼 클릭 핸들러
-  const handleEditProductClick = (product) => {
+  // 수정 버튼 클릭 핸들러
+  const handleEditClick = (product) => {
     setSelectedProduct(product);
     setIsFormOpen(true);
-    if (product.optionNames && product.optionValues) {
-      setOptionValues(product.optionValues);
-      setSelectedOption(product.optionNames[0] || ""); // 기본적으로 첫 번째 옵션 선택
-    }
-  };
-  // 상품 삭제 핸들러
-  const handleDeleteProductClick = async (productId) => {
-    try {
-      await axiosInstance.delete(`/api/products/${productId}`);
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== productId)
-      );
-    } catch (error) {
-      console.error("상품 삭제에 실패했습니다.", error);
-    }
   };
   // 옵션 변경 핸들러
-  const handleOptionChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectedOption(selectedValue);
+  const handleOptionChange = (productId, index) => {
+    setSelectedOptionIndexes((prevIndexes) => ({
+      ...prevIndexes,
+      [productId]: index,
+    }));
   };
-  // 옵션 데이터 구하기
-  const getOptionValues = (optionName) => {
-    return optionValues[optionName] || [];
+  // 삭제 버튼 클릭 핸들러
+  const handleDeleteClick = (productId) => {
+    axiosInstance
+      .delete(`/product/delete`)
+      .then(() => {
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.id !== productId)
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to delete product", error);
+      });
   };
   return (
     <div className="p-6">
@@ -114,8 +106,18 @@ const ProductList = () => {
                 </tr>
               ) : (
                 products.map((product) => {
-                  // const optionNames = product.optionNames || [];
-                  // const optionValues = product.optionValues || [];
+                  const optionNames = product.strOptionName
+                    ? product.strOptionName.split(",")
+                    : [];
+                  const optionValues = product.strOptionValue
+                    ? product.strOptionValue.split("|")
+                    : [];
+                  const selectedOptionIndex =
+                    selectedOptionIndexes[product.id] || -1;
+                  const selectedOptionValue =
+                    selectedOptionIndex >= 0
+                      ? optionValues[selectedOptionIndex]
+                      : "";
                   return (
                     <tr key={product.id} className="border-b border-gray-200">
                       <td className="px-6 py-4 text-sm text-gray-900">
@@ -125,41 +127,44 @@ const ProductList = () => {
                         {product.cate}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        ${product.price}
+                        {product.price}원
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {product.inven}
+                        {product.inven}개
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {product.content}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <select
-                          // value={selectedOption}
-                          onChange={handleOptionChange}
+                          onChange={(e) =>
+                            handleOptionChange(product.id, e.target.value)
+                          }
                           className="border rounded p-1"
+                          defaultValue=""
                         >
-                          {product.strOptionName
-                            .split(",")
-                            .map((option, index) => (
-                              <option key={index} value={index}>
-                                {option}
-                              </option>
-                            ))}
+                          <option value="" disabled>
+                            선택하세요
+                          </option>
+                          {optionNames.map((option, index) => (
+                            <option key={index} value={index}>
+                              {option}
+                            </option>
+                          ))}
                         </select>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {/* 이부분 해야함 */}
+                        {selectedOptionValue}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900 flex space-x-2">
                         <button
-                          onClick={() => handleEditProductClick(product)}
+                          onClick={() => handleEditClick(product)}
                           className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                         >
                           수정
                         </button>
                         <button
-                          onClick={() => handleDeleteProductClick(product.id)}
+                          onClick={() => handleDeleteClick(product.id)}
                           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                         >
                           삭제
