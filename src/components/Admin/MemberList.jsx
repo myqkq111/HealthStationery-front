@@ -1,7 +1,7 @@
 // src/components/Admin/MemberList.jsx
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 import MemberForm from "./MemberForm";
 
 const MemberList = () => {
@@ -11,13 +11,15 @@ const MemberList = () => {
 
   useEffect(() => {
     // 컴포넌트가 마운트될 때 회원 목록을 서버에서 가져오는 함수
-    const fetchMembers = async () => {
-      try {
-        const response = await axios.get("/api/members"); // 실제 API 엔드포인트로 교체
-        setMembers(response.data); // 회원 목록 상태 업데이트
-      } catch (error) {
-        console.error("Failed to fetch members", error); // 데이터 fetching 오류 처리
-      }
+    const fetchMembers = () => {
+      axiosInstance
+        .get("/adminMember/selectAll") // 실제 API 엔드포인트로 교체
+        .then((response) => {
+          setMembers(response.data); // 회원 목록 상태 업데이트
+        })
+        .catch((error) => {
+          console.error("Failed to fetch members", error); // 데이터 fetching 오류 처리
+        });
     };
 
     fetchMembers();
@@ -30,7 +32,7 @@ const MemberList = () => {
 
   const handleDeleteMember = async (memberId) => {
     try {
-      await axios.delete(`/api/members/${memberId}`); // 실제 API 엔드포인트로 교체
+      await axiosInstance.delete(`/adminMember/delete/${memberId}`); // 실제 API 엔드포인트로 교체
       setMembers(members.filter((member) => member.id !== memberId)); // 회원 목록에서 삭제
     } catch (error) {
       console.error("Failed to delete member", error); // 삭제 오류 처리
@@ -67,7 +69,7 @@ const MemberList = () => {
               이메일
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              상태
+              권한
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               작업
@@ -78,13 +80,13 @@ const MemberList = () => {
           {members.map((member) => (
             <tr key={member.id}>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {member.username}
+                {member.name}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {member.email}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {member.status}
+                {member.member_type}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button

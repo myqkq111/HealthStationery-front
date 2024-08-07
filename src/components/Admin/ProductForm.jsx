@@ -127,9 +127,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
 
     request
       .then((response) => {
-        // 상품이 수정된 경우 response.data가 있을 수 있고, 상품이 추가된 경우 response.data가 없을 수 있으므로
-        // response.data가 없으면 undefined를 전달
-        onProductUpdated(response.data || undefined);
+        onProductUpdated();
       })
       .catch((error) => {
         console.error("Failed to save product", error);
