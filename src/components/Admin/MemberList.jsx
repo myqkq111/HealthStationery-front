@@ -3,6 +3,7 @@ import axiosInstance from "../api/AxiosInstance";
 import { FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
 import axios from "axios";
 import MemberForm from "./MemberForm";
+import { format, parseISO } from "date-fns"; // 날짜 포맷팅을 위한 import
 
 const MemberList = () => {
   const [members, setMembers] = useState([]);
@@ -51,17 +52,18 @@ const MemberList = () => {
   };
 
   const handleDeleteMember = (memberId) => {
-    axiosInstance
-      .delete(`/adminMember/delete/${memberId}`)
-      .then(() => {
-        // 여기서는 실제 API 호출을 대신하여 직접 상태를 업데이트합니다.
-        setMembers((prevMembers) =>
-          prevMembers.filter((member) => member.id !== memberId)
-        );
-      })
-      .catch((error) => {
-        console.error("Failed to delete member", error);
-      });
+    if (window.confirm("정말로 이 회원을 삭제하시겠습니까?")) {
+      axiosInstance
+        .delete(`/adminMember/delete/${memberId}`)
+        .then(() => {
+          setMembers((prevMembers) =>
+            prevMembers.filter((member) => member.id !== memberId)
+          );
+        })
+        .catch((error) => {
+          console.error("Failed to delete member", error);
+        });
+    }
   };
 
   const handleMemberUpdated = (updatedMember) => {
@@ -139,7 +141,7 @@ const MemberList = () => {
               이메일
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              카테고리
+              가입유형
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               전화번호
@@ -162,48 +164,58 @@ const MemberList = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {filteredMembers.map((member) => (
-            <tr key={member.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {member.name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {member.email}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {member.cate}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {member.tell}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {member.birth}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {`${member.mailaddr}, ${member.roadaddr}, ${member.detailaddr}`}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {member.regdt}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {member.member_type}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  onClick={() => handleEditMember(member)}
-                  className="text-blue-500 hover:text-blue-700 mr-2"
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => handleDeleteMember(member.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <FaTrashAlt />
-                </button>
-              </td>
-            </tr>
-          ))}
+          {filteredMembers.map((member) => {
+            // 날짜 포맷팅
+            const birthDate = member.birth
+              ? format(parseISO(member.birth), "yyyy-MM-dd")
+              : "";
+            const regDate = member.regdt
+              ? format(parseISO(member.regdt), "yyyy-MM-dd")
+              : "";
+
+            return (
+              <tr key={member.id}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {member.name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {member.email}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {member.cate}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {member.tell}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {birthDate}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {`${member.mailaddr}, ${member.roadaddr}, ${member.detailaddr}`}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {regDate}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {member.member_type}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    onClick={() => handleEditMember(member)}
+                    className="text-blue-500 hover:text-blue-700 mr-2"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteMember(member.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FaTrashAlt />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       {isFormOpen && (

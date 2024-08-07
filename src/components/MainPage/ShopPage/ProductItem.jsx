@@ -41,9 +41,9 @@ const ProductItem = ({
           }`}
         />
       </div>
-      <h3 className="text-xl font-semibold mb-2">{name}</h3>
-      <p className="text-lg text-gray-700 mb-2">{price}</p>
-      <p className="text-md text-gray-600 mb-2">{details}</p>
+      <h3 className="text-sm  mb-2">{name}</h3>
+      <p className="text-lg font-semibold text-gray-700 mb-2">{price}</p>
+      <p className="text-sm font-semibold text-gray-600 mb-2">{details}</p>
       <p className="text-sm text-red-600 mb-4">리뷰: {reviews}</p>
     </div>
   );
