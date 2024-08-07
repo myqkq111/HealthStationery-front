@@ -11,6 +11,7 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
   const [detailaddr, setDetailaddr] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const id = JSON.parse(localStorage.getItem("member")).id;
+  const cate = JSON.parse(localStorage.getItem("member")).cate;
 
   useEffect(() => {
     if (isOpen) {
@@ -36,6 +37,7 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
     }
     const updateInfo = {
       id,
+      cate,
       email,
       name,
       tell,

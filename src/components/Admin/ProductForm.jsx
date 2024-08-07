@@ -18,8 +18,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [colorOptions, setColorOptions] = useState([]); // 색상 옵션 배열
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     if (product) {
       setFormData({
