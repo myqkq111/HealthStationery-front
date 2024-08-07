@@ -33,14 +33,13 @@ const Register = () => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const cate = query.get("cate");
- 
+
   useEffect(() => {
-    if(cate){
+    if (cate) {
       setEmail(query.get("email"));
       setName(query.get("name"));
     }
-  },[]);
-  
+  }, []);
 
   const navigate = useNavigate();
 
@@ -122,14 +121,14 @@ const Register = () => {
   };
 
   const handlePasswordChange = (e) => {
-    setPasswordError("")
-    setPasswordCheckMessage("")
+    setPasswordError("");
+    setPasswordCheckMessage("");
     const newPassword = e.target.value;
     setPassword(newPassword);
     if (newPassword.length > 0) {
       validatePassword(newPassword);
     } else {
-      setPasswordStrength('');
+      setPasswordStrength("");
     }
   };
 
@@ -148,14 +147,14 @@ const Register = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     if (!cate) {
       // 'cate'가 없을 때 필수 유효성 검사
       if (!isEmailAvailable) {
         setError("이메일 중복 확인이 필요합니다.");
         return;
       }
-  
+
       if (passwordCheckMessage === "") {
         setError("비밀번호를 확인해주세요.");
         return;
@@ -163,37 +162,37 @@ const Register = () => {
     }
 
     // 공통 유효성 검사
-    if(name === ""){
+    if (name === "") {
       setError("이름을 입력해주세요.");
       return;
     }
 
-    if(fm === ""){
+    if (fm === "") {
       setError("성별 체크를 해주세요.");
       return;
     }
-    
-    if(tell === ""){
+
+    if (tell === "") {
       setError("연락처를 입력해주세요.");
       return;
     }
-    
-    if(mailaddr === ""){
+
+    if (mailaddr === "") {
       setError("우편번호를 입력해주세요.");
       return;
     }
 
-    if(roadaddr === ""){
+    if (roadaddr === "") {
       setError("도로명주소를 입력해주세요.");
       return;
     }
 
-    if(detailaddr === ""){
+    if (detailaddr === "") {
       setError("상세주소를 입력해주세요.");
       return;
     }
 
-    if(birthDate === null){
+    if (birthDate === null) {
       setError("생년월일을 입력해주새요.");
       return;
     }
@@ -227,49 +226,55 @@ const Register = () => {
   };
 
   const emailChange = (e) => {
-    setEmail(e.target.value)
+    setEmail(e.target.value);
     setEmailError("");
     setIsEmailAvailable(false);
-  }
+  };
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-gray-100 p-4">
       <h1 className="text-3xl font-bold mb-6">회원가입</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-md p-6">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex-grow">
-          <label className="block text-gray-700 text-lg font-semibold mb-2">
-            이메일
-          </label>
-          <div className="flex items-center">
-            <input
-              type="email"
-              value={email}
-              placeholder="이메일을 입력하세요"
-              onChange={emailChange}
-              readOnly={cate}
-              required
-              className={`w-full p-2 border border-gray-300 rounded-lg shadow-sm ${
-                cate ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "focus:outline-none focus:ring-2 focus:ring-blue-500"
-              }`}
-            />
-            {!cate && (
-              <button
-                type="button"
-                onClick={handleEmailCheck}
-                className="ml-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-auto flex-shrink-0"
+        <div className="flex items-center gap-4 mb-4">
+          <div className="flex-grow">
+            <label className="block text-gray-700 text-lg font-semibold mb-2">
+              이메일
+            </label>
+            <div className="flex items-center">
+              <input
+                type="email"
+                value={email}
+                placeholder="이메일을 입력하세요"
+                onChange={emailChange}
+                readOnly={cate}
+                required
+                className={`w-full p-2 border border-gray-300 rounded-lg shadow-sm ${
+                  cate
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "focus:outline-none focus:ring-2 focus:ring-blue-500"
+                }`}
+              />
+              {!cate && (
+                <button
+                  type="button"
+                  onClick={handleEmailCheck}
+                  className="ml-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-auto flex-shrink-0"
+                >
+                  중복 확인
+                </button>
+              )}
+            </div>
+            {emailError && (
+              <p
+                className={`text-sm mt-2 ${
+                  isEmailAvailable ? "text-green-500" : "text-red-500"
+                }`}
               >
-                중복 확인
-              </button>
+                {emailError}
+              </p>
             )}
           </div>
-          {emailError && (
-            <p className={`text-sm mt-2 ${isEmailAvailable ? 'text-green-500' : 'text-red-500'}`}>
-              {emailError}
-            </p>
-          )}
         </div>
-      </div>
 
         {!cate && (
           <>
@@ -288,19 +293,31 @@ const Register = () => {
               {passwordStrength && (
                 <div className="mt-2 text-sm">
                   <div className="mt-2 text-sm">
-                  <div className="relative pt-1">
-                    <div className="flex mb-2 items-center justify-between">
-                      <div className={`w-1/3 h-2 rounded-full ${getColorClass(0)}`}></div>
-                      <div className={`w-1/3 h-2 rounded-full ${getColorClass(1)}`}></div>
-                      <div className={`w-1/3 h-2 rounded-full ${getColorClass(2)}`}></div>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className={getTextColorClass("취약")}>취약</span>
-                      <span className={getTextColorClass("중간")}>중간</span>
-                      <span className={getTextColorClass("강함")}>강함</span>
+                    <div className="relative pt-1">
+                      <div className="flex mb-2 items-center justify-between">
+                        <div
+                          className={`w-1/3 h-2 rounded-full ${getColorClass(
+                            0
+                          )}`}
+                        ></div>
+                        <div
+                          className={`w-1/3 h-2 rounded-full ${getColorClass(
+                            1
+                          )}`}
+                        ></div>
+                        <div
+                          className={`w-1/3 h-2 rounded-full ${getColorClass(
+                            2
+                          )}`}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className={getTextColorClass("취약")}>취약</span>
+                        <span className={getTextColorClass("중간")}>중간</span>
+                        <span className={getTextColorClass("강함")}>강함</span>
+                      </div>
                     </div>
                   </div>
-                </div>
                 </div>
               )}
             </div>
@@ -314,9 +331,9 @@ const Register = () => {
                 value={confirmPassword}
                 placeholder="비밀번호를 다시 입력하세요"
                 onChange={(e) => {
-                  setPasswordError("")
-                  setPasswordCheckMessage("")
-                  setConfirmPassword(e.target.value)
+                  setPasswordError("");
+                  setPasswordCheckMessage("");
+                  setConfirmPassword(e.target.value);
                 }}
                 required
                 className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
