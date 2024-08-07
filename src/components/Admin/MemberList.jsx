@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axiosInstance from "../api/AxiosInstance";
 import { FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
 import axios from "axios";
 import MemberForm from "./MemberForm";
@@ -56,9 +57,19 @@ const MemberList = () => {
   ];
 
   useEffect(() => {
-    // 임시 데이터 설정
-    setMembers(sampleMembers);
-    setFilteredMembers(sampleMembers);
+    // 컴포넌트가 마운트될 때 회원 목록을 서버에서 가져오는 함수
+    const fetchMembers = () => {
+      axiosInstance
+        .get("/adminMember/selectAll") // 실제 API 엔드포인트로 교체
+        .then((response) => {
+          setMembers(response.data); // 회원 목록 상태 업데이트
+        })
+        .catch((error) => {
+          console.error("Failed to fetch members", error); // 데이터 fetching 오류 처리
+        });
+    };
+
+    fetchMembers();
   }, []);
 
   useEffect(() => {
