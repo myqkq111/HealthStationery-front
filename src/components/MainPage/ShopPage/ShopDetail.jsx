@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import ProductItem from "./ProductItem";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../api/AxiosInstance";
-
 const ShopDetail = () => {
   const [products, setProducts] = useState([]);
-
   useEffect(() => {
     // 데이터 가져오기
     axiosInstance
@@ -18,7 +16,6 @@ const ShopDetail = () => {
       });
     console.log(products);
   }, []);
-
   return (
     <div className="min-h-screen bg-white px-8 py-8">
       {/* 텍스트 섹션 */}
@@ -32,7 +29,6 @@ const ShopDetail = () => {
           모두보기 {products.length}
         </p>
       </div>
-
       {/* 상품 목록 섹션 */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {products.length > 0 ? (
@@ -60,5 +56,4 @@ const ShopDetail = () => {
     </div>
   );
 };
-
 export default ShopDetail;
