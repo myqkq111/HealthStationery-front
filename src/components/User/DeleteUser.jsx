@@ -21,9 +21,9 @@ const DeleteUser = ({ isOpen, onClose }) => {
       if (response.data) {
         if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
           await axiosInstance.delete("/member/deleteAccount", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            // headers: {
+            //   Authorization: `Bearer ${token}`,
+            // },
             data: { cate },
             withCredentials: true,
           });

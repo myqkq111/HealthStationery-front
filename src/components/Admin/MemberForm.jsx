@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 
 const MemberForm = ({ member, onClose, onMemberUpdated }) => {
   const [memberType, setMemberType] = useState(
@@ -8,14 +8,17 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const memberData = { member_type: memberType };
-    console.log("Data to send:", memberData);
-
     let request;
 
+    if (!window.confirm("정말로 이 회원을 삭제하시겠습니까?")) {
+      return;
+    }
+
     if (member) {
-      request = axios.put(`/api/members/${member.id}`, memberData);
+      request = axiosInstance.put(
+        `/adminMember/update/${member.id}`,
+        memberType
+      );
     } else {
       console.error("Member does not exist for update");
       return;
