@@ -1,15 +1,15 @@
-// src/components/MyPage.jsx
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/AxiosInstance";
 import UpdateProfile from "./UpdateProfile";
 import DeleteUser from "./DeleteUser";
+import ResetPassword from "./ResetPassword"; // Import ResetPassword
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -34,11 +34,16 @@ const MyPage = () => {
     setIsDeleteUserOpen(true);
   };
 
+  const handleResetPassword = () => {
+    setIsResetPasswordOpen(true); // Open ResetPassword modal
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "정보 없음";
     const date = new Date(dateString);
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 변환
+    return date.toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
   };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="w-1/4 max-w-xs bg-white shadow-md p-4">
@@ -88,6 +93,15 @@ const MyPage = () => {
             </button>
           </li>
           <hr className="flex-1 border-t border-gray-300" />
+          <li>
+            <button
+              onClick={handleResetPassword}
+              className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+            >
+              비밀번호 재설정
+            </button>
+          </li>
+          <hr className="flex-1 border-t border-gray-300" />
         </ul>
       </div>
       <div className="w-3/4 max-w-4xl p-8 bg-white shadow-md ml-4">
@@ -131,19 +145,29 @@ const MyPage = () => {
           </p>
         )}
       </div>
-      <UpdateProfile
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={(updatedInfo) => {
-          setUserInfo((prev) => ({ ...prev, ...updatedInfo }));
-          alert("회원 정보가 업데이트되었습니다.");
-        }}
-      />
-      <DeleteUser
-        isOpen={isDeleteUserOpen}
-        onClose={() => setIsDeleteUserOpen(false)}
-      />
+      {isModalOpen && (
+        <UpdateProfile
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={(updatedInfo) => {
+            setUserInfo((prev) => ({ ...prev, ...updatedInfo }));
+            alert("회원 정보가 업데이트되었습니다.");
+          }}
+        />
+      )}
+      {isDeleteUserOpen && (
+        <DeleteUser
+          isOpen={isDeleteUserOpen}
+          onClose={() => setIsDeleteUserOpen(false)}
+        />
+      )}
+      {isResetPasswordOpen && (
+        <ResetPassword
+          onClose={() => setIsResetPasswordOpen(false)} // Close ResetPassword modal
+        />
+      )}
     </div>
   );
 };
+
 export default MyPage;

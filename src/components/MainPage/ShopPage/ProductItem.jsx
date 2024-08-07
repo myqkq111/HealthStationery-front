@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ProductItem = ({
-  image,
-  hoverImage,
-  name,
-  price,
-  details,
-  reviews,
-  link,
-}) => {
+const IMAGE_BASE_URL = "/images/products/"; // 서버의 기본 URL
+
+const ProductItem = ({ cate, name, price, image, content, inven, link }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
 
@@ -17,6 +11,9 @@ const ProductItem = ({
   const handleClick = () => {
     navigate(link);
   };
+
+  const imageUrl = `${IMAGE_BASE_URL}/${cate}/1.JPG`;
+  const hoverImageUrl = `${IMAGE_BASE_URL}/${cate}/2.JPG`;
 
   return (
     <div
@@ -26,25 +23,30 @@ const ProductItem = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative w-full h-64 mb-4">
+        {/* 기본 이미지 */}
         <img
-          src={image}
+          src={imageUrl}
           alt={name}
           className={`absolute inset-0 object-contain w-full h-full transition-opacity duration-300 ${
             isHovered ? "opacity-0" : "opacity-100"
           }`}
         />
-        <img
-          src={hoverImage}
-          alt={`${name} hover`}
-          className={`absolute inset-0 object-contain w-full h-full transition-opacity duration-300 ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-        />
+        {/* 마우스 오버 이미지 */}
+        {image && (
+          <img
+            src={hoverImageUrl}
+            alt={`${name} hover`}
+            className={`absolute inset-0 object-contain w-full h-full transition-opacity duration-300 ${
+              isHovered ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        )}
       </div>
-      <h3 className="text-xl font-semibold mb-2">{name}</h3>
-      <p className="text-lg text-gray-700 mb-2">{price}</p>
-      <p className="text-md text-gray-600 mb-2">{details}</p>
-      <p className="text-sm text-red-600 mb-4">리뷰: {reviews}</p>
+      <h3 className="text-sm mb-2">{name}</h3>
+      <p className="text-lg font-semibold text-gray-700 mb-2">{price}원</p>
+      <p className="text-sm text-gray-600 mb-2">{content}</p> {/* 상품 설명 */}
+      <p className="text-sm text-red-600 mb-4">재고: {inven}개</p>{" "}
+      {/* 재고 수량 */}
     </div>
   );
 };

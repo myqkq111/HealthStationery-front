@@ -1,158 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ProductItem from "./ProductItem";
 import { Link } from "react-router-dom";
-
+import axiosInstance from "../../api/AxiosInstance";
 const ShopDetail = () => {
-  // 상품 데이터
-  const products = [
-    {
-      id: 1,
-      image: "/images/products/product1.jpg",
-      hoverImage: "/images/products/product1-hover.jpg", // 마우스 오버 시 보여줄 이미지 경로
-      name: "스트랩",
-      price: "100원",
-      details: "국민스트랩! Double 논슬립 그립테크의 기술력",
-      reviews: "120",
-      link: "/product/1",
-    },
-    {
-      id: 2,
-      image: "/images/products/knees/1.jpg",
-      hoverImage: "/images/products/knees/2.jpg", // 마우스 오버 시 보여줄 이미지 경로
-      name: "히어로 네오프렌 7mm 무릎 보호대",
-      price: "100원",
-      details: "상품 상세정보 2",
-      reviews: "80",
-      link: "/product/2",
-    },
-    {
-      id: 3,
-      image: "/images/products/product3.jpg",
-      name: "상품 이름 3",
-      price: "100원",
-      details: "상품 상세정보 3",
-      reviews: "150",
-      link: "/product/3",
-    },
-    {
-      id: 4,
-      image: "/images/products/product4.jpg",
-      name: "상품 이름 4",
-      price: "100원",
-      details: "상품 상세정보 4",
-      reviews: "200",
-      link: "/product/4",
-    },
-    {
-      id: 5,
-      image: "/images/products/product1.jpg",
-      name: "상품 이름 1",
-      price: "100원",
-      details: "상품 상세정보 1",
-      reviews: "120",
-      link: "/product/1",
-    },
-    {
-      id: 6,
-      image: "/images/products/product2.jpg",
-      name: "상품 이름 2",
-      price: "100원",
-      details: "상품 상세정보 2",
-      reviews: "80",
-      link: "/product/2",
-    },
-    {
-      id: 7,
-      image: "/images/products/product3.jpg",
-      name: "상품 이름 3",
-      price: "100원",
-      details: "상품 상세정보 3",
-      reviews: "150",
-      link: "/product/3",
-    },
-    {
-      id: 8,
-      image: "/images/products/product4.jpg",
-      name: "상품 이름 4",
-      price: "100원",
-      details: "상품 상세정보 4",
-      reviews: "200",
-      link: "/product/4",
-    },
-    {
-      id: 1,
-      image: "/images/products/product1.jpg",
-      name: "상품 이름 1",
-      price: "100원",
-      details: "상품 상세정보 1",
-      reviews: "120",
-      link: "/product/1",
-    },
-    {
-      id: 2,
-      image: "/images/products/product2.jpg",
-      name: "상품 이름 2",
-      price: "100원",
-      details: "상품 상세정보 2",
-      reviews: "80",
-      link: "/product/2",
-    },
-    {
-      id: 3,
-      image: "/images/products/product3.jpg",
-      name: "상품 이름 3",
-      price: "100원",
-      details: "상품 상세정보 3",
-      reviews: "150",
-      link: "/product/3",
-    },
-    {
-      id: 4,
-      image: "/images/products/product4.jpg",
-      name: "상품 이름 4",
-      price: "100원",
-      details: "상품 상세정보 4",
-      reviews: "200",
-      link: "/product/4",
-    },
-    {
-      id: 5,
-      image: "/images/products/product1.jpg",
-      name: "상품 이름 1",
-      price: "100원",
-      details: "상품 상세정보 1",
-      reviews: "120",
-      link: "/product/1",
-    },
-    {
-      id: 6,
-      image: "/images/products/product2.jpg",
-      name: "상품 이름 2",
-      price: "100원",
-      details: "상품 상세정보 2",
-      reviews: "80",
-      link: "/product/2",
-    },
-    {
-      id: 7,
-      image: "/images/products/product3.jpg",
-      name: "상품 이름 3",
-      price: "100원",
-      details: "상품 상세정보 3",
-      reviews: "150",
-      link: "/product/3",
-    },
-    {
-      id: 8,
-      image: "/images/products/product4.jpg",
-      name: "상품 이름 4",
-      price: "100원",
-      details: "상품 상세정보 4",
-      reviews: "200",
-      link: "/product/4",
-    },
-  ];
-
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    // 데이터 가져오기
+    axiosInstance
+      .get("/product/selectAll") // API 엔드포인트는 실제 사용하시는 것으로 수정하세요
+      .then((response) => {
+        setProducts(response.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch products:", error);
+      });
+    console.log(products);
+  }, []);
   return (
     <div className="min-h-screen bg-white px-8 py-8">
       {/* 텍스트 섹션 */}
@@ -166,28 +29,31 @@ const ShopDetail = () => {
           모두보기 {products.length}
         </p>
       </div>
-
       {/* 상품 목록 섹션 */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <Link
-            key={product.id}
-            to={`/product/${product.id}`}
-            state={{ product, initialImage: product.image }} // 상품 데이터를 state로 전달
-          >
-            <ProductItem
-              image={product.image}
-              hoverImage={product.hoverImage} // 마우스 오버 이미지 전달
-              name={product.name}
-              price={product.price}
-              details={product.details}
-              reviews={product.reviews}
-            />
-          </Link>
-        ))}
+        {products.length > 0 ? (
+          products.map((product) => (
+            <Link
+              key={product.id}
+              to={`/product/${product.id}`}
+              state={{ product, initialImage: product.image }} // 상품 데이터를 state로 전달
+            >
+              <ProductItem
+                cate={product.cate}
+                name={product.name}
+                price={product.price}
+                image={product.strImage}
+                content={product.content}
+                inven={product.inven}
+                link={`/product/${product.id}`}
+              />
+            </Link>
+          ))
+        ) : (
+          <p className="text-center text-gray-600">상품이 없습니다.</p>
+        )}
       </div>
     </div>
   );
 };
-
 export default ShopDetail;

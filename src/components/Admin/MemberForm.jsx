@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 
 const MemberForm = ({ member, onClose, onMemberUpdated }) => {
   const [memberType, setMemberType] = useState(
@@ -8,13 +8,17 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const memberData = { member_type: memberType };
-
     let request;
 
+    if (!window.confirm(`정말로 권한을 ${memberType}으로 변경하시겠습니까?`)) {
+      return;
+    }
+
     if (member) {
-      request = axios.put(`/api/members/${member.id}`, memberData);
+      request = axiosInstance.put(
+        `/adminMember/update/${member.id}`,
+        memberType
+      );
     } else {
       console.error("Member does not exist for update");
       return;
@@ -22,6 +26,11 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
 
     request
       .then((response) => {
+        // let user = JSON.parse(localStorage.getItem("member"));
+        // user.member_type = memberType;
+        // JSON.stringify(user);
+        // localStorage.removeItem("member");
+        // localStorage.setItem("member", user);
         onMemberUpdated(response.data);
         onClose();
       })

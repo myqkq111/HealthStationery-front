@@ -1,3 +1,5 @@
+// src/components/DeleteUser.jsx
+
 import React, { useState } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import { useAuth } from "../contexts/AuthContext";
@@ -90,4 +92,5 @@ const DeleteUser = ({ isOpen, onClose }) => {
     </div>
   );
 };
+
 export default DeleteUser;
