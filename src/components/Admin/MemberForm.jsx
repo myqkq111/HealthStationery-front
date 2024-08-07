@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 
 const MemberForm = ({ member, onClose, onMemberUpdated }) => {
   const [memberType, setMemberType] = useState(
@@ -8,13 +8,13 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const memberData = { member_type: memberType };
-
     let request;
 
     if (member) {
-      request = axios.put(`/api/members/${member.id}`, memberData);
+      request = axiosInstance.put(
+        `/adminMember/update/${member.id}`,
+        memberType
+      );
     } else {
       console.error("Member does not exist for update");
       return;

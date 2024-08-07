@@ -13,49 +13,6 @@ const MemberList = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortColumn, setSortColumn] = useState("name");
 
-  // 임시 데이터
-  const sampleMembers = [
-    {
-      id: 1,
-      name: "김철수",
-      email: "chulsoo.kim@example.com",
-      cate: "VIP",
-      tell: "010-1234-5678",
-      birth: "1985-10-15",
-      mailaddr: "서울시 강남구",
-      roadaddr: "테헤란로",
-      detailaddr: "123-45",
-      regdt: "2024-08-01",
-      member_type: "admin",
-    },
-    {
-      id: 2,
-      name: "이영희",
-      email: "younghee.lee@example.com",
-      cate: "일반",
-      tell: "010-8765-4321",
-      birth: "1990-05-20",
-      mailaddr: "부산시 해운대구",
-      roadaddr: "해운대해변로",
-      detailaddr: "678-90",
-      regdt: "2024-08-02",
-      member_type: "user",
-    },
-    {
-      id: 3,
-      name: "박민수",
-      email: "minsu.park@example.com",
-      cate: "정기",
-      tell: "010-1357-2468",
-      birth: "1988-12-25",
-      mailaddr: "인천시 연수구",
-      roadaddr: "연수로",
-      detailaddr: "234-56",
-      regdt: "2024-08-03",
-      member_type: "user",
-    },
-  ];
-
   useEffect(() => {
     // 컴포넌트가 마운트될 때 회원 목록을 서버에서 가져오는 함수
     const fetchMembers = () => {
@@ -94,8 +51,8 @@ const MemberList = () => {
   };
 
   const handleDeleteMember = (memberId) => {
-    axios
-      .delete(`/api/members/${memberId}`)
+    axiosInstance
+      .delete(`/adminMember/delete/${memberId}`)
       .then(() => {
         // 여기서는 실제 API 호출을 대신하여 직접 상태를 업데이트합니다.
         setMembers((prevMembers) =>

@@ -3,6 +3,7 @@ import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const token = localStorage.getItem("token");
+
   const [formData, setFormData] = useState({
     cate: "",
     name: "",
@@ -17,8 +18,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [sizeOptions, setSizeOptions] = useState([]); // 사이즈 옵션 배열
   const [colorOptions, setColorOptions] = useState([]); // 색상 옵션 배열
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (product) {
