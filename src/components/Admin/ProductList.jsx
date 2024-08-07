@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import ProductForm from "./ProductForm"; // ProductForm 임포트
+import ProductForm from "./ProductForm";
 import axiosInstance from "../api/AxiosInstance";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import Tooltip from "@mui/material/Tooltip";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -11,7 +12,6 @@ const ProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // 상품 목록을 가져오는 함수
   useEffect(() => {
     axiosInstance
       .get("/product/selectAll")
@@ -21,7 +21,6 @@ const ProductList = () => {
       .catch(() => {});
   }, []);
 
-  // 페이지네이션에 필요한 데이터 추출
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
   const currentProducts = products.slice(
@@ -29,7 +28,6 @@ const ProductList = () => {
     indexOfLastProduct
   );
 
-  // 상품 추가 또는 수정 후 업데이트
   const handleProductUpdated = () => {
     axiosInstance
       .get("/product/selectAll")
@@ -40,19 +38,16 @@ const ProductList = () => {
     setIsFormOpen(false);
   };
 
-  // 상품 추가 버튼 클릭 핸들러
   const handleAddProductClick = () => {
     setSelectedProduct(null);
     setIsFormOpen(true);
   };
 
-  // 수정 버튼 클릭 핸들러
   const handleEditClick = (product) => {
     setSelectedProduct(product);
     setIsFormOpen(true);
   };
 
-  // 옵션 변경 핸들러
   const handleOptionChange = (productId, index) => {
     setSelectedOptionIndexes((prevIndexes) => ({
       ...prevIndexes,
@@ -75,27 +70,24 @@ const ProductList = () => {
     }
   };
 
-  // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  // 스크롤 제어 함수
   useEffect(() => {
     document.body.style.overflow = isFormOpen ? "hidden" : "auto";
     return () => {
-      document.body.style.overflow = "auto"; // Cleanup
+      document.body.style.overflow = "auto";
     };
   }, [isFormOpen]);
 
-  // 페이지네이션 버튼 생성
   const pageNumbers = [];
   for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
     pageNumbers.push(i);
   }
 
   return (
-    <div className="p-6 ">
+    <div className="p-6">
       <button
         onClick={handleAddProductClick}
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
@@ -105,31 +97,31 @@ const ProductList = () => {
       <div>
         <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border  border-gray-200 rounded-lg shadow-md">
-            <thead className="bg-gray-100 border-b  border-gray-200 ">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+            <thead className="bg-gray-100 border-b border-gray-200">
               <tr>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   상품명
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   카테고리
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   가격
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   재고
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-48">
                   상품설명
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   옵션
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap min-w-[150px] max-w-[200px]">
                   옵션 값
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   작업
                 </th>
               </tr>
@@ -160,22 +152,22 @@ const ProductList = () => {
                       : "";
                   return (
                     <tr key={product.id} className="border-b border-gray-200">
-                      <td className="px-4 py-4 text-sm text-center text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
                         {product.name}
                       </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
                         {product.cate}
                       </td>
-                      <td className="px-4 py-4 text-sm text-right text-gray-900">
+                      <td className="px-4 py-4 text-sm text-right text-gray-900 whitespace-nowrap">
                         {product.price}원
                       </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
                         {product.inven}개
                       </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
                         {product.content}
                       </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900">
+                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
                         <select
                           onChange={(e) =>
                             handleOptionChange(product.id, e.target.value)
@@ -193,19 +185,21 @@ const ProductList = () => {
                           ))}
                         </select>
                       </td>
-                      <td className="px-4 py-4 w-48 text-sm text-center text-gray-900">
-                        {selectedOptionValue}
+                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap min-w-[150px] max-w-[200px] overflow-hidden text-ellipsis">
+                        <Tooltip title={selectedOptionValue} placement="top">
+                          <span>{selectedOptionValue}</span>
+                        </Tooltip>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => handleEditClick(product)}
-                          className="text-blue-500  hover:text-blue-700 mr-2"
+                          className="text-blue-500 hover:text-blue-700 mr-2"
                         >
                           <FaEdit />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(product.id)}
-                          className="text-red-500  hover:text-red-700"
+                          className="text-red-500 hover:text-red-700"
                         >
                           <FaTrashAlt />
                         </button>

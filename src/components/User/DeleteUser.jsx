@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import { useAuth } from "../contexts/AuthContext";
-
 const DeleteUser = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState("");
   const { logout } = useAuth();
   const user = JSON.parse(localStorage.getItem("member"));
+<<<<<<< HEAD
   const { cate, email } = user;
 
   const handlePasswordConfirm = () => {
@@ -16,6 +16,15 @@ const DeleteUser = ({ isOpen, onClose }) => {
       .then((response) => {
         if (response.data) {
           handleDeleteAccount(token, cate);
+=======
+  const { cate, id } = user;
+  const handlePasswordConfirm = () => {
+    axiosInstance
+      .post("/member/confirmPassword", { password, id })
+      .then((response) => {
+        if (response.data) {
+          handleDeleteAccount(id);
+>>>>>>> 58609408510d7420ea1d445ba7fda153ec1311b8
         } else {
           alert("비밀번호가 맞지 않습니다.");
         }
@@ -29,6 +38,7 @@ const DeleteUser = ({ isOpen, onClose }) => {
         setPassword("");
       });
   };
+<<<<<<< HEAD
 
   const handleDeleteAccount = (token, cate) => {
     if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
@@ -38,6 +48,14 @@ const DeleteUser = ({ isOpen, onClose }) => {
             Authorization: `Bearer ${token}`,
           },
           data: { cate },
+=======
+  const handleDeleteAccount = (id) => {
+    console.log("여기도오냐");
+    if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
+      axiosInstance
+        .delete("/member/deleteAccount", {
+          data: { id },
+>>>>>>> 58609408510d7420ea1d445ba7fda153ec1311b8
           withCredentials: true,
         })
         .then(() => {
@@ -51,9 +69,7 @@ const DeleteUser = ({ isOpen, onClose }) => {
         });
     }
   };
-
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50">
       <div className="bg-white p-6 max-w-md w-full relative">
@@ -83,7 +99,11 @@ const DeleteUser = ({ isOpen, onClose }) => {
             onClick={
               cate === "home"
                 ? handlePasswordConfirm
+<<<<<<< HEAD
                 : () => handleDeleteAccount(localStorage.getItem("token"), cate)
+=======
+                : () => handleDeleteAccount(id)
+>>>>>>> 58609408510d7420ea1d445ba7fda153ec1311b8
             }
             className="py-2 px-4 bg-blue-600 text-white hover:bg-blue-700 transition duration-300 ease-in-out"
           >
@@ -100,5 +120,4 @@ const DeleteUser = ({ isOpen, onClose }) => {
     </div>
   );
 };
-
 export default DeleteUser;

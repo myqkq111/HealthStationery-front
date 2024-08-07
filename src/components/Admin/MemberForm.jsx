@@ -10,7 +10,7 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
     e.preventDefault();
     let request;
 
-    if (!window.confirm("정말로 이 회원을 삭제하시겠습니까?")) {
+    if (!window.confirm(`정말로 권한을 ${memberType}으로 변경하시겠습니까?`)) {
       return;
     }
 
@@ -26,6 +26,11 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
 
     request
       .then((response) => {
+        // let user = JSON.parse(localStorage.getItem("member"));
+        // user.member_type = memberType;
+        // JSON.stringify(user);
+        // localStorage.removeItem("member");
+        // localStorage.setItem("member", user);
         onMemberUpdated(response.data);
         onClose();
       })
