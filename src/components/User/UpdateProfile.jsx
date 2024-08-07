@@ -1,52 +1,58 @@
-// src/components/UpdateProfile.jsx
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 import CustomModal from "./CustomModal";
+import Address from "../../openApi/Address";
 
-const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
+const UpdateProfile = ({ isOpen, onClose, onSave }) => {
+  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [tell, setTell] = useState("");
-  const [address, setAddress] = useState("");
+  const [mailaddr, setMailaddr] = useState("");
+  const [roadaddr, setRoadaddr] = useState("");
+  const [detailaddr, setDetailaddr] = useState("");
   const [birthdate, setBirthdate] = useState("");
+  const id = JSON.parse(localStorage.getItem("member")).id;
 
-  // Modal 열릴 때 기존 정보를 가져오는 함수
   useEffect(() => {
     if (isOpen) {
-      // 사용자 정보를 가져오는 API 호출
-      axios
-        .get(`http://localhost:8080/member/profile/${userEmail}`)
-        .then((response) => {
-          const { name, tell, address, birthdate } = response.data;
-          setName(name || "");
-          setTell(tell || "");
-          setAddress(address || "");
-          setBirthdate(birthdate || "");
-        })
-        .catch((error) => {
-          console.error("Error fetching profile data:", error);
-          alert("프로필 정보를 가져오는 데 실패했습니다.");
-        });
+      const user = JSON.parse(localStorage.getItem("member"));
+      if (user) {
+        const { email, name, tell, roadaddr, detailaddr, birth, mailaddr } =
+          user;
+        setEmail(email || "");
+        setName(name || "");
+        setTell(tell || "");
+        setRoadaddr(roadaddr || "");
+        setDetailaddr(detailaddr || "");
+        setBirthdate(formatDate(birth));
+        setMailaddr(mailaddr || "");
+      }
     }
-  }, [isOpen, userEmail]);
+  }, [isOpen]);
 
   const handleSave = () => {
-    // 데이터 유효성 검사
-    if (!name || !tell || !address || !birthdate) {
+    if (!name || !tell || !roadaddr || !detailaddr || !mailaddr) {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
-
-    axios
-      .put("http://localhost:8080/member/update", {
-        email: userEmail,
-        name,
-        tell,
-        address,
-        birthdate,
-      })
+    const updateInfo = {
+      id,
+      email,
+      name,
+      tell,
+      mailaddr,
+      roadaddr,
+      detailaddr,
+      birth: birthdate,
+    };
+    console.log(updateInfo);
+    axiosInstance
+      .put("/member/updateUser", updateInfo)
       .then((response) => {
         console.log("Profile updated successfully:", response.data);
-        onClose(); // 수정 완료 후 모달 닫기
+        handleUpdate(updateInfo); // handleUpdate 호출
+        onClose();
+        onSave(updateInfo);
       })
       .catch((error) => {
         console.error("Error updating profile:", error);
@@ -54,9 +60,21 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
       });
   };
 
+  // 생년월일을 날짜로만 표기하도록 변환하는 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 변환
+  };
+
+  // handleUpdate 함수 추가
+  const handleUpdate = (updatedInfo) => {
+    localStorage.setItem("member", JSON.stringify(updatedInfo));
+    // alert("회원 정보가 업데이트되었습니다.");
+  };
+
   return (
     <CustomModal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">회원 정보 수정</h2>
       <div className="space-y-4">
         <div>
           <label
@@ -68,9 +86,10 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
           <input
             id="email"
             type="text"
-            value={userEmail}
+            value={email}
             readOnly
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="이메일"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm bg-gray-100 text-gray-500 focus:outline-none sm:text-sm"
           />
         </div>
         <div>
@@ -103,19 +122,17 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
-        <div>
-          <label
-            htmlFor="address"
-            className="block text-sm font-medium text-gray-700"
-          >
+        <div className="mb-4">
+          <label className="block text-gray-700 text-lg font-semibold mb-2">
             주소
           </label>
-          <input
-            id="address"
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          <Address
+            mailaddr={mailaddr}
+            setMailaddr={setMailaddr}
+            roadaddr={roadaddr}
+            setRoadaddr={setRoadaddr}
+            detailaddr={detailaddr}
+            setDetailaddr={setDetailaddr}
           />
         </div>
         <div>
@@ -127,10 +144,11 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
           </label>
           <input
             id="birthdate"
-            type="date"
+            type="text"
             value={birthdate}
-            onChange={(e) => setBirthdate(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            readOnly
+            placeholder="생년월일"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm bg-gray-100 text-gray-500 focus:outline-none sm:text-sm"
           />
         </div>
         <button
@@ -143,5 +161,4 @@ const UpdateProfile = ({ isOpen, onClose, userEmail }) => {
     </CustomModal>
   );
 };
-
 export default UpdateProfile;

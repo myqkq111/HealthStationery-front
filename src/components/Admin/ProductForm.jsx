@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
+  const token = localStorage.getItem("token");
   const [formData, setFormData] = useState({
     cate: "",
     name: "",
