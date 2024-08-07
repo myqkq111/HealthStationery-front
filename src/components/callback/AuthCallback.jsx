@@ -23,8 +23,6 @@ const AuthCallback = () => {
         } else {
           // 로그인 상태 업데이트
           login(token, member);
-          console.log(response.data);
-          console.log(token);
 
           navigate("/"); // 홈 페이지로 이동
         }

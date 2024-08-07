@@ -121,7 +121,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
 
     const headers = {
       "Content-Type": "multipart/form-data",
-      ...(product && { Authorization: `Bearer ${token}` }), // 상품이 있을 때만 Authorization 헤더 추가
+      Authorization: `Bearer ${token}`,
     };
 
     const request = product
