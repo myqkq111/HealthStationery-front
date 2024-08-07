@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import { FaEdit, FaTrashAlt, FaSearch } from "react-icons/fa";
-import axios from "axios";
 import MemberForm from "./MemberForm";
 import { format, parseISO } from "date-fns"; // 날짜 포맷팅을 위한 import
 

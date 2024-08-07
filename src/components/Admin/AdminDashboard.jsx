@@ -6,22 +6,20 @@ import OrderList from "./OrderList";
 import BoardList from "./BoardList";
 
 const AdminDashboard = () => {
-  // 초기값을 localStorage에서 가져오고, 값이 없으면 'products'로 설정
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem("activeTab");
     return savedTab ? savedTab : "products";
   });
 
-  // activeTab이 변경될 때마다 localStorage에 저장
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
   }, [activeTab]);
 
   return (
     <div className="flex min-h-screen">
-      {/* 왼쪽 탭 */}
-      <div className="w-64 bg-gray-200 p-4 border-r border-gray-300">
-        {/* 고정 너비 설정 */}
+      {/* 왼쪽 사이드바 */}
+      <div className="w-64 bg-gray-200 p-4 border-r border-gray-300 fixed h-full">
+        {/* 고정 너비 및 높이 설정 */}
         <div className="flex flex-col space-y-2">
           <button
             onClick={() => setActiveTab("products")}
@@ -67,7 +65,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* 오른쪽 내용 */}
-      <div className="flex-1 p-6 bg-gray-100">
+      <div className="flex-1 ml-64 p-6 bg-gray-100">
         {activeTab === "products" && <ProductList />}
         {activeTab === "members" && <MemberList />}
         {activeTab === "orders" && <OrderList />}
