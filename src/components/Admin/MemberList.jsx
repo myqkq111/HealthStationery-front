@@ -26,6 +26,7 @@ const MemberList = () => {
       roadaddr: "테헤란로",
       detailaddr: "123-45",
       regdt: "2024-08-01",
+      member_type: "admin",
     },
     {
       id: 2,
@@ -38,6 +39,7 @@ const MemberList = () => {
       roadaddr: "해운대해변로",
       detailaddr: "678-90",
       regdt: "2024-08-02",
+      member_type: "user",
     },
     {
       id: 3,
@@ -50,6 +52,7 @@ const MemberList = () => {
       roadaddr: "연수로",
       detailaddr: "234-56",
       regdt: "2024-08-03",
+      member_type: "user",
     },
   ];
 
@@ -194,6 +197,9 @@ const MemberList = () => {
               등록일
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              권한
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               작업
             </th>
           </tr>
@@ -221,6 +227,9 @@ const MemberList = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {member.regdt}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {member.member_type}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button
