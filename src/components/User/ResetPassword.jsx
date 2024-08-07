@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const FindPW = ({ onClose }) => {
+const UpdatePassword = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -82,4 +82,4 @@ const FindPW = ({ onClose }) => {
   );
 };
 
-export default FindPW;
+export default UpdatePassword;

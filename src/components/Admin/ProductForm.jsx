@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
+  const token = localStorage.getItem("token");
   const [formData, setFormData] = useState({
     cate: "",
     name: "",
