@@ -60,18 +60,19 @@ const ProductList = () => {
     }));
   };
 
-  // 삭제 버튼 클릭 핸들러
   const handleDeleteClick = (productId) => {
-    axiosInstance
-      .delete(`/product/delete/${productId}`)
-      .then(() => {
-        setProducts((prevProducts) =>
-          prevProducts.filter((product) => product.id !== productId)
-        );
-      })
-      .catch((error) => {
-        console.error("Failed to delete product", error);
-      });
+    if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
+      axiosInstance
+        .delete(`/product/delete/${productId}`)
+        .then(() => {
+          setProducts((prevProducts) =>
+            prevProducts.filter((product) => product.id !== productId)
+          );
+        })
+        .catch((error) => {
+          console.error("Failed to delete product", error);
+        });
+    }
   };
 
   // 페이지 변경 핸들러
