@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const token = localStorage.getItem("token");
-
   const [formData, setFormData] = useState({
     cate: "",
     name: "",
@@ -18,7 +16,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const [sizeOptions, setSizeOptions] = useState([]); // 사이즈 옵션 배열
   const [colorOptions, setColorOptions] = useState([]); // 색상 옵션 배열
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   useEffect(() => {
     if (product) {
       setFormData({
@@ -32,17 +29,14 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         optionName: product.optionName || [],
         optionValue: product.optionValue || [],
       });
-
       // 옵션 이름과 값이 있을 때만 처리
       if (product.strOptionName && product.strOptionValue) {
         const optionNames = product.strOptionName.split(",");
         const optionValues = product.strOptionValue.split("|");
-
         const sizeIndex = optionNames.indexOf("size");
         if (sizeIndex !== -1) {
           setSizeOptions(optionValues[sizeIndex].split("|"));
         }
-
         const colorIndex = optionNames.indexOf("color");
         if (colorIndex !== -1) {
           setColorOptions(optionValues[colorIndex].split("|"));
@@ -50,7 +44,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       }
     }
   }, [product]);
-
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" || name === "contentImage") {
@@ -65,10 +58,8 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       }));
     }
   };
-
   const handleAddOption = () => {
     const { optionName, optionValue } = formData;
-
     // 입력값이 한글, 영어 문자, 숫자, ,만 포함되는지 확인
     if (/^[\uac00-\ud7afa-zA-Z0-9,]+$/.test(optionValue)) {
       if (optionName) {
@@ -89,18 +80,15 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       alert("옵션 값은 한글, 영어 문자, 숫자 및 ,만 포함될 수 있습니다.");
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     const data = new FormData();
     data.append("cate", formData.cate);
     data.append("name", formData.name);
     data.append("price", formData.price);
     data.append("inven", formData.inven);
     data.append("content", formData.content);
-
     if (sizeOptions.length > 0) {
       data.append("optionName", "size");
       data.append("optionValue", sizeOptions.join(","));
@@ -109,25 +97,20 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       data.append("optionName", "color");
       data.append("optionValue", colorOptions.join(","));
     }
-
     Array.from(formData.image).forEach((file) => data.append("image", file));
     Array.from(formData.contentImage).forEach((file) =>
       data.append("contentImage", file)
     );
-
     const url = product
       ? `http://localhost:8080/product/update/${product.id}` // 상품 아이디를 URL에 포함시킴
       : "http://localhost:8080/product/insert";
-
     const headers = {
       "Content-Type": "multipart/form-data",
-      ...(product && { Authorization: `Bearer ${token}` }), // 상품이 있을 때만 Authorization 헤더 추가
+      Authorization: `Bearer ${token}`,
     };
-
     const request = product
       ? axios.put(url, data, { headers }) // 수정 요청
       : axios.post(url, data, { headers }); // 추가 요청
-
     request
       .then((response) => {
         onProductUpdated();
@@ -163,15 +146,15 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               required
             >
               <option value="">카테고리 선택</option>
-              <option value="그립/스트랩">그립/스트랩</option>
-              <option value="손목">손목</option>
-              <option value="팔꿈치">팔꿈치</option>
-              <option value="무릎">무릎</option>
-              <option value="팔">팔</option>
-              <option value="등/허리">등/허리</option>
-              <option value="파워리프팅/스트렝스">파워리프팅/스트렝스</option>
-              <option value="기타운동장비">기타운동장비</option>
-              <option value="의류">의류</option>
+              <option value="gripps">그립/스트랩</option>
+              <option value="wrist">손목</option>
+              <option value="elbows">팔꿈치</option>
+              <option value="knees">무릎</option>
+              <option value="arms">팔</option>
+              <option value="back">등/허리</option>
+              <option value="powerlifting">파워리프팅/스트렝스</option>
+              <option value="workoutgear">기타운동장비</option>
+              <option value="clothing">의류</option>
             </select>
           </div>
           <div className="mb-4">
@@ -300,7 +283,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               <option value="color">Color</option>
             </select>
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="optionValue"
@@ -333,7 +315,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               추가
             </button>
           </div>
-
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               사이즈
@@ -346,7 +327,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               )}
             </ul>
           </div>
-
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               색상
@@ -359,7 +339,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               )}
             </ul>
           </div>
-
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -381,5 +360,4 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     </div>
   );
 };
-
 export default ProductForm;

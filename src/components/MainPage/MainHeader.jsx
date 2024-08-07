@@ -1,6 +1,6 @@
 // src/components/MainPage/MainHeader.jsx
 import React from "react";
-import { FaUser, FaShoppingCart, FaSearch } from "react-icons/fa";
+import { FaUser, FaShoppingCart, FaSearch, FaUserShield } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -21,21 +21,35 @@ const MainHeader = () => {
     navigate("/"); // 로그아웃 후 홈으로 이동
   };
 
+  const handleAdminPageClick = () => {
+    navigate("/admin"); // 관리자 페이지로 이동
+  };
+
+  // 로그인한 사용자 정보 가져오기
+  const member = JSON.parse(localStorage.getItem("member"));
+  const isAdmin = member?.member_type === "admin";
+
   return (
     <header className="bg-white text-black py-2 px-3 border-b border-gray-200 top-10 inset-x-0 z-20">
       <div className="container mx-auto flex items-center justify-end space-x-3">
         <div className="flex items-center space-x-3">
           {localStorage.getItem("bool") ? (
             <>
-              <span className="text-xs">
-                {JSON.parse(localStorage.getItem("member")).name}
-              </span>
+              <span className="text-xs">{member.name}</span>
               <button
                 onClick={handleLogoutClick}
                 className="text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
               >
                 로그아웃
               </button>
+              {isAdmin && (
+                <button
+                  onClick={handleAdminPageClick}
+                  className="text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer flex items-center"
+                >
+                  <FaUserShield className="mr-1 text-sm" /> 관리자 페이지
+                </button>
+              )}
             </>
           ) : (
             <>
