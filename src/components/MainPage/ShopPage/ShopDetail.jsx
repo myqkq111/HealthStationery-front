@@ -17,9 +17,9 @@ const ShopDetail = () => {
     },
     {
       id: 2,
-      image: "/images/products/product2.jpg",
-      hoverImage: "/images/products/product2-hover.jpg", // 마우스 오버 시 보여줄 이미지 경로
-      name: "상품 이름 2",
+      image: "/images/products/knees/1.jpg",
+      hoverImage: "/images/products/knees/2.jpg", // 마우스 오버 시 보여줄 이미지 경로
+      name: "히어로 네오프렌 7mm 무릎 보호대",
       price: "100원",
       details: "상품 상세정보 2",
       reviews: "80",
