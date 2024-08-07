@@ -16,8 +16,6 @@ const MyPage = () => {
     const user = JSON.parse(localStorage.getItem("member"));
     if (user) {
       // 로컬 스토리지에서 가져온 사용자 정보를 상태로 설정
-      console.log(user);
-      console.log(user.name);
       setUserInfo(user);
     } else {
       // 서버에서 사용자 정보를 가져와야 할 경우
