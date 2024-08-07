@@ -23,7 +23,6 @@ import AdminPage from "./pages/AdminPage";
 import BasketPage from "./components/MainPage/ShopPage/BasketPage";
 import FNQ from "./components/MainPage/FNQPage/fnqpage.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
-
 const App = () => {
   return (
     <>
@@ -48,7 +47,7 @@ const App = () => {
             <Route path="/forgot" element={<Forgot />} />
             <Route path="/find-id" element={<FindID />} />
             <Route path="/findPW" element={<FindPW />} />
-            <Route path="/shop" element={<Shop />} />
+            <Route path="/:category" element={<Shop />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/profile" element={<MyPage />} />
             <Route path="/payment" element={<Payment />} />
@@ -68,5 +67,4 @@ const App = () => {
     </>
   );
 };
-
 export default App;

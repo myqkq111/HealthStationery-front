@@ -6,6 +6,7 @@ const DeleteUser = ({ isOpen, onClose }) => {
   const { logout } = useAuth();
   const user = JSON.parse(localStorage.getItem("member"));
   const { cate, id } = user;
+
   const handlePasswordConfirm = () => {
     axiosInstance
       .post("/member/confirmPassword", { password, id })
