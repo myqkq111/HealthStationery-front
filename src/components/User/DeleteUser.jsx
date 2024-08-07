@@ -1,3 +1,5 @@
+// src/components/DeleteUser.jsx
+
 import React, { useState } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import { useAuth } from "../contexts/AuthContext";
@@ -27,7 +29,6 @@ const DeleteUser = ({ isOpen, onClose }) => {
       });
   };
   const handleDeleteAccount = (id) => {
-    console.log("여기도오냐");
     if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
       axiosInstance
         .delete("/member/deleteAccount", {
@@ -92,4 +93,5 @@ const DeleteUser = ({ isOpen, onClose }) => {
     </div>
   );
 };
+
 export default DeleteUser;
