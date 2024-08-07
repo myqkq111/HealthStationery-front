@@ -89,13 +89,10 @@ const ProductPage = () => {
       });
     }
   };
-  // 썸네일 이미지 배열
-  const thumbnails = [
-    "/images/products/product1.jpg",
-    "/images/products/product2.jpg",
-    "/images/products/product3.jpg",
-    "/images/products/product4.jpg",
-  ];
+  const thumbnails = Array.from(
+    { length: 27 },
+    (_, index) => `/images/products/knees/${index + 1}.jpg`
+  );
 
   // 현재 썸네일 인덱스
   const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(
@@ -393,21 +390,28 @@ const ProductPage = () => {
         <div>
           <div className="flex items-center justify-center" ref={detailsRef}>
             <img
-              src="/images/products/productPage1.jpg"
+              src="/images/products/knees/shop1.jpg"
               alt="상세1"
               className="w-full h-auto object-cover"
             />
           </div>
           <div>
             <img
-              src="/images/products/productPage2.jpg"
+              src="/images/products/knees/shop2.jpg"
               alt="상세2"
               className="w-full h-auto object-cover"
             />
           </div>
           <div className="flex mb-6">
             <img
-              src="/images/products/productPage3.jpg"
+              src="/images/products/knees/shop3.jpg"
+              alt="상세3"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+          <div className="flex mb-6">
+            <img
+              src="/images/products/knees/shop4.jpg"
               alt="상세3"
               className="w-full h-auto object-cover"
             />

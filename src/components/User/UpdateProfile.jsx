@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import CustomModal from "./CustomModal";
 import Address from "../../openApi/Address";
-
 const UpdateProfile = ({ isOpen, onClose, onSave }) => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");

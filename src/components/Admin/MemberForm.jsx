@@ -1,72 +1,75 @@
-// src/components/Admin/MemberForm.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const MemberForm = ({ member, onClose, onMemberUpdated }) => {
-  const [name, setName] = useState(member ? member.name : "");
-  const [email, setEmail] = useState(member ? member.email : "");
+  const [memberType, setMemberType] = useState(
+    member ? member.member_type : "user" // Default to "user" if no member type is provided
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const memberData = { name, email };
+    const memberData = { member_type: memberType };
 
-    try {
-      if (member) {
-        // Update member
-        const response = await axios.put(
-          `/api/members/${member.id}`,
-          memberData
-        );
-        onMemberUpdated(response.data);
-      } else {
-        // Add new member
-        const response = await axios.post("/api/members", memberData);
-        onMemberUpdated(response.data);
-      }
-      onClose();
-    } catch (error) {
-      console.error("Failed to save member", error);
+    let request;
+
+    if (member) {
+      request = axios.put(`/api/members/${member.id}`, memberData);
+    } else {
+      console.error("Member does not exist for update");
+      return;
     }
+
+    request
+      .then((response) => {
+        onMemberUpdated(response.data);
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Failed to save member", error);
+      });
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-4 rounded shadow-lg">
-        <h2 className="text-xl font-bold mb-4">
-          {member ? "회원 수정" : "회원 추가"}
-        </h2>
-        <form onSubmit={handleSubmit}>
+    <div className="fixed inset-0 bg-gray-700 bg-opacity-60 flex justify-center items-center z-50">
+      <div className="bg-white p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">회원 수정</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="mb-4">
             <label className="block mb-2">이름</label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="border p-2 w-full"
+              value={member ? member.name : ""}
+              readOnly
+              className="border p-2 w-full bg-gray-200"
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">이메일</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+            <label className="block mb-2">권한</label>
+            <select
+              value={memberType}
+              onChange={(e) => setMemberType(e.target.value)}
               className="border p-2 w-full"
-            />
+            >
+              <option value="admin">admin</option>
+              <option value="user">user</option>
+            </select>
           </div>
-          <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-            저장
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="bg-gray-500 text-white p-2 rounded ml-2"
-          >
-            취소
-          </button>
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              저장
+            </button>
+          </div>
         </form>
       </div>
     </div>

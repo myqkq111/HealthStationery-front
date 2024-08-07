@@ -39,7 +39,6 @@ const MyPage = () => {
     const date = new Date(dateString);
     return date.toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 변환
   };
-
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="w-1/4 max-w-xs bg-white shadow-md p-4">
@@ -147,5 +146,4 @@ const MyPage = () => {
     </div>
   );
 };
-
 export default MyPage;
