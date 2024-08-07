@@ -10,7 +10,7 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
     e.preventDefault();
     let request;
 
-    if (!window.confirm("정말로 이 회원을 삭제하시겠습니까?")) {
+    if (!window.confirm("정말로 이 회원정보를 수정하시겠습니까?")) {
       return;
     }
 
