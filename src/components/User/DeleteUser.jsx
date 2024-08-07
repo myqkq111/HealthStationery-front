@@ -25,12 +25,15 @@ const DeleteUser = ({ isOpen, onClose }) => {
         setPassword("");
       });
   };
-  const handleDeleteAccount = (id) => {
-    console.log("여기도오냐");
+
+  const handleDeleteAccount = (token, cate) => {
     if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
       axiosInstance
         .delete("/member/deleteAccount", {
-          data: { id },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { cate },
           withCredentials: true,
         })
         .then(() => {
