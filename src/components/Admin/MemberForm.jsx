@@ -10,6 +10,7 @@ const MemberForm = ({ member, onClose, onMemberUpdated }) => {
     e.preventDefault();
 
     const memberData = { member_type: memberType };
+    console.log("Data to send:", memberData);
 
     let request;
 
