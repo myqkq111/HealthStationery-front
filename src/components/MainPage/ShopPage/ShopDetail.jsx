@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import ProductItem from "./ProductItem";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../api/AxiosInstance";
+
 const ShopDetail = () => {
   const [products, setProducts] = useState([]);
   const { category } = useParams(); // URL 파라미터로 카테고리 가져오기
+
   useEffect(() => {
     const fetchProducts = async () => {
       axiosInstance
@@ -20,6 +22,7 @@ const ShopDetail = () => {
           console.error("Failed to fetch products:", error);
         });
     };
+
     fetchProducts();
   }, [category]); // 카테고리가 변경될 때마다 요청
 

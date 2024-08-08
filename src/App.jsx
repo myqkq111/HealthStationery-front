@@ -59,11 +59,6 @@ const App = () => {
           <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
         </Router>
       </AuthProvider>
-      {/* <Router>
-    <Routes>
-    <Route path="/oauth" element={<AuthCallback />} />
-      </Routes>
-    </Router> */}
     </>
   );
 };
