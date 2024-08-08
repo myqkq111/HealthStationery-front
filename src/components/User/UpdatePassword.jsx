@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosInstance";
 
-const ResetPassword = ({ onClose }) => {
-  const [step, setStep] = useState(1); // Track current step
+const UpdatePassword = ({ onClose }) => {
+  const [step, setStep] = useState(1); // 현재 단계 추적
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -10,10 +10,19 @@ const ResetPassword = ({ onClose }) => {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("member"));
+    const { cate } = user;
+
+    if (cate !== "home") {
+      setStep(2);
+    }
+  }, []);
+
   const handlePasswordConfirm = () => {
     setIsLoading(true);
-    setError(""); // Clear previous errors
-    setSuccess(""); // Clear previous success message
+    setError(""); // 이전 오류 지우기
+    setSuccess(""); // 이전 성공 메시지 지우기
 
     const user = JSON.parse(localStorage.getItem("member"));
     const { cate, email } = user;
@@ -26,8 +35,8 @@ const ResetPassword = ({ onClose }) => {
       })
       .then((response) => {
         if (response.data === 1) {
-          // Password confirmed, proceed to password reset
-          setStep(2); // Move to the next step
+          // 비밀번호 확인 완료, 다음 단계로 이동
+          setStep(2); // 다음 단계로 이동
         } else {
           setError("현재 비밀번호가 맞지 않습니다.");
         }
@@ -54,7 +63,7 @@ const ResetPassword = ({ onClose }) => {
 
     axiosInstance
       .put("/member/updatePassword", {
-        password: newPassword, // Include the current password if required by server
+        password: newPassword, // 서버에서 현재 비밀번호도 필요할 경우 포함
         cate,
         email,
       })
@@ -62,8 +71,8 @@ const ResetPassword = ({ onClose }) => {
         if (response.data === 1) {
           setSuccess("비밀번호가 성공적으로 변경되었습니다.");
           setTimeout(() => {
-            onClose(); // Close the modal after showing success message
-          }, 2000); // Delay to show success message
+            onClose(); // 성공 메시지를 보여준 후 모달 닫기
+          }, 2000); // 성공 메시지를 보여주기 위한 딜레이
         } else {
           setError("비밀번호 변경 실패.");
         }
@@ -74,7 +83,7 @@ const ResetPassword = ({ onClose }) => {
       })
       .finally(() => {
         setIsLoading(false);
-        // Clear form fields
+        // 폼 필드 초기화
         setCurrentPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
@@ -169,4 +178,4 @@ const ResetPassword = ({ onClose }) => {
   );
 };
 
-export default ResetPassword;
+export default UpdatePassword;
