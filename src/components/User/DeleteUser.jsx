@@ -1,3 +1,5 @@
+// src/components/DeleteUser.jsx
+
 import React, { useState } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import { useAuth } from "../contexts/AuthContext";
@@ -6,6 +8,7 @@ const DeleteUser = ({ isOpen, onClose }) => {
   const { logout } = useAuth();
   const user = JSON.parse(localStorage.getItem("member"));
   const { cate, id } = user;
+
   const handlePasswordConfirm = () => {
     axiosInstance
       .post("/member/confirmPassword", { password, id })
@@ -25,15 +28,11 @@ const DeleteUser = ({ isOpen, onClose }) => {
         setPassword("");
       });
   };
-
-  const handleDeleteAccount = (token, cate) => {
+  const handleDeleteAccount = (id) => {
     if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
       axiosInstance
         .delete("/member/deleteAccount", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: { cate },
+          data: { id },
           withCredentials: true,
         })
         .then(() => {
@@ -94,4 +93,5 @@ const DeleteUser = ({ isOpen, onClose }) => {
     </div>
   );
 };
+
 export default DeleteUser;

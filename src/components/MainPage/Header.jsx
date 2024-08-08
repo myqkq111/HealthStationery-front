@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axiosInstance from "../api/AxiosInstance";
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false);
@@ -11,21 +10,7 @@ const Header = () => {
   };
   const handleLinkClick = (e, path) => {
     e.preventDefault(); // 기본 링크 동작 방지
-    // 서버에 GET 요청을 보냅니다.
-    axiosInstance
-      .get(`/product/selectCate?cate=${path}`)
-      .then(() => {
-        // 요청이 성공하면 페이지를 이동합니다.
-        if (path === "shop") {
-          window.location.href = `/shop`; // 모든 상품을 가져올 때
-        } else {
-          window.location.href = `/${path}`; // 카테고리별 상품을 가져올 때
-        }
-      })
-      .catch((error) => {
-        // 오류가 발생하면 콘솔에 오류를 출력합니다.
-        console.error("Error:", error);
-      });
+    window.location.href = `/${path}`;
   };
   return (
     <nav
