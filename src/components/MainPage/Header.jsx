@@ -1,20 +1,35 @@
 import React, { useState } from "react";
-
+import axiosInstance from "../api/AxiosInstance";
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false);
-
   const toggleDropdown = (isOpen) => {
     setIsDropdownOpen(isOpen);
   };
-
   const toggleContactDropdown = (isOpen) => {
     setIsContactDropdownOpen(isOpen);
   };
-
+  const handleLinkClick = (e, path) => {
+    e.preventDefault(); // 기본 링크 동작 방지
+    // 서버에 GET 요청을 보냅니다.
+    axiosInstance
+      .get(`/product/selectCate?cate=${path}`)
+      .then(() => {
+        // 요청이 성공하면 페이지를 이동합니다.
+        if (path === "shop") {
+          window.location.href = `/shop`; // 모든 상품을 가져올 때
+        } else {
+          window.location.href = `/${path}`; // 카테고리별 상품을 가져올 때
+        }
+      })
+      .catch((error) => {
+        // 오류가 발생하면 콘솔에 오류를 출력합니다.
+        console.error("Error:", error);
+      });
+  };
   return (
     <nav
-      style={{ borderTop: "2px solid #e5e7eb" }}
+      style={{ borderTop: "2px solid #E5E7EB" }}
       className="bg-white p-0 sticky top-0 z-20"
     >
       <div className="container mx-auto flex justify-between items-center">
@@ -28,7 +43,6 @@ const Header = () => {
             />
           </a>
         </div>
-
         <div className="flex-1 flex justify-center gap-4 relative ">
           <a
             href="/about"
@@ -52,66 +66,66 @@ const Header = () => {
                 className="absolute left-0 w-44 bg-white border border-gray-300 shadow-lg rounded-md z-20"
                 style={{ top: "100%" }}
               >
-                <a
-                  href="/shop"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "shop")}
                 >
                   모두보기
-                </a>
-                <a
-                  href="/gripps"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "gripps")}
                 >
                   그립/스트랩
-                </a>
-                <a
-                  href="/wrist"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "wrist")}
                 >
                   손목
-                </a>
-                <a
-                  href="/elbows"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "elbows")}
                 >
                   팔꿈치
-                </a>
-                <a
-                  href="/knees"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "knees")}
                 >
                   무릎
-                </a>
-                <a
-                  href="/arms"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "arms")}
                 >
                   팔
-                </a>
-                <a
-                  href="/back"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "back")}
                 >
                   등/허리
-                </a>
-                <a
-                  href="/powerlifting"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "powerlifting")}
                 >
                   파워리프팅/스트렝스
-                </a>
-                <a
-                  href="/workoutgear"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "workoutgear")}
                 >
                   기타운동장비
-                </a>
-                <a
-                  href="/clothing"
-                  className="block px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide"
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "clothing")}
                 >
                   의류
-                </a>
+                </button>
               </div>
             )}
           </div>
@@ -158,7 +172,6 @@ const Header = () => {
               </div>
             )}
           </div>
-
           <a
             href="#review"
             className="text-black px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
@@ -170,5 +183,4 @@ const Header = () => {
     </nav>
   );
 };
-
 export default Header;

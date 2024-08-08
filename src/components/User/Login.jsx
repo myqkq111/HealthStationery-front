@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/AxiosInstance.jsx";
 import Forgot from "./Forgot";
 import FindID from "./FindID";
-import ResetPassword from "./ResetPassword";
 import { createPortal } from "react-dom";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -14,7 +13,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [isFindIDOpen, setIsFindIDOpen] = useState(false);
-  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -46,14 +44,12 @@ const Login = () => {
   const handleCloseForgot = () => {
     setIsForgotOpen(false);
     setIsFindIDOpen(false);
-    setIsResetPasswordOpen(false);
   };
   const handleOpenFindID = () => {
     setIsFindIDOpen(true);
     setIsForgotOpen(false);
   };
   const handleOpenResetPassword = () => {
-    setIsResetPasswordOpen(true);
     setIsForgotOpen(false);
   };
 
@@ -155,7 +151,6 @@ const Login = () => {
 
         {error && <p className="text-red-500 text-center mt-4">{error}</p>}
       </div>
-
       {isForgotOpen &&
         createPortal(
           <Forgot
@@ -167,11 +162,6 @@ const Login = () => {
         )}
       {isFindIDOpen &&
         createPortal(<FindID onClose={handleCloseForgot} />, document.body)}
-      {isResetPasswordOpen &&
-        createPortal(
-          <ResetPassword onClose={handleCloseForgot} />,
-          document.body
-        )}
     </div>
   );
 };
