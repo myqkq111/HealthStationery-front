@@ -1,85 +1,58 @@
-import React, { useState, useCallback, useRef } from "react";
-import { useLocation, Link } from "react-router-dom";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import debounce from "lodash/debounce";
 import ProductReviewSection from "./ProductReviewSection";
 import ProductItem from "./ProductItem";
 import ScrollToTopButton from "../ScrollToTopButton";
-
-const relatedProducts = [
-  {
-    id: 1,
-    image: "/images/products/product1.jpg",
-    hoverImage: "/images/products/product1-hover.jpg",
-    name: "스트랩",
-    price: "100원",
-    details: "국민스트랩! Double 논슬립 그립테크의 기술력",
-    reviews: "120",
-    link: "/product/1",
-  },
-  {
-    id: 2,
-    image: "/images/products/product2.jpg",
-    hoverImage: "/images/products/product2-hover.jpg",
-    name: "상품 이름 2",
-    price: "100원",
-    details: "상품 상세정보 2",
-    reviews: "80",
-    link: "/product/2",
-  },
-  {
-    id: 3,
-    image: "/images/products/product3.jpg",
-    hoverImage: "/images/products/product3-hover.jpg",
-    name: "상품 이름 3",
-    price: "100원",
-    details: "상품 상세정보 3",
-    reviews: "150",
-    link: "/product/3",
-  },
-  {
-    id: 4,
-    image: "/images/products/product4.jpg",
-    hoverImage: "/images/products/product4-hover.jpg",
-    name: "상품 이름 4",
-    price: "100원",
-    details: "상품 상세정보 4",
-    reviews: "200",
-    link: "/product/4",
-  },
-  {
-    id: 5,
-    image: "/images/products/product1.jpg",
-    hoverImage: "/images/products/product1-hover.jpg",
-    name: "상품 이름 5",
-    price: "100원",
-    details: "상품 상세정보 5",
-    reviews: "110",
-    link: "/product/5",
-  },
-  {
-    id: 6,
-    image: "/images/products/product2.jpg",
-    hoverImage: "/images/products/product2-hover.jpg",
-    name: "상품 이름 6",
-    price: "100원",
-    details: "상품 상세정보 6",
-    reviews: "90",
-    link: "/product/6",
-  },
-];
+import axiosInstance from "../../api/AxiosInstance";
 
 const ProductPage = () => {
-  const location = useLocation();
-  const { product, initialImage } = location.state || {}; // 전달된 상품 데이터와 초기 이미지 URL 가져오기
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState();
+  const [error, setError] = useState(null);
+  const [thumbnails, setThumbnails] = useState([]);
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchProduct = () => {
+      axiosInstance
+        .get(`/product/selectOne?id=${id}`)
+        .then((response) => {
+          const productData = response.data;
+          setProduct(productData);
+
+          // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
+          const strImage = productData.strImage.split(","); // imagePaths는 예시입니다. 실제 API 응답에 맞게 수정하세요.
+
+          // 첫 번째 이미지를 기본 이미지로 설정합니다.
+          const defaultImage = strImage[0]
+            ? `/images/products/${productData.cate}/${strImage[0]}`
+            : "";
+          setMainImage(defaultImage);
+
+          // 썸네일 배열을 설정합니다.
+          const thumbnails = strImage.map(
+            (path) => `/images/products/${productData.cate}/${path}`
+          );
+          setThumbnails(thumbnails);
+        })
+        .catch((error) => {
+          console.error("상품 정보를 가져오는 데 실패했습니다:", error);
+          setError(error);
+        });
+    };
+    fetchProduct();
+  }, [id]);
 
   // 상품이 없는 경우에는 빈 상태로 초기화
-  const [mainImage, setMainImage] = useState(
-    initialImage || product?.image || ""
-  ); // 초기 이미지 설정
+  const [mainImage, setMainImage] = useState(); // 초기 이미지 설정
   const [fade, setFade] = useState(false);
 
   const detailsRef = useRef(null);
   const reviewRef = useRef(null);
+
+  // const defaultImage = `/images/products/${[product.cate]}/1.JPG`;
 
   const scrollToSection = (ref) => {
     if (ref.current) {
@@ -89,10 +62,6 @@ const ProductPage = () => {
       });
     }
   };
-  const thumbnails = Array.from(
-    { length: 27 },
-    (_, index) => `/images/products/knees/${index + 1}.jpg`
-  );
 
   // 현재 썸네일 인덱스
   const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(
@@ -166,6 +135,23 @@ const ProductPage = () => {
       console.log("색상:", selectedColor);
     }
   };
+
+  // 서버에서 관련 상품 데이터 가져오기
+  useEffect(() => {
+    axiosInstance
+      .get("/product/selectAll")
+      .then((response) => {
+        setRelatedProducts(response.data); // 응답 데이터를 상태에 저장
+        setLoading(false); // 로딩 상태 업데이트
+      })
+      .catch((err) => {
+        setError(err); // 오류 상태 업데이트
+        setLoading(false); // 로딩 상태 업데이트
+      });
+  }, []); // 컴포넌트 마운트 시 데이터 요청
+
+  if (loading) return <p>Loading...</p>; // 로딩 중일 때 메시지
+  if (error) return <p>Error: {error.message}</p>; // 오류 발생 시 메시지
 
   if (!product) {
     return <p>상품 정보가 없습니다.</p>; // 데이터가 없을 때 메시지
