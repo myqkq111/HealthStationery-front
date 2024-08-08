@@ -29,7 +29,7 @@ const Register = () => {
   const [passwordError, setPasswordError] = useState("");
   const [passwordCheckMessage, setPasswordCheckMessage] = useState("");
 
-  //OAuth를 통한 회원가입 페이지 일 경우
+  // OAuth를 통한 회원가입 페이지 일 경우
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const cate = query.get("cate");
@@ -39,7 +39,7 @@ const Register = () => {
       setEmail(query.get("email"));
       setName(query.get("name"));
     }
-  }, []);
+  }, [cate]);
 
   const navigate = useNavigate();
 
@@ -55,27 +55,36 @@ const Register = () => {
     setBirthDate(date);
   };
 
-  const handleEmailCheck = async () => {
+  const handleEmailCheck = () => {
+    if (!validateEmail(email)) {
+      setEmailError("올바른 이메일 형식을 입력해주세요.");
+      setIsEmailAvailable(false);
+      return;
+    }
     if (email.trim() === "") return;
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/member/checkEmail",
-        email,
-        { headers: { "Content-Type": "text/plain" } }
-      );
+    axios
+      .post("http://localhost:8080/member/checkEmail", email, {
+        headers: { "Content-Type": "text/plain" },
+      })
+      .then((response) => {
+        if (response.data) {
+          setEmailError("이메일이 이미 등록되어 있습니다.");
+          setIsEmailAvailable(false);
+        } else {
+          setEmailError("사용 가능한 이메일입니다.");
+          setIsEmailAvailable(true);
+        }
+      })
+      .catch((error) => {
+        console.error("이메일 중복 체크 실패:", error);
+        setEmailError("이메일 중복 체크에 실패했습니다.");
+      });
+  };
 
-      if (response.data) {
-        setEmailError("이메일이 이미 등록되어 있습니다.");
-        setIsEmailAvailable(false);
-      } else {
-        setEmailError("사용 가능한 이메일 입니다.");
-        setIsEmailAvailable(true);
-      }
-    } catch (error) {
-      console.error("이메일 중복 체크 실패:", error);
-      setEmailError("이메일 중복 체크에 실패했습니다.");
-    }
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
   };
 
   const validatePassword = (password) => {
@@ -145,7 +154,7 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     if (!cate) {
@@ -193,7 +202,7 @@ const Register = () => {
     }
 
     if (birthDate === null) {
-      setError("생년월일을 입력해주새요.");
+      setError("생년월일을 입력해 주세요.");
       return;
     }
 
@@ -213,16 +222,18 @@ const Register = () => {
     formData.append("roadaddr", roadaddr);
     formData.append("detailaddr", detailaddr);
 
-    try {
-      await axios.post("http://localhost:8080/member/signup", formData, {
+    axios
+      .post("http://localhost:8080/member/signup", formData, {
         headers: { "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        console.log("회원가입 성공");
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.error("회원가입 실패:", error);
+        setError("회원가입 실패. 다시 시도해 주세요.");
       });
-      console.log("회원가입 성공");
-      navigate("/login");
-    } catch (error) {
-      console.error("회원가입 실패:", error);
-      setError("회원가입 실패. 다시 시도해 주세요.");
-    }
   };
 
   const emailChange = (e) => {
@@ -240,6 +251,7 @@ const Register = () => {
             <label className="block text-gray-700 text-lg font-semibold mb-2">
               이메일
             </label>
+
             <div className="flex items-center">
               <input
                 type="email"
@@ -254,6 +266,7 @@ const Register = () => {
                     : "focus:outline-none focus:ring-2 focus:ring-blue-500"
                 }`}
               />
+
               {!cate && (
                 <button
                   type="button"
@@ -264,6 +277,7 @@ const Register = () => {
                 </button>
               )}
             </div>
+
             {emailError && (
               <p
                 className={`text-sm mt-2 ${
@@ -292,30 +306,22 @@ const Register = () => {
               />
               {passwordStrength && (
                 <div className="mt-2 text-sm">
-                  <div className="mt-2 text-sm">
-                    <div className="relative pt-1">
-                      <div className="flex mb-2 items-center justify-between">
-                        <div
-                          className={`w-1/3 h-2 rounded-full ${getColorClass(
-                            0
-                          )}`}
-                        ></div>
-                        <div
-                          className={`w-1/3 h-2 rounded-full ${getColorClass(
-                            1
-                          )}`}
-                        ></div>
-                        <div
-                          className={`w-1/3 h-2 rounded-full ${getColorClass(
-                            2
-                          )}`}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-xs">
-                        <span className={getTextColorClass("취약")}>취약</span>
-                        <span className={getTextColorClass("중간")}>중간</span>
-                        <span className={getTextColorClass("강함")}>강함</span>
-                      </div>
+                  <div className="relative pt-1">
+                    <div className="flex mb-2 items-center justify-between">
+                      <div
+                        className={`w-1/3 h-2 rounded-full ${getColorClass(0)}`}
+                      ></div>
+                      <div
+                        className={`w-1/3 h-2 rounded-full ${getColorClass(1)}`}
+                      ></div>
+                      <div
+                        className={`w-1/3 h-2 rounded-full ${getColorClass(2)}`}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className={getTextColorClass("취약")}>취약</span>
+                      <span className={getTextColorClass("중간")}>중간</span>
+                      <span className={getTextColorClass("강함")}>강함</span>
                     </div>
                   </div>
                 </div>
