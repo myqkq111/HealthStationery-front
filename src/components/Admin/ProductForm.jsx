@@ -80,6 +80,15 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       alert("옵션 값은 한글, 영어 문자, 숫자 및 ,만 포함될 수 있습니다.");
     }
   };
+
+  const handleRemoveOption = (type, index) => {
+    if (type === "size") {
+      setSizeOptions((prevSizes) => prevSizes.filter((_, i) => i !== index));
+    } else if (type === "color") {
+      setColorOptions((prevColors) => prevColors.filter((_, i) => i !== index));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -321,7 +330,18 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
             </label>
             <ul className="list-disc list-inside ml-4 text-gray-700">
               {sizeOptions.length > 0 ? (
-                sizeOptions.map((size, index) => <li key={index}>{size}</li>)
+                sizeOptions.map((size, index) => (
+                  <li key={index} className="flex justify-between items-center">
+                    {size}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveOption("size", index)}
+                      className="ml-2 text-red-600 hover:text-red-800"
+                    >
+                      삭제
+                    </button>
+                  </li>
+                ))
               ) : (
                 <li className="text-gray-500">등록된 사이즈가 없습니다.</li>
               )}
@@ -333,7 +353,18 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
             </label>
             <ul className="list-disc list-inside ml-4 text-gray-700">
               {colorOptions.length > 0 ? (
-                colorOptions.map((color, index) => <li key={index}>{color}</li>)
+                colorOptions.map((color, index) => (
+                  <li key={index} className="flex justify-between items-center">
+                    {color}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveOption("color", index)}
+                      className="ml-2 text-red-600 hover:text-red-800"
+                    >
+                      삭제
+                    </button>
+                  </li>
+                ))
               ) : (
                 <li className="text-gray-500">등록된 색상이 없습니다.</li>
               )}
