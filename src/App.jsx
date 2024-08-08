@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/User/Login";
@@ -8,7 +7,7 @@ import MainHeader from "./components/MainPage/MainHeader";
 import Header from "./components/MainPage/Header";
 import Forgot from "./components/User/Forgot";
 import FindID from "./components/User/FindID";
-import FindPW from "./components/User/ResetPassword";
+
 import Terms from "./components/User/Terms";
 import Footer from "./components/MainPage/Footer";
 import BottomPage from "./components/MainPage/BottomPage";
@@ -46,7 +45,7 @@ const App = () => {
             <Route path="/terms" element={<Terms />} />
             <Route path="/forgot" element={<Forgot />} />
             <Route path="/find-id" element={<FindID />} />
-            <Route path="/findPW" element={<FindPW />} />
+
             <Route path="/:category" element={<Shop />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/profile" element={<MyPage />} />

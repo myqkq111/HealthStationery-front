@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/AxiosInstance";
 import UpdateProfile from "./UpdateProfile";
 import DeleteUser from "./DeleteUser";
-import ResetPassword from "./ResetPassword"; // Import ResetPassword
+import UpdatePassword from "./UpdatePassword"; // Import ResetPassword
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -93,15 +93,19 @@ const MyPage = () => {
             </button>
           </li>
           <hr className="flex-1 border-t border-gray-300" />
-          <li>
-            <button
-              onClick={handleResetPassword}
-              className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
-            >
-              비밀번호 재설정
-            </button>
-          </li>
-          <hr className="flex-1 border-t border-gray-300" />
+          {userInfo?.cate === "home" && ( // "home" 카테고리인 경우에만 렌더링
+            <>
+              <li>
+                <button
+                  onClick={handleResetPassword}
+                  className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+                >
+                  비밀번호 재설정
+                </button>
+              </li>
+              <hr className="flex-1 border-t border-gray-300" />
+            </>
+          )}
         </ul>
       </div>
       <div className="w-3/4 max-w-4xl p-8 bg-white shadow-md ml-4">
@@ -162,7 +166,7 @@ const MyPage = () => {
         />
       )}
       {isResetPasswordOpen && (
-        <ResetPassword
+        <UpdatePassword
           onClose={() => setIsResetPasswordOpen(false)} // Close ResetPassword modal
         />
       )}
