@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce";
 import ProductReviewSection from "./ProductReviewSection";
 import ProductItem from "./ProductItem";
@@ -12,7 +12,9 @@ const ProductPage = () => {
   const [product, setProduct] = useState();
   const [error, setError] = useState(null);
   const [thumbnails, setThumbnails] = useState([]);
+  const [options, setOptions] = useState({ sizes: [], colors: [] });
   const { id } = useParams();
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
     const fetchProduct = () => {
@@ -23,19 +25,31 @@ const ProductPage = () => {
           setProduct(productData);
 
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
-          const strImage = productData.strImage.split(","); // imagePaths는 예시입니다. 실제 API 응답에 맞게 수정하세요.
-
-          // 첫 번째 이미지를 기본 이미지로 설정합니다.
+          const strImage = productData.strImage.split(",");
           const defaultImage = strImage[0]
             ? `/images/products/${productData.cate}/${strImage[0]}`
             : "";
           setMainImage(defaultImage);
 
-          // 썸네일 배열을 설정합니다.
           const thumbnails = strImage.map(
             (path) => `/images/products/${productData.cate}/${path}`
           );
           setThumbnails(thumbnails);
+
+          // 옵션과 색상 데이터를 상태에 저장합니다.
+          const strOptionName = productData.strOptionName || ""; // 예시: "size,color"
+          const strOptionValue = productData.strOptionValue || ""; // 예시: "S,M,L,XL|AllBlack,Grey,Red,Black"
+          const optionNames = strOptionName.split(",");
+          const optionValues = strOptionValue.split("|");
+
+          // 사이즈와 색상 옵션을 추출합니다.
+          const sizes = optionValues[0] ? optionValues[0].split(",") : [];
+          const colors = optionValues[1] ? optionValues[1].split(",") : [];
+
+          setOptions({
+            sizes,
+            colors,
+          });
         })
         .catch((error) => {
           console.error("상품 정보를 가져오는 데 실패했습니다:", error);
@@ -44,7 +58,6 @@ const ProductPage = () => {
     };
     fetchProduct();
   }, [id]);
-
   // 상품이 없는 경우에는 빈 상태로 초기화
   const [mainImage, setMainImage] = useState(); // 초기 이미지 설정
   const [fade, setFade] = useState(false);
@@ -94,22 +107,23 @@ const ProductPage = () => {
   const [colorError, setColorError] = useState(false);
 
   // 옵션 선택
-  const handleOptionChange = (event) => {
+  const handleColorChange = (event) => {
     const value = event.target.value;
-    setSelectedOption(value);
-    setColorError(false); // 옵션을 선택하면 색상 오류 상태를 해제합니다.
+    setSelectedColor(value);
+    setColorError(!value);
+    // 색상이 선택되면 사이즈 선택 가능하게 합니다.
     if (value) {
-      // 옵션이 선택되면 색상 선택 가능하게 합니다.
-      document.getElementById("color").disabled = false;
+      document.getElementById("size").disabled = false;
     } else {
-      // 옵션이 선택되지 않으면 색상 선택 불가능하게 합니다.
-      document.getElementById("color").disabled = true;
+      document.getElementById("size").disabled = true;
+      setSelectedOption(""); // 색상이 선택되지 않으면 사이즈도 선택 해제
     }
   };
 
-  // 색상 선택
-  const handleColorChange = (event) => {
-    setSelectedColor(event.target.value);
+  const handleOptionChange = (event) => {
+    const value = event.target.value;
+    setSelectedOption(value);
+    setOptionError(!value);
   };
 
   // 제출 처리
@@ -130,10 +144,25 @@ const ProductPage = () => {
     }
 
     if (valid) {
-      // 제출 처리
-      console.log("옵션:", selectedOption);
-      console.log("색상:", selectedColor);
+      navigate("/payment", {
+        state: {
+          productId: product.id,
+          selectedOption,
+          selectedColor,
+        },
+      });
     }
+  };
+
+  const handleGoToCart = () => {
+    navigate("/cart", {
+      state: {
+        productId: product.id,
+        selectedOption,
+        selectedColor,
+        quantity: 1, // 장바구니에 추가할 수량 (예: 1로 설정)
+      },
+    });
   };
 
   // 서버에서 관련 상품 데이터 가져오기
@@ -212,10 +241,10 @@ const ProductPage = () => {
           <div className="flex-1 px-4 sm:px-6 lg:px-0">
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
             <p className="text-lg mb-2">리뷰: {product.reviews}개</p>
-            <p className="text-lg mb-8">가격: {product.price}</p>
+            <p className="text-lg mb-8">가격: {product.price}원</p>
             <hr className="mb-6" />
             <p className="text-lg text-sm font-semibold font-serif mb-2">
-              {product.details}
+              {product.content}
             </p>
             <div
               className="bg-yellow-300 flex items-center justify-center space-x-4 p-2 cursor-pointer mb-14"
@@ -259,71 +288,74 @@ const ProductPage = () => {
               </div>
             </div>
 
-            {/* 옵션 선택 */}
-            <form onSubmit={handleSubmit}>
-              <div className="mb-6">
-                <label
-                  className="block text-gray-700 font-medium mb-2"
-                  htmlFor="option"
-                >
-                  option*
-                </label>
-                <select
-                  id="option"
-                  name="option"
-                  value={selectedOption}
-                  onChange={handleOptionChange}
-                  className={`block w-full border border-gray-300 p-2 text-gray-700 ${
-                    optionError ? "border-red-500" : ""
-                  }`}
-                >
-                  <option value="" disabled>
-                    option(필수)
-                  </option>
-                  <option value="option1">옵션 1</option>
-                  <option value="option2">옵션 2</option>
-                  <option value="option3">옵션 3</option>
-                </select>
-                {optionError && (
-                  <p className="text-red-500 mt-2">옵션은 필수입니다.</p>
-                )}
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {options.colors.length > 0 && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="color"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    색상
+                  </label>
+                  <select
+                    id="color"
+                    value={selectedColor}
+                    onChange={handleColorChange}
+                    className={`border rounded p-2 w-full ${
+                      colorError ? "border-red-500" : ""
+                    }`}
+                  >
+                    <option value="">선택하세요</option>
+                    {options.colors.map((color, index) => (
+                      <option key={index} value={color}>
+                        {color}
+                      </option>
+                    ))}
+                  </select>
+                  {colorError && (
+                    <p className="text-red-500 text-xs mt-1">
+                      색상을 선택해 주세요.
+                    </p>
+                  )}
+                </div>
+              )}
 
-              {/* 색상 선택 */}
-              <div>
-                <label
-                  className="block text-gray-700 font-medium mb-2"
-                  htmlFor="color"
-                >
-                  color*
-                </label>
-                <select
-                  id="color"
-                  name="color"
-                  value={selectedColor}
-                  onChange={handleColorChange}
-                  disabled={!selectedOption} // 옵션이 선택되지 않으면 색상 선택 비활성화
-                  className={`block w-full border border-gray-300 p-2 text-gray-700 ${
-                    colorError ? "border-red-500" : ""
-                  }`}
-                >
-                  <option value="" disabled>
-                    color(필수)
-                  </option>
-                  <option value="red">Red</option>
-                  <option value="blue">Blue</option>
-                  <option value="green">Green</option>
-                  <option value="yellow">Yellow</option>
-                </select>
-                {colorError && (
-                  <p className="text-red-500 mt-2">색상은 필수입니다.</p>
-                )}
-              </div>
+              {options.sizes.length > 0 && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="size"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    사이즈
+                  </label>
+                  <select
+                    id="size"
+                    value={selectedOption}
+                    onChange={handleOptionChange}
+                    className={`border rounded p-2 w-full ${
+                      optionError ? "border-red-500" : ""
+                    }`}
+                    disabled={!selectedColor} // 색상이 선택되지 않았으면 비활성화
+                  >
+                    <option value="">선택하세요</option>
+                    {options.sizes.map((size, index) => (
+                      <option key={index} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                  {optionError && (
+                    <p className="text-red-500 text-xs mt-1">
+                      사이즈를 선택해 주세요.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <div className="flex gap-4 mt-6">
                 {/* 바로 구매 버튼 */}
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition duration-300 ease-in-out flex-1 max-w-xs"
                 >
                   바로 구매
@@ -333,6 +365,7 @@ const ProductPage = () => {
                 <button
                   type="button"
                   className="bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs"
+                  onClick={handleGoToCart} // 클릭 시 장바구니 페이지로 이동
                 >
                   장바구니
                 </button>
