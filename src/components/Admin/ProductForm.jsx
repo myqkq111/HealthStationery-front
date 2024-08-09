@@ -1,49 +1,36 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const token = localStorage.getItem("token");
   const [formData, setFormData] = useState({
     cate: "",
     name: "",
     price: "",
-    inven: "",
     image: [],
     content: "",
     contentImage: [],
-    optionName: [], // 배열로 초기화
-    optionValue: [], // 배열로 초기화
+    color: "", // 색상
+    size: "", // 사이즈
+    sizeStock: [], // 사이즈와 색상에 대한 재고
+    stock: "", // 재고 수량
   });
-  const [sizeOptions, setSizeOptions] = useState([]); // 사이즈 옵션 배열
-  const [colorOptions, setColorOptions] = useState([]); // 색상 옵션 배열
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (product) {
       setFormData({
         cate: product.cate || "",
         name: product.name || "",
         price: product.price || "",
-        inven: product.inven || "",
         image: product.image || [],
         content: product.content || "",
         contentImage: product.contentImage || [],
-        optionName: product.optionName || [],
-        optionValue: product.optionValue || [],
+        sizeStock: product.sizeStock || [],
       });
-      // 옵션 이름과 값이 있을 때만 처리
-      if (product.strOptionName && product.strOptionValue) {
-        const optionNames = product.strOptionName.split(",");
-        const optionValues = product.strOptionValue.split("|");
-        const sizeIndex = optionNames.indexOf("size");
-        if (sizeIndex !== -1) {
-          setSizeOptions(optionValues[sizeIndex].split("|"));
-        }
-        const colorIndex = optionNames.indexOf("color");
-        if (colorIndex !== -1) {
-          setColorOptions(optionValues[colorIndex].split("|"));
-        }
-      }
     }
   }, [product]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" || name === "contentImage") {
@@ -58,65 +45,60 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       }));
     }
   };
-  const handleAddOption = () => {
-    const { optionName, optionValue } = formData;
-    // 입력값이 한글, 영어 문자, 숫자, ,만 포함되는지 확인
-    if (/^[\uac00-\ud7afa-zA-Z0-9,]+$/.test(optionValue)) {
-      if (optionName) {
-        if (optionName === "size") {
-          // 사이즈 옵션 업데이트
-          setSizeOptions([optionValue]);
-        } else if (optionName === "color") {
-          // 색상 옵션 업데이트
-          setColorOptions([optionValue]);
-        }
-        // 입력값 초기화
-        setFormData((prevData) => ({
-          ...prevData,
-          optionValue: "",
-        }));
-      }
+
+  const handleAddStock = () => {
+    const { color, size, stock } = formData;
+    if (color && size && stock) {
+      setFormData((prevData) => ({
+        ...prevData,
+        sizeStock: [
+          ...prevData.sizeStock,
+          { color, size, stock: parseInt(stock) },
+        ],
+        color: "",
+        size: "",
+        stock: "",
+      }));
     } else {
-      alert("옵션 값은 한글, 영어 문자, 숫자 및 ,만 포함될 수 있습니다.");
+      alert("색상, 사이즈, 재고를 모두 입력해 주세요.");
     }
   };
 
-  const handleRemoveOption = (type, index) => {
-    if (type === "size") {
-      setSizeOptions((prevSizes) => prevSizes.filter((_, i) => i !== index));
-    } else if (type === "color") {
-      setColorOptions((prevColors) => prevColors.filter((_, i) => i !== index));
-    }
+  const handleRemoveStock = (index) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeStock: prevData.sizeStock.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+
     const data = new FormData();
     data.append("cate", formData.cate);
     data.append("name", formData.name);
     data.append("price", formData.price);
-    data.append("inven", formData.inven);
     data.append("content", formData.content);
-    if (sizeOptions.length > 0) {
-      data.append("optionName", "size");
-      data.append("optionValue", sizeOptions.join(","));
-    }
-    if (colorOptions.length > 0) {
-      data.append("optionName", "color");
-      data.append("optionValue", colorOptions.join(","));
-    }
+
+    data.append("sizeStock", formData.sizeStock);
+
+    // 이미지 파일 추가
     Array.from(formData.image).forEach((file) => data.append("image", file));
     Array.from(formData.contentImage).forEach((file) =>
       data.append("contentImage", file)
     );
+
     const url = product
-      ? `http://localhost:8080/product/update/${product.id}` // 상품 아이디를 URL에 포함시킴
-      : "http://localhost:8080/product/insert";
+      ? `http://localhost:8080/product/update/${product.id}` // 수정 요청 시 URL
+      : "http://localhost:8080/product/insert"; // 추가 요청 시 URL
     const headers = {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     };
+    for (let [key, value] of data.entries()) {
+      console.log(key, value);
+    }
     const request = product
       ? axios.put(url, data, { headers }) // 수정 요청
       : axios.post(url, data, { headers }); // 추가 요청
@@ -125,7 +107,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         onProductUpdated();
       })
       .catch((error) => {
-        console.error("Failed to save product", error);
+        console.error("상품 저장에 실패했습니다.", error);
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -139,6 +121,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
           {product ? "상품 수정" : "상품 추가"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 카테고리, 상품명, 가격, 이미지, 설명, 설명 이미지 */}
           <div className="mb-4">
             <label
               htmlFor="cate"
@@ -202,23 +185,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
           </div>
           <div className="mb-4">
             <label
-              htmlFor="inven"
-              className="block text-sm font-medium text-gray-700"
-            >
-              재고
-            </label>
-            <input
-              id="inven"
-              name="inven"
-              type="number"
-              value={formData.inven}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
               htmlFor="image"
               className="block text-sm font-medium text-gray-700"
             >
@@ -266,76 +232,82 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               className="mt-1 block w-full py-2 px-3 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* 색상, 사이즈, 재고 추가 */}
           <div className="mb-4">
             <label
-              htmlFor="optionName"
+              htmlFor="color"
               className="block text-sm font-medium text-gray-700"
             >
-              상품 옵션 이름
+              색상
+            </label>
+            <input
+              id="color"
+              name="color"
+              type="text"
+              value={formData.color}
+              onChange={handleChange}
+              className="mt-1 block w-full py-2 px-3 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="size"
+              className="block text-sm font-medium text-gray-700"
+            >
+              사이즈
             </label>
             <select
-              id="optionName"
-              name="optionName"
-              value={formData.optionName}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  optionName: e.target.value,
-                  optionValue: "", // 옵션 이름 변경 시 입력값 초기화
-                }))
-              }
+              id="size"
+              name="size"
+              value={formData.size}
+              onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             >
-              <option value="">옵션 선택</option>
-              <option value="size">Size</option>
-              <option value="color">Color</option>
+              <option value="">사이즈 선택</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
             </select>
           </div>
           <div className="mb-4">
             <label
-              htmlFor="optionValue"
+              htmlFor="stock"
               className="block text-sm font-medium text-gray-700"
             >
-              상품 옵션 값
+              재고
             </label>
             <input
-              id="optionValue"
-              name="optionValue"
-              type="text"
-              value={formData.optionValue}
+              id="stock"
+              name="stock"
+              type="number"
+              value={formData.stock}
               onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={
-                formData.optionName === "size"
-                  ? "사이즈 입력 (예: S,M,L)"
-                  : formData.optionName === "color"
-                  ? "색상 입력 (예: 블루,검정,흰색)"
-                  : "옵션 값을 입력해주세요"
-              }
-              disabled={!formData.optionName} // 옵션 이름이 선택되지 않으면 비활성화
             />
             <button
               type="button"
-              onClick={handleAddOption}
+              onClick={handleAddStock}
               className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              disabled={!formData.optionValue || !formData.optionName}
+              disabled={!formData.color || !formData.size || !formData.stock}
             >
               추가
             </button>
           </div>
+
+          {/* 등록된 재고 목록 */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              사이즈
+              등록된 재고
             </label>
             <ul className="list-disc list-inside ml-4 text-gray-700">
-              {sizeOptions.length > 0 ? (
-                sizeOptions.map((size, index) => (
+              {formData.sizeStock.length > 0 ? (
+                formData.sizeStock.map((item, index) => (
                   <li key={index} className="flex justify-between items-center">
-                    {size}
+                    {item}
                     <button
                       type="button"
-                      onClick={() => handleRemoveOption("size", index)}
+                      onClick={() => handleRemoveStock(index)}
                       className="ml-2 text-red-600 hover:text-red-800"
                     >
                       삭제
@@ -343,33 +315,11 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
                   </li>
                 ))
               ) : (
-                <li className="text-gray-500">등록된 사이즈가 없습니다.</li>
+                <li className="text-gray-500">등록된 재고가 없습니다.</li>
               )}
             </ul>
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              색상
-            </label>
-            <ul className="list-disc list-inside ml-4 text-gray-700">
-              {colorOptions.length > 0 ? (
-                colorOptions.map((color, index) => (
-                  <li key={index} className="flex justify-between items-center">
-                    {color}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveOption("color", index)}
-                      className="ml-2 text-red-600 hover:text-red-800"
-                    >
-                      삭제
-                    </button>
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500">등록된 색상이 없습니다.</li>
-              )}
-            </ul>
-          </div>
+
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -391,4 +341,5 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     </div>
   );
 };
+
 export default ProductForm;
