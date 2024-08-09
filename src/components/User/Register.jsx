@@ -52,7 +52,8 @@ const Register = () => {
   };
 
   const handleDateChange = (date) => {
-    setBirthDate(date);
+    const utcDate = date.toISOString();
+    setBirthDate(utcDate);
   };
 
   const handleEmailCheck = () => {
@@ -214,10 +215,7 @@ const Register = () => {
     formData.append("fm", fm);
     formData.append("tell", tell);
     formData.append("carrier", carrier);
-    formData.append(
-      "birth",
-      birthDate ? birthDate.toISOString().split("T")[0] : ""
-    );
+    formData.append("birth", birthDate);
     formData.append("mailaddr", mailaddr);
     formData.append("roadaddr", roadaddr);
     formData.append("detailaddr", detailaddr);
