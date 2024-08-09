@@ -7,15 +7,24 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedOptionIndexes, setSelectedOptionIndexes] = useState({});
+  const [selectedOptions, setSelectedOptions] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [showOutOfStock, setShowOutOfStock] = useState(false);
+
+  const getStock = (productId, color, size) => {
+    const product = products.find((p) => p.id === productId);
+    if (!product) return "재고 없음";
+    const stockItem = product.list.find(
+      (item) => item.color === color && item.size === size
+    );
+    return stockItem ? stockItem.stock : "재고 없음";
+  };
 
   useEffect(() => {
     axiosInstance
       .get("/product/selectAll")
       .then((response) => {
-        console.log(response.data);
         setProducts(response.data);
       })
       .catch(() => {});
@@ -23,7 +32,39 @@ const ProductList = () => {
 
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = products.slice(
+
+  // 품절 상품 필터링 로직
+  const filteredProducts = products
+    .map((product) => {
+      if (showOutOfStock) {
+        const colors = [...new Set(product.list.map((item) => item.color))];
+        const sizes = [...new Set(product.list.map((item) => item.size))];
+
+        const outOfStockItems = colors.flatMap((color) =>
+          sizes
+            .map((size) => ({
+              color,
+              size,
+              stock: getStock(product.id, color, size),
+            }))
+            .filter((item) => item.stock === 0)
+        );
+
+        return {
+          ...product,
+          outOfStockItems,
+          showProduct: outOfStockItems.length > 0,
+        };
+      }
+      return {
+        ...product,
+        outOfStockItems: [],
+        showProduct: true,
+      };
+    })
+    .filter((product) => product.showProduct);
+
+  const currentProducts = filteredProducts.slice(
     indexOfFirstProduct,
     indexOfLastProduct
   );
@@ -38,8 +79,6 @@ const ProductList = () => {
     setIsFormOpen(false);
   };
 
-  console.log(products);
-
   const handleAddProductClick = () => {
     setSelectedProduct(null);
     setIsFormOpen(true);
@@ -48,13 +87,6 @@ const ProductList = () => {
   const handleEditClick = (product) => {
     setSelectedProduct(product);
     setIsFormOpen(true);
-  };
-
-  const handleOptionChange = (productId, index) => {
-    setSelectedOptionIndexes((prevIndexes) => ({
-      ...prevIndexes,
-      [productId]: index,
-    }));
   };
 
   const handleDeleteClick = (productId) => {
@@ -76,6 +108,22 @@ const ProductList = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleColorChange = (e, productId) => {
+    const color = e.target.value;
+    setSelectedOptions((prevOptions) => ({
+      ...prevOptions,
+      [productId]: { ...prevOptions[productId], color, size: "" }, // 사이즈를 초기화
+    }));
+  };
+
+  const handleSizeChange = (e, productId) => {
+    const size = e.target.value;
+    setSelectedOptions((prevOptions) => ({
+      ...prevOptions,
+      [productId]: { ...prevOptions[productId], size },
+    }));
+  };
+
   useEffect(() => {
     document.body.style.overflow = isFormOpen ? "hidden" : "auto";
     return () => {
@@ -84,18 +132,28 @@ const ProductList = () => {
   }, [isFormOpen]);
 
   const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
+  for (let i = 1; i <= Math.ceil(filteredProducts.length / itemsPerPage); i++) {
     pageNumbers.push(i);
   }
 
   return (
     <div className="p-6">
-      <button
-        onClick={handleAddProductClick}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-      >
-        상품 추가
-      </button>
+      <div className="mb-4">
+        <button
+          onClick={handleAddProductClick}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-4"
+        >
+          상품 추가
+        </button>
+        <button
+          onClick={() => setShowOutOfStock(!showOutOfStock)}
+          className={`bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ${
+            showOutOfStock ? "bg-red-700" : "bg-red-500"
+          }`}
+        >
+          {showOutOfStock ? "모든 상품 보기" : "품절 상품 보기"}
+        </button>
+      </div>
       <div>
         <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
         <div className="overflow-x-auto">
@@ -117,10 +175,10 @@ const ProductList = () => {
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   Color
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap min-w-[150px] max-w-[200px]">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-24">
                   Size
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap min-w-[150px] max-w-[200px]">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-24">
                   재고
                 </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
@@ -139,47 +197,130 @@ const ProductList = () => {
                   </td>
                 </tr>
               ) : (
-                currentProducts.map((product) => {
-                  return (
-                    <tr key={product.id} className="border-b border-gray-200">
-                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                        {product.name}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                        {product.cate}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-right text-gray-900 whitespace-nowrap">
-                        {product.price}원
-                      </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                        {product.content}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                        color
-                      </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                        size
-                      </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap min-w-[150px] max-w-[200px] overflow-hidden text-ellipsis">
-                        재고
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleEditClick(product)}
-                          className="text-blue-500 hover:text-blue-700 mr-2"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(product.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrashAlt />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
+                currentProducts.map((product) => (
+                  <React.Fragment key={product.id}>
+                    {showOutOfStock && product.outOfStockItems.length > 0 ? (
+                      product.outOfStockItems.map((item, index) => (
+                        <tr key={index} className="border-b border-gray-200">
+                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                            {product.name}
+                          </td>
+                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                            {product.cate}
+                          </td>
+                          <td className="px-4 py-4 text-sm text-right text-gray-900 whitespace-nowrap">
+                            {product.price}원
+                          </td>
+                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                            {product.content}
+                          </td>
+                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                            {item.color}
+                          </td>
+                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                            {item.size}
+                          </td>
+                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap min-w-[150px] max-w-[200px] overflow-hidden text-ellipsis">
+                            {item.stock} (재고 없음)
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                            <button
+                              onClick={() => handleEditClick(product)}
+                              className="text-blue-500 hover:text-blue-700 mr-2"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(product.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <FaTrashAlt />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr className="border-b border-gray-200">
+                        <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                          {product.name}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                          {product.cate}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-right text-gray-900 whitespace-nowrap">
+                          {product.price}원
+                        </td>
+                        <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                          {product.content}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                          <select
+                            className="w-full border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={selectedOptions[product.id]?.color || ""}
+                            onChange={(e) => handleColorChange(e, product.id)}
+                          >
+                            <option value="">선택</option>
+                            {[
+                              ...new Set(
+                                product.list.map((item) => item.color)
+                              ),
+                            ].map((color, index) => (
+                              <option key={index} value={color}>
+                                {color}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                          <select
+                            className="w-full border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={selectedOptions[product.id]?.size || ""}
+                            onChange={(e) => handleSizeChange(e, product.id)}
+                            disabled={!selectedOptions[product.id]?.color} // 컬러가 선택되지 않았으면 사이즈 선택 비활성화
+                          >
+                            <option value="">선택</option>
+                            {[
+                              ...new Set(
+                                product.list
+                                  .filter(
+                                    (item) =>
+                                      item.color ===
+                                      selectedOptions[product.id]?.color
+                                  )
+                                  .map((item) => item.size)
+                              ),
+                            ].map((size, index) => (
+                              <option key={index} value={size}>
+                                {size}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap min-w-[150px] max-w-[200px] overflow-hidden text-ellipsis">
+                          {getStock(
+                            product.id,
+                            selectedOptions[product.id]?.color || "",
+                            selectedOptions[product.id]?.size || ""
+                          )}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                          <button
+                            onClick={() => handleEditClick(product)}
+                            className="text-blue-500 hover:text-blue-700 mr-2"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(product.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FaTrashAlt />
+                          </button>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))
               )}
             </tbody>
           </table>
