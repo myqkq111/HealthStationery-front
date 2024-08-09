@@ -16,6 +16,7 @@ const ProductList = () => {
     axiosInstance
       .get("/product/selectAll")
       .then((response) => {
+        console.log(response.data);
         setProducts(response.data);
       })
       .catch(() => {});
@@ -109,17 +110,17 @@ const ProductList = () => {
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   가격
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
-                  재고
-                </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-48">
                   상품설명
                 </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
-                  옵션
+                  컬러
                 </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap min-w-[150px] max-w-[200px]">
-                  옵션 값
+                  사이즈
+                </th>
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
+                  재고
                 </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
                   작업
