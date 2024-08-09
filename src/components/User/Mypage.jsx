@@ -54,7 +54,7 @@ const MyPage = () => {
           <li>
             <button
               onClick={() => navigate("/profile/orders")}
-              className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+              className="w-full py-2 px-4 text-left hover:bg-gray-200 transition duration-300 ease-in-out"
             >
               주문조회
             </button>
@@ -63,7 +63,7 @@ const MyPage = () => {
           <li>
             <button
               onClick={() => navigate("/profile/favorites")}
-              className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+              className="w-full py-2 px-4 text-left hover:bg-gray-200 transition duration-300 ease-in-out"
             >
               좋아요
             </button>
@@ -72,7 +72,7 @@ const MyPage = () => {
           <li>
             <button
               onClick={() => navigate("/profile/returns")}
-              className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+              className="w-full py-2 px-4 text-left hover:bg-gray-200 transition duration-300 ease-in-out"
             >
               취소/교환/반품
             </button>
@@ -81,7 +81,7 @@ const MyPage = () => {
           <li>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+              className="w-full py-2 px-4 text-left hover:bg-gray-200 transition duration-300 ease-in-out"
             >
               정보수정
             </button>
@@ -90,7 +90,7 @@ const MyPage = () => {
           <li>
             <button
               onClick={handleDeleteAccount}
-              className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+              className="w-full py-2 px-4 text-left hover:bg-gray-200 transition duration-300 ease-in-out"
             >
               회원탈퇴
             </button>
@@ -101,7 +101,7 @@ const MyPage = () => {
               <li>
                 <button
                   onClick={handleResetPassword}
-                  className="w-full py-2 px-4 text-left rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out"
+                  className="w-full py-2 px-4 text-left  hover:bg-gray-200 transition duration-300 ease-in-out"
                 >
                   비밀번호 재설정
                 </button>
@@ -113,9 +113,7 @@ const MyPage = () => {
       </div>
       <div className="w-3/4 max-w-4xl p-8 bg-white shadow-md ml-4">
         <h2 className="text-2xl font-bold mb-6 text-center">회원 정보</h2>
-        <p className="text-gray-600 mb-4 text-center">
-          여기서 회원 정보를 관리할 수 있습니다.
-        </p>
+
         {userInfo ? (
           <div className="mb-6 border-t border-gray-200 pt-4">
             <h3 className="text-lg font-semibold mb-4">회원 정보</h3>
@@ -154,10 +152,14 @@ const MyPage = () => {
       </div>
       {isModalOpen && (
         <UpdateProfile
-          isOpen={isModalOpen}
+          isOpen={true}
           onClose={() => setIsModalOpen(false)}
           onSave={(updatedInfo) => {
-            setUserInfo((prev) => ({ ...prev, ...updatedInfo }));
+            setUserInfo((prev) => ({
+              ...prev,
+              ...updatedInfo,
+              cate: prev.cate,
+            }));
             alert("회원 정보가 업데이트되었습니다.");
           }}
         />
