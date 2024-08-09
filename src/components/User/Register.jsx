@@ -258,7 +258,7 @@ const Register = () => {
                 onChange={emailChange}
                 readOnly={cate}
                 required
-                className={`w-full p-2 border border-gray-300 rounded-lg shadow-sm ${
+                className={`w-full p-2 border border-gray-300 shadow-sm ${
                   cate
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                     : "focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -269,7 +269,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={handleEmailCheck}
-                  className="ml-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-auto flex-shrink-0"
+                  className="ml-4 py-2 px-4 bg-blue-500 text-white hover:bg-blue-600 w-auto flex-shrink-0"
                 >
                   중복 확인
                 </button>
@@ -300,7 +300,7 @@ const Register = () => {
                 placeholder="비밀번호를 입력하세요"
                 onChange={handlePasswordChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {passwordStrength && (
                 <div className="mt-2 text-sm">
@@ -340,12 +340,12 @@ const Register = () => {
                   setConfirmPassword(e.target.value);
                 }}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
                 onClick={handlePasswordCheck}
-                className="mt-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="mt-2 py-2 px-4 bg-blue-500 text-white hover:bg-blue-600"
               >
                 비밀번호 확인
               </button>
@@ -411,7 +411,7 @@ const Register = () => {
             <select
               value={carrier}
               onChange={handleCarrierChange}
-              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">통신사 선택</option>
               <option value="skt">SKT</option>
@@ -424,7 +424,7 @@ const Register = () => {
               placeholder="연락처를 입력하세요"
               onChange={(e) => setTell(e.target.value)}
               required
-              className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -451,7 +451,7 @@ const Register = () => {
             selected={birthDate}
             onChange={handleDateChange}
             dateFormat="yyyy-MM-dd"
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholderText="날짜를 선택하세요"
             maxDate={new Date()}
             showYearDropdown
@@ -463,7 +463,7 @@ const Register = () => {
 
         <button
           type="submit"
-          className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out"
+          className="w-full py-3 bg-blue-500 text-white hover:bg-blue-600 transition duration-300 ease-in-out"
         >
           가입완료
         </button>

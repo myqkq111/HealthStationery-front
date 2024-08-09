@@ -49,6 +49,7 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
       roadaddr,
       detailaddr,
       birth: formattedBirthdate,
+      cate: JSON.parse(localStorage.getItem("member")).cate,
     };
     console.log(updateInfo);
     axiosInstance
@@ -138,7 +139,7 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
             type="text"
             value={tell}
             onChange={(e) => setTell(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div className="mb-4">
