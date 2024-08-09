@@ -70,13 +70,13 @@ const Address = ({
           onChange={(e) => setMailaddr(e.target.value)}
           placeholder="우편번호"
           readOnly
-          className="flex-1 p-2 border border-gray-300 rounded-l-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+          className="flex-1 p-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
         />
         <input
           type="button"
           onClick={openPostcode}
           value="우편번호 찾기"
-          className="p-2 bg-blue-500 text-white border border-blue-600 rounded-r-lg cursor-pointer hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+          className="p-2 bg-blue-500 text-white border border-blue-600 cursor-pointer hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
         />
         <br />
         <input
@@ -86,7 +86,7 @@ const Address = ({
           onChange={(e) => setRoadaddr(e.target.value)}
           placeholder="도로명주소"
           readOnly
-          className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+          className="w-full p-4 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
         />
         <br />
         <input
@@ -95,7 +95,7 @@ const Address = ({
           value={detailaddr}
           onChange={(e) => setDetailaddr(e.target.value)}
           placeholder="상세주소"
-          className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+          className="w-full p-4 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
         />
       </div>
     </>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import axiosInstance from "../api/AxiosInstance";
 
 const FindID = ({ onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -16,8 +17,8 @@ const FindID = ({ onClose }) => {
     setLoading(true);
     setError("");
 
-    axios
-      .post("http://localhost:5000/member/find-id", { phoneNumber })
+    axiosInstance
+      .post("http:/localhost:5000/member/find-id", { phoneNumber })
       .then((response) => {
         setEmail(response.data.email);
         setLoading(false);

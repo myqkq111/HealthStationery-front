@@ -80,20 +80,20 @@ const Login = () => {
         <div className="flex flex-col gap-3 mb-6">
           <button
             onClick={() => socialLogin("naver")}
-            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out"
+            className="btn btn-primary flex items-center justify-center py-3 px-4 text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out"
           >
             <i className="fab fa-naver mr-2"></i> 네이버로 시작하기
           </button>
           <button
             onClick={() => socialLogin("google")}
-            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out"
+            className="btn btn-primary flex items-center justify-center py-3 px-4 text-black bg-white hover:bg-[#f5f5f5] transition duration-300 ease-in-out"
           >
             <i className="fab fa-google mr-2"></i> 구글로 시작하기
           </button>
 
           <button
             onClick={() => socialLogin("kakao")}
-            className="btn btn-primary flex items-center justify-center py-3 px-4 rounded-lg text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out"
+            className="btn btn-primary flex items-center justify-center py-3 px-4 text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out"
           >
             <i className="fab fa-kakao mr-2"></i> 카카오로 시작하기
           </button>
@@ -113,7 +113,7 @@ const Login = () => {
               placeholder="이메일"
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
+              className="w-full p-4 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
             />
           </div>
           <div className="w-full mb-4">
@@ -123,12 +123,12 @@ const Login = () => {
               placeholder="비밀번호"
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
+              className="w-full p-4 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
             />
           </div>
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition duration-300 ease-in-out"
+            className="w-full py-3 px-4 bg-orange-500 text-white hover:bg-orange-600 transition duration-300 ease-in-out"
           >
             로그인
           </button>
@@ -137,13 +137,13 @@ const Login = () => {
         <div className="flex justify-between mt-6 text-sm text-gray-600">
           <button
             onClick={() => navigate("/terms")}
-            className="text-blue-500 hover:underline"
+            className="text-blue-500 hover:underline font-bold"
           >
             회원가입
           </button>
           <button
             onClick={handleForgotClick}
-            className="text-blue-500 hover:underline"
+            className="text-blue-500 hover:underline font-bold"
           >
             아이디/비밀번호 찾기
           </button>
