@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import ProductForm from "./ProductForm";
 import axiosInstance from "../api/AxiosInstance";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import Tooltip from "@mui/material/Tooltip";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -38,6 +37,8 @@ const ProductList = () => {
       .catch(() => {});
     setIsFormOpen(false);
   };
+
+  console.log(products);
 
   const handleAddProductClick = () => {
     setSelectedProduct(null);
@@ -114,12 +115,12 @@ const ProductList = () => {
                   상품설명
                 </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
-                  컬러
+                  Color
                 </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap min-w-[150px] max-w-[200px]">
-                  사이즈
+                  Size
                 </th>
-                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
+                <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap min-w-[150px] max-w-[200px]">
                   재고
                 </th>
                 <th className="px-4 py-3 text-left text-center text-sm font-medium text-gray-700 whitespace-nowrap w-32">
@@ -139,18 +140,6 @@ const ProductList = () => {
                 </tr>
               ) : (
                 currentProducts.map((product) => {
-                  const optionNames = product.strOptionName
-                    ? product.strOptionName.split(",")
-                    : [];
-                  const optionValues = product.strOptionValue
-                    ? product.strOptionValue.split("|")
-                    : [];
-                  const selectedOptionIndex =
-                    selectedOptionIndexes[product.id] || -1;
-                  const selectedOptionValue =
-                    selectedOptionIndex >= 0
-                      ? optionValues[selectedOptionIndex]
-                      : "";
                   return (
                     <tr key={product.id} className="border-b border-gray-200">
                       <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
@@ -163,33 +152,16 @@ const ProductList = () => {
                         {product.price}원
                       </td>
                       <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                        {product.inven}개
-                      </td>
-                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
                         {product.content}
                       </td>
                       <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                        <select
-                          onChange={(e) =>
-                            handleOptionChange(product.id, e.target.value)
-                          }
-                          className="border rounded p-1"
-                          defaultValue=""
-                        >
-                          <option value="" disabled>
-                            선택하세요
-                          </option>
-                          {optionNames.map((option, index) => (
-                            <option key={index} value={index}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
+                        color
+                      </td>
+                      <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                        size
                       </td>
                       <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap min-w-[150px] max-w-[200px] overflow-hidden text-ellipsis">
-                        <Tooltip title={selectedOptionValue} placement="top">
-                          <span>{selectedOptionValue}</span>
-                        </Tooltip>
+                        재고
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                         <button

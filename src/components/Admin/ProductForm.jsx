@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const token = localStorage.getItem("token");
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     stock: "", // 재고 수량
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (product) {
       setFormData({
@@ -28,6 +30,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       });
     }
   }, [product]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" || name === "contentImage") {
@@ -66,6 +69,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+
     const data = new FormData();
     data.append("cate", formData.cate);
     data.append("name", formData.name);
@@ -76,22 +80,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     Array.from(formData.contentImage).forEach((file) =>
       data.append("contentImage", file)
     );
-
-    // const data = new FormData();
-    // data.append(
-    //   "product",
-    //   JSON.stringify({
-    //     cate: formData.cate,
-    //     name: formData.name,
-    //     price: formData.price,
-    //     content: formData.content,
-    //     sizeStock: formData.sizeStock || [],
-    //   })
-    // );
-    // (formData.image || []).forEach((file) => data.append("image", file));
-    // (formData.contentImage || []).forEach((file) =>
-    //   data.append("contentImage", file)
-    // );
 
     const url = product
       ? `http://localhost:8080/product/update/${product.id}` // 수정 요청 시 URL
@@ -117,55 +105,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         setIsSubmitting(false);
       });
   };
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
 
-  //   const data = new FormData();
-
-  //   // ProductVO 객체를 JSON으로 변환하여 'product'라는 파트로 추가
-  //   data.append(
-  //     "product",
-  //     JSON.stringify({
-  //       id: formData.id,
-  //       cate: formData.cate,
-  //       name: formData.name,
-  //       price: formData.price,
-  //       content: formData.content,
-  //       image: formData.image,
-  //       contentImage: formData.contentImage,
-  //       sizeStock: formData.sizeStock,
-  //     })
-  //   );
-
-  //   // 이미지는 List<MultipartFile>로 서버에 전송
-  //   Array.from(formData.imageFiles).forEach((file) =>
-  //     data.append("image", file)
-  //   );
-  //   Array.from(formData.contentImageFiles).forEach((file) =>
-  //     data.append("contentImage", file)
-  //   );
-
-  //   const url = product
-  //     ? `http://localhost:8080/product/update/${product.id}`
-  //     : "http://localhost:8080/product/insert";
-
-  //   const headers = {
-  //     // Axios는 자동으로 'Content-Type: multipart/form-data'를 설정하므로 필요 없음
-  //     Authorization: `Bearer ${token}`,
-  //   };
-
-  //   try {
-  //     const response = product
-  //       ? await axios.put(url, data, { headers })
-  //       : await axios.post(url, data, { headers });
-  //     onProductUpdated();
-  //   } catch (error) {
-  //     console.error("상품 저장에 실패했습니다.", error);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-60 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-md max-h-[80vh] overflow-y-auto">
@@ -369,6 +309,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               )}
             </ul>
           </div>
+
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -390,4 +331,5 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     </div>
   );
 };
+
 export default ProductForm;
