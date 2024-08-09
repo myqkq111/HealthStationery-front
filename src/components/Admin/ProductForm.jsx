@@ -105,7 +105,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         setIsSubmitting(false);
       });
   };
-
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-60 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-md max-h-[80vh] overflow-y-auto">
