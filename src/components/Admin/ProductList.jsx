@@ -15,6 +15,7 @@ const ProductList = () => {
     axiosInstance
       .get("/product/selectAll")
       .then((response) => {
+        console.log(response.data);
         setProducts(response.data);
       })
       .catch(() => {});

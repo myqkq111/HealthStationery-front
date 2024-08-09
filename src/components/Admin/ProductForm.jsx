@@ -37,6 +37,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       setFormData((prevData) => ({
         ...prevData,
         [name]: files ? Array.from(files).map((file) => file.name) : [],
+        // [name]: files ? Array.from(files) : [],
       }));
     } else {
       setFormData((prevData) => ({
@@ -45,16 +46,12 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       }));
     }
   };
-
   const handleAddStock = () => {
     const { color, size, stock } = formData;
     if (color && size && stock) {
       setFormData((prevData) => ({
         ...prevData,
-        sizeStock: [
-          ...prevData.sizeStock,
-          { color, size, stock: parseInt(stock) },
-        ],
+        sizeStock: [...prevData.sizeStock, `${color}, ${size}, ${stock}`],
         color: "",
         size: "",
         stock: "",
@@ -63,14 +60,12 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       alert("색상, 사이즈, 재고를 모두 입력해 주세요.");
     }
   };
-
   const handleRemoveStock = (index) => {
     setFormData((prevData) => ({
       ...prevData,
       sizeStock: prevData.sizeStock.filter((_, i) => i !== index),
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -80,10 +75,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     data.append("name", formData.name);
     data.append("price", formData.price);
     data.append("content", formData.content);
-
     data.append("sizeStock", formData.sizeStock);
-
-    // 이미지 파일 추가
     Array.from(formData.image).forEach((file) => data.append("image", file));
     Array.from(formData.contentImage).forEach((file) =>
       data.append("contentImage", file)
@@ -232,7 +224,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               className="mt-1 block w-full py-2 px-3 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           {/* 색상, 사이즈, 재고 추가 */}
           <div className="mb-4">
             <label
@@ -294,7 +285,6 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               추가
             </button>
           </div>
-
           {/* 등록된 재고 목록 */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
