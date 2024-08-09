@@ -41,7 +41,10 @@ const MyPage = () => {
   const formatDate = (dateString) => {
     if (!dateString) return "정보 없음";
     const date = new Date(dateString);
-    return date.toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
+    const localDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    );
+    return localDate.toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
   };
 
   return (

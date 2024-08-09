@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import CustomModal from "./CustomModal";
 import Address from "../../openApi/Address";
+
 const UpdateProfile = ({ isOpen, onClose, onSave }) => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -9,9 +10,9 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
   const [mailaddr, setMailaddr] = useState("");
   const [roadaddr, setRoadaddr] = useState("");
   const [detailaddr, setDetailaddr] = useState("");
-  const [birthdate, setBirthdate] = useState("");
+  const [birthdate, setBirthdate] = useState(""); // 생년월일을 로컬 포맷으로 저장
+
   const id = JSON.parse(localStorage.getItem("member")).id;
-  const cate = JSON.parse(localStorage.getItem("member")).cate;
 
   useEffect(() => {
     if (isOpen) {
@@ -24,54 +25,71 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
         setTell(tell || "");
         setRoadaddr(roadaddr || "");
         setDetailaddr(detailaddr || "");
-        setBirthdate(formatDate(birth));
         setMailaddr(mailaddr || "");
+        setBirthdate(formatDateForDisplay(birth)); // 생년월일을 표시 형식으로 변환
       }
     }
   }, [isOpen]);
 
   const handleSave = () => {
     if (!name || !tell || !roadaddr || !detailaddr || !mailaddr) {
-      alert("모든 필드를 입력해 주세요.");
+      alert("모든 필드를 입력해 주세요."); // 모든 필드가 채워졌는지 확인
       return;
     }
+
+    // 생년월일을 ISO 문자열 형식으로 변환하여 서버에 전송
+    const formattedBirthdate = formatDateToISO(birthdate);
+
     const updateInfo = {
       id,
-      cate,
       email,
       name,
       tell,
       mailaddr,
       roadaddr,
       detailaddr,
-      birth: birthdate,
+      birth: formattedBirthdate,
     };
     console.log(updateInfo);
     axiosInstance
       .put("/member/updateUser", updateInfo)
       .then((response) => {
         console.log("Profile updated successfully:", response.data);
-        handleUpdate(updateInfo); // handleUpdate 호출
+        handleUpdate(updateInfo); // 로컬 스토리지에 새 정보 저장
         onClose();
         onSave(updateInfo);
       })
       .catch((error) => {
         console.error("Error updating profile:", error);
-        alert("프로필 업데이트에 실패했습니다. 다시 시도해 주세요.");
+        alert("프로필 업데이트에 실패했습니다. 다시 시도해 주세요."); // 에러 처리
       });
   };
 
-  // 생년월일을 날짜로만 표기하도록 변환하는 함수
-  const formatDate = (dateString) => {
+  // 생년월일 문자열을 YYYY-MM-DD 형식으로 변환하여 표시
+  const formatDateForDisplay = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 변환
+    // 날짜를 UTC 기준으로 변환하고, 로컬 타임존에서 하루를 빼서 날짜를 조정
+    const offset = date.getTimezoneOffset() * 60000;
+    const adjustedDate = new Date(date.getTime() - offset);
+    const year = adjustedDate.getFullYear();
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(adjustedDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
-  // handleUpdate 함수 추가
+  // 로컬 날짜 문자열을 ISO 문자열 형식으로 변환
+  const formatDateToISO = (dateString) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    // 로컬 시간대에서 UTC로 변환하기 위해 시간을 설정
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.toISOString(); // ISO 형식으로 변환
+  };
+
+  // 로컬 스토리지에 새 프로필 정보 저장
   const handleUpdate = (updatedInfo) => {
     localStorage.setItem("member", JSON.stringify(updatedInfo));
-    // alert("회원 정보가 업데이트되었습니다.");
   };
 
   return (
@@ -162,4 +180,5 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
     </CustomModal>
   );
 };
+
 export default UpdateProfile;
