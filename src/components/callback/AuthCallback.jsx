@@ -20,6 +20,9 @@ const AuthCallback = () => {
         const { token, member } = response.data;
         if (token === "no") {
           navigate(`/terms?cate=${cate}&email=${email}&name=${name}`);
+        } else if(token === "yes"){
+          alert("이미 사용중인 이메일입니다.");
+          navigate("/login");
         } else {
           // 로그인 상태 업데이트
           login(token, member);
