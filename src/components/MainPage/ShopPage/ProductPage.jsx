@@ -205,20 +205,21 @@ const ProductPage = () => {
       .post("/basket/insert", data)
       .then((response) => {
         console.log(response.data);
+        setLoading(false);
+        navigate("/cart", {
+          state: {
+            productId: product.id,
+            selectedOption,
+            selectedColor,
+            quantity, // 장바구니에 추가할 수량 (예: 1로 설정)
+          },
+        });
       })
       .catch((error) => {
         console.error("Error verifying code:", error);
         setError("인증 코드가 올바르지 않습니다.");
         setLoading(false);
       });
-    // navigate("/cart", {
-    //   state: {
-    //     productId: product.id,
-    //     selectedOption,
-    //     selectedColor,
-    //     quantity, // 장바구니에 추가할 수량 (예: 1로 설정)
-    //   },
-    // });
   };
 
   // 서버에서 관련 상품 데이터 가져오기
