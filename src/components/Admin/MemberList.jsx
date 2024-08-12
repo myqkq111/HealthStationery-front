@@ -12,6 +12,8 @@ const MemberList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortColumn, setSortColumn] = useState("name");
+  const [currentPage, setCurrentPage] = useState(1);
+  const membersPerPage = 10; // 페이지당 회원 수
 
   useEffect(() => {
     // 컴포넌트가 마운트될 때 회원 목록을 서버에서 가져오는 함수
@@ -44,6 +46,14 @@ const MemberList = () => {
       )
     );
   }, [searchQuery, sortOrder, sortColumn, members]);
+
+  // 페이지네이션을 위해 현재 페이지의 회원 목록을 계산
+  const indexOfLastMember = currentPage * membersPerPage;
+  const indexOfFirstMember = indexOfLastMember - membersPerPage;
+  const currentMembers = filteredMembers.slice(
+    indexOfFirstMember,
+    indexOfLastMember
+  );
 
   const handleEditMember = (member) => {
     setEditingMember(member);
@@ -84,6 +94,14 @@ const MemberList = () => {
   const handleSearch = () => {
     setSearchQuery(searchQuery.trim());
   };
+
+  // 페이지네이션 핸들러
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // 총 페이지 수 계산
+  const totalPages = Math.ceil(filteredMembers.length / membersPerPage);
 
   useEffect(() => {
     document.body.style.overflow = isFormOpen ? "hidden" : "auto";
@@ -163,7 +181,7 @@ const MemberList = () => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {filteredMembers.map((member) => {
+          {currentMembers.map((member) => {
             // 날짜 포맷팅
             const birthDate = member.birth
               ? format(parseISO(member.birth), "yyyy-MM-dd")
@@ -217,6 +235,37 @@ const MemberList = () => {
           })}
         </tbody>
       </table>
+      <div className="mt-4 flex justify-between items-center">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="bg-gray-300 text-gray-600 px-4 py-2 rounded disabled:opacity-50"
+        >
+          이전
+        </button>
+        <div>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              className={`mx-1 px-3 py-1 rounded ${
+                currentPage === index + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-600"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="bg-gray-300 text-gray-600 px-4 py-2 rounded disabled:opacity-50"
+        >
+          다음
+        </button>
+      </div>
       {isFormOpen && (
         <MemberForm
           member={editingMember}
