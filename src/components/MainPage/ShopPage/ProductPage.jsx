@@ -142,21 +142,20 @@ const ProductPage = () => {
     }
   };
 
-  const handleQuantityChange = (event) => {
-    const value = Number(event.target.value);
-    const maxStock = stock[selectedColor]?.[selectedOption] || 0;
+  const handleQuantityChange = (change) => {
+    setQuantity((prevQuantity) => {
+      const newQuantity = prevQuantity + change;
+      const maxStock = stock[selectedColor]?.[selectedOption] || 0;
 
-    if (maxStock === 0) {
-      alert("재고가 없습니다.");
-      setQuantity(0); // 수량을 0으로 설정하여 사용자가 더 이상 수량을 선택할 수 없게 합니다.
-      return;
-    }
+      if (newQuantity < 1) return 1; // 수량이 1보다 작아지지 않도록
 
-    if (value > maxStock) {
-      alert(`재고가 부족합니다. 최대 수량은 ${maxStock}개입니다.`);
-      return;
-    }
-    setQuantity(value);
+      if (newQuantity > maxStock) {
+        alert(`재고가 부족합니다. 최대 수량은 ${maxStock}개입니다.`);
+        return maxStock; // 최대 재고로 수량 조정
+      }
+
+      return newQuantity;
+    });
   };
 
   // 제출 처리
@@ -339,7 +338,7 @@ const ProductPage = () => {
                   id="color"
                   value={selectedColor}
                   onChange={handleColorChange}
-                  className="border border-gray-300 p-2 rounded"
+                  className="border border-gray-300 p-2"
                 >
                   <option value="">선택하세요</option>
                   {options.colors.map((color) => (
@@ -349,10 +348,11 @@ const ProductPage = () => {
                   ))}
                 </select>
                 {colorError && (
-                  <p className="text-red-500 text-sm">색상을 선택하세요.</p>
+                  <p className="text-red-500 text-sm">
+                    색상을 선택하세요.(필수)
+                  </p>
                 )}
               </div>
-
               <div className="flex flex-col mb-6">
                 <label className="font-semibold mb-2" htmlFor="size">
                   사이즈(필수선택)
@@ -362,39 +362,63 @@ const ProductPage = () => {
                   value={selectedOption}
                   onChange={handleOptionChange}
                   className="border border-gray-300 p-2 rounded"
+                  disabled={!selectedColor} // 색상이 선택되지 않은 경우 선택 불가
                 >
                   <option value="">선택하세요</option>
-                  {options.sizes.map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
+                  {options.sizes.map((size) => {
+                    const sizeStock = stock[selectedColor]?.[size] || 0;
+                    return (
+                      <option
+                        key={size}
+                        value={size}
+                        disabled={sizeStock === 0} // 재고가 0인 경우 선택 불가
+                      >
+                        {sizeStock === 0 ? `${size} (품절)` : size}
+                      </option>
+                    );
+                  })}
                 </select>
                 {optionError && (
-                  <p className="text-red-500 text-sm">사이즈를 선택하세요.</p>
+                  <p className="text-red-500 text-sm">
+                    사이즈를 선택하세요.(필수)
+                  </p>
                 )}
               </div>
-
               {/* Quantity Selection (수량 선택) */}
-              {selectedColor && selectedOption && (
-                <div className="flex items-center mb-6">
-                  <label className="font-semibold mb-2" htmlFor="quantity">
-                    수량
-                  </label>
+              <div className="mb-4">
+                <label
+                  htmlFor="quantity"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  수량
+                </label>
+                <div className="flex items-center mt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleQuantityChange(-1)}
+                    className="bg-gray-200 border border-gray-300 px-3 py-1 text-gray-700"
+                  >
+                    -
+                  </button>
                   <input
-                    type="number"
+                    type="text"
                     id="quantity"
                     value={quantity}
-                    onChange={handleQuantityChange}
-                    min="1"
-                    className="border border-gray-300 p-2 rounded ml-4 w-24"
+                    readOnly
+                    className="w-12 text-center border-t border-b border-gray-300 px-3 py-1"
                   />
+                  <button
+                    type="button"
+                    onClick={() => handleQuantityChange(1)}
+                    className="bg-gray-200 border border-gray-300 px-3 py-1 text-gray-700 "
+                  >
+                    +
+                  </button>
                   <p className="ml-4 font-semibold">
                     총 가격: {totalPrice.toLocaleString()} 원
                   </p>
                 </div>
-              )}
-
+              </div>
               <div className="flex gap-4 mt-6">
                 {/* 바로 구매 버튼 */}
                 <button
