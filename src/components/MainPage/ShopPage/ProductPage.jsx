@@ -13,6 +13,7 @@ const ProductPage = () => {
   const [error, setError] = useState(null);
   const [thumbnails, setThumbnails] = useState([]);
   const [options, setOptions] = useState({ sizes: [], colors: [] });
+  const [contentImages, setContentImages] = useState([]); // 추가된 상태
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [optionError, setOptionError] = useState(false);
@@ -43,6 +44,13 @@ const ProductPage = () => {
             (path) => `/images/products/${productData.cate}/${path}`
           );
           setThumbnails(thumbnails);
+
+          const strContentImage = productData.strContentImage.split(",");
+          const contentImages = strContentImage.map(
+            (path) => `/images/products/${productData.cate}/${path}`
+          );
+          console.log(contentImages);
+          setContentImages(contentImages);
 
           // list에서 옵션 데이터 추출
           const sizes = [...new Set(productData.list.map((item) => item.size))];
@@ -220,7 +228,6 @@ const ProductPage = () => {
     //   },
     // });
   };
-
   // 서버에서 관련 상품 데이터 가져오기
   useEffect(() => {
     axiosInstance
@@ -492,33 +499,15 @@ const ProductPage = () => {
 
         {/* 이미지 */}
         <div>
-          <div className="flex items-center justify-center" ref={detailsRef}>
-            <img
-              src="/images/products/knees/shop1.jpg"
-              alt="상세1"
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <div>
-            <img
-              src="/images/products/knees/shop2.jpg"
-              alt="상세2"
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <div className="flex mb-6">
-            <img
-              src="/images/products/knees/shop3.jpg"
-              alt="상세3"
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <div className="flex mb-6">
-            <img
-              src="/images/products/knees/shop4.jpg"
-              alt="상세3"
-              className="w-full h-auto object-cover"
-            />
+          <div className="prose">
+            {contentImages.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Content ${index}`}
+                className="w-full h-auto object-cover"
+              />
+            ))}
           </div>
         </div>
 
@@ -615,13 +604,6 @@ const ProductPage = () => {
         {/* 상품 리뷰 섹션 */}
         <div ref={reviewRef}>
           <ProductReviewSection productId={product.id} />
-        </div>
-        <div className="flex mb-6">
-          <img
-            src="/images/products/productPage4.jpg"
-            alt="상세4"
-            className="w-full h-full object-cover"
-          />
         </div>
         <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
