@@ -195,14 +195,31 @@ const ProductPage = () => {
   };
 
   const handleGoToCart = () => {
-    navigate("/cart", {
-      state: {
-        productId: product.id,
-        selectedOption,
-        selectedColor,
-        quantity, // 장바구니에 추가할 수량 (예: 1로 설정)
-      },
-    });
+    const userId = JSON.parse(localStorage.getItem("member")).id;
+    const data = new FormData();
+    data.append("productId", product.id);
+    data.append("memberId", userId);
+    data.append("color", selectedOption);
+    data.append("size", selectedColor);
+    data.append("count", quantity);
+    axiosInstance
+      .post("/basket/insert", data)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error verifying code:", error);
+        setError("인증 코드가 올바르지 않습니다.");
+        setLoading(false);
+      });
+    // navigate("/cart", {
+    //   state: {
+    //     productId: product.id,
+    //     selectedOption,
+    //     selectedColor,
+    //     quantity, // 장바구니에 추가할 수량 (예: 1로 설정)
+    //   },
+    // });
   };
 
   // 서버에서 관련 상품 데이터 가져오기
