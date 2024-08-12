@@ -5,6 +5,7 @@ import ProductReviewSection from "./ProductReviewSection";
 import ProductItem from "./ProductItem";
 import ScrollToTopButton from "../ScrollToTopButton";
 import axiosInstance from "../../api/AxiosInstance";
+import Swal from "sweetalert2";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -23,16 +24,17 @@ const ProductPage = () => {
   const [stock, setStock] = useState({}); // 재고 상태 추가
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
+  const uid = JSON.parse(localStorage.getItem("member")).id;
 
   useEffect(() => {
     const fetchProduct = () => {
       axiosInstance
-        .get(`/product/selectOne?id=${id}`)
+        .get(`/product/selectOne?id=${id}&uid=${uid}`)
         .then((response) => {
           const productData = response.data;
           console.log(productData);
           setProduct(productData);
-
+          if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
           const strImage = productData.strImage.split(",");
           const defaultImage = strImage[0]
@@ -80,7 +82,7 @@ const ProductPage = () => {
         });
     };
     fetchProduct();
-  }, [id]);
+  }, [id, uid]);
 
   // 상품이 없는 경우에는 빈 상태로 초기화
   const [mainImage, setMainImage] = useState(); // 초기 이미지 설정
@@ -206,27 +208,128 @@ const ProductPage = () => {
     const data = new FormData();
     data.append("productId", product.id);
     data.append("memberId", userId);
-    data.append("color", selectedOption);
-    data.append("size", selectedColor);
+    data.append("color", selectedColor);
+    data.append("size", selectedOption);
     data.append("count", quantity);
+
     axiosInstance
-      .post("/basket/insert", data)
+      .post("/basket/check", data)
       .then((response) => {
-        console.log(response.data);
+        if (response.data === 0) {
+          // 장바구니에 없는 상품일 경우
+          axiosInstance
+            .post("/basket/insert", data)
+            .then((response) => {
+              setLoading(false);
+              Swal.fire({
+                title: "상품이 장바구니에 추가되었습니다.",
+                text: "장바구니 페이지로 이동하시겠습니까?",
+                icon: "success",
+                showCancelButton: true,
+                confirmButtonText: "네",
+                cancelButtonText: "아니요",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  navigate("/cart", {
+                    state: {
+                      productId: product.id,
+                      selectedOption,
+                      selectedColor,
+                      quantity,
+                    },
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.error("Error adding to cart:", error);
+              setError("장바구니에 추가하는 도중 오류가 발생했습니다.");
+              setLoading(false);
+            });
+        } else {
+          Swal.fire({
+            title: "이미 장바구니에 등록된 상품입니다.",
+            text: "상품 개수를 증가시키겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "확인",
+            cancelButtonText: "취소",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              axiosInstance
+                .put(`/basket/countup?id=${response.data}`)
+                .then(() => {
+                  Swal.fire({
+                    title: "수량이 증가되었습니다.",
+                    text: "장바구니 페이지로 이동하시겠습니까?",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonText: "네",
+                    cancelButtonText: "아니요",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      navigate("/cart", {
+                        state: {
+                          productId: product.id,
+                          selectedOption,
+                          selectedColor,
+                          quantity: quantity + 1,
+                        },
+                      });
+                    }
+                  });
+                })
+                .catch((error) => {
+                  console.error("Failed to increase quantity:", error);
+                  Swal.fire(
+                    "오류",
+                    "장바구니 수량 증가 도중 오류가 발생했습니다.",
+                    "error"
+                  );
+                });
+            }
+          });
+        }
       })
       .catch((error) => {
-        console.error("Error verifying code:", error);
-        setError("인증 코드가 올바르지 않습니다.");
+        console.error("Error verifying cart:", error);
+        setError("장바구니 확인 도중 오류가 발생했습니다.");
         setLoading(false);
       });
-    // navigate("/cart", {
-    //   state: {
-    //     productId: product.id,
-    //     selectedOption,
-    //     selectedColor,
-    //     quantity, // 장바구니에 추가할 수량 (예: 1로 설정)
-    //   },
-    // });
+  };
+  // 찜
+  const [isLiked, setIsLiked] = useState(false); // 찜 상태 관리
+
+  const handleWishlistToggle = async () => {
+    const newLikedStatus = !isLiked;
+
+    if (newLikedStatus) {
+      axiosInstance
+        .post("/wishlist/add", {
+          productId: product.id,
+          memberId: uid,
+        })
+        .then(() => {
+          setIsLiked(newLikedStatus);
+        })
+        .catch((error) => {
+          console.error("찜 목록 추가 실패:", error);
+        });
+    } else {
+      axiosInstance
+        .delete("/wishlist/remove", {
+          data: {
+            productId: product.id,
+            memberId: uid,
+          },
+        })
+        .then(() => {
+          setIsLiked(newLikedStatus);
+        })
+        .catch((error) => {
+          console.error("찜 목록 제거 실패:", error);
+        });
+    }
   };
   // 서버에서 관련 상품 데이터 가져오기
   useEffect(() => {
@@ -465,9 +568,12 @@ const ProductPage = () => {
                 {/* 찜(하트) 버튼 */}
                 <button
                   type="button"
-                  className="bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs"
+                  onClick={handleWishlistToggle}
+                  className={`bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs ${
+                    isLiked ? "text-red-500" : ""
+                  }`}
                 >
-                  ❤
+                  {isLiked ? "❤" : "🤍"}
                 </button>
               </div>
             </form>
