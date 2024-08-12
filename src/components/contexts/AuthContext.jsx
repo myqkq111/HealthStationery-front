@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("member");
     localStorage.removeItem("bool");
     localStorage.removeItem("admin");
+    alert("로그아웃 되었습니다.");
   };
 
   // 컨텍스트 값을 제공하여 하위 컴포넌트에서 사용할 수 있게 함

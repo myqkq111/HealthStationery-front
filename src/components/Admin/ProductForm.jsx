@@ -3,6 +3,9 @@ import axios from "axios";
 
 const ProductForm = ({ product, onClose, onProductUpdated }) => {
   const token = localStorage.getItem("token");
+
+  const defaultImageArray = (str) => (str ? str.split(",") : []);
+
   const [formData, setFormData] = useState({
     cate: "",
     name: "",
@@ -24,9 +27,9 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         cate: product.cate || "",
         name: product.name || "",
         price: product.price || "",
-        image: product.image || [],
+        image: defaultImageArray(product.strImage),
         content: product.content || "",
-        contentImage: product.contentImage || [],
+        contentImage: defaultImageArray(product.strContentImage), // 문자열을 배열로 변환
         sizeStock: product.list || [],
         color: "",
         size: "",
@@ -135,15 +138,24 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     data.append("name", formData.name);
     data.append("price", formData.price);
     data.append("content", formData.content);
-    data.append("sizeStock", formData.sizeStock);
+    data.append("sizeStock", JSON.stringify(formData.sizeStock));
     Array.from(formData.image).forEach((file) => data.append("image", file));
     Array.from(formData.contentImage).forEach((file) =>
       data.append("contentImage", file)
     );
 
+    // FormData의 항목 출력
+    for (let [key, value] of data.entries()) {
+      console.log(key, value);
+    }
+
     const url = product
       ? `http://localhost:8080/product/update/${product.id}` // 수정 요청 시 URL
       : "http://localhost:8080/product/insert"; // 추가 요청 시 URL
+
+    console.log("URL:", url); // URL 확인
+    console.log("FormData:", Array.from(data.entries())); // FormData 확인
+
     const headers = {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
@@ -159,7 +171,10 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         onProductUpdated();
       })
       .catch((error) => {
-        console.error("상품 저장에 실패했습니다.", error);
+        console.error(
+          "상품 저장에 실패했습니다.",
+          error.response ? error.response.data : error.message
+        );
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -235,54 +250,85 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               required
             />
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="image"
-              className="block text-sm font-medium text-gray-700"
-            >
-              이미지 파일 (여러 개 선택 가능)
-            </label>
-            <input
-              id="image"
-              name="image"
-              type="file"
-              multiple
-              onChange={handleChange}
-              className="mt-1 block w-full py-2 px-3 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="content"
-              className="block text-sm font-medium text-gray-700"
-            >
-              설명
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="4"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="contentImage"
-              className="block text-sm font-medium text-gray-700"
-            >
-              설명 이미지 파일 (여러 개 선택 가능)
-            </label>
-            <input
-              id="contentImage"
-              name="contentImage"
-              type="file"
-              multiple
-              onChange={handleChange}
-              className="mt-1 block w-full py-2 px-3 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="space-y-6">
+            {/* 이미지 파일 업로드 */}
+            <div className="mb-4">
+              <label
+                htmlFor="image"
+                className="block text-sm font-medium text-gray-700"
+              >
+                이미지 파일 (여러 개 선택 가능)
+              </label>
+              <input
+                id="image"
+                name="image"
+                type="file"
+                multiple
+                onChange={handleChange}
+                className="mt-1 block w-full py-2 px-3 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {formData.image.length > 0 && (
+                <div className="mt-2">
+                  <strong className="block text-sm font-medium text-gray-700">
+                    현재 이미지:
+                  </strong>
+                  <ul className="list-disc list-inside mt-1">
+                    {formData.image.map((fileName, index) => (
+                      <li key={index} className="text-gray-800">
+                        {fileName}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="content"
+                className="block text-sm font-medium text-gray-700"
+              >
+                설명
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                value={formData.content}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="4"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="contentImage"
+                className="block text-sm font-medium text-gray-700"
+              >
+                설명 이미지 파일 (여러 개 선택 가능)
+              </label>
+              <input
+                id="contentImage"
+                name="contentImage"
+                type="file"
+                multiple
+                onChange={handleChange}
+                className="mt-1 block w-full py-2 px-3 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {formData.contentImage.length > 0 && (
+                <div className="mt-2">
+                  <strong className="block text-sm font-medium text-gray-700">
+                    현재 설명 이미지:
+                  </strong>
+                  <ul className="list-disc list-inside mt-1">
+                    {formData.contentImage.map((fileName, index) => (
+                      <li key={index} className="text-gray-800">
+                        {fileName}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
           {/* 색상, 사이즈, 재고 추가 */}
           <div className="mb-4">
@@ -316,6 +362,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">사이즈 선택</option>
+              <option value=" ">없음</option>
               <option value="S">S</option>
               <option value="M">M</option>
               <option value="L">L</option>

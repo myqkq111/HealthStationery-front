@@ -7,7 +7,6 @@ import MainHeader from "./components/MainPage/MainHeader";
 import Header from "./components/MainPage/Header";
 import Forgot from "./components/User/Forgot";
 import FindID from "./components/User/FindID";
-
 import Terms from "./components/User/Terms";
 import Footer from "./components/MainPage/Footer";
 import BottomPage from "./components/MainPage/BottomPage";

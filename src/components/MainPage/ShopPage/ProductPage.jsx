@@ -5,6 +5,7 @@ import ProductReviewSection from "./ProductReviewSection";
 import ProductItem from "./ProductItem";
 import ScrollToTopButton from "../ScrollToTopButton";
 import axiosInstance from "../../api/AxiosInstance";
+import Swal from "sweetalert2";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -13,6 +14,7 @@ const ProductPage = () => {
   const [error, setError] = useState(null);
   const [thumbnails, setThumbnails] = useState([]);
   const [options, setOptions] = useState({ sizes: [], colors: [] });
+  const [contentImages, setContentImages] = useState([]); // 추가된 상태
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [optionError, setOptionError] = useState(false);
@@ -51,6 +53,13 @@ const ProductPage = () => {
           );
           setThumbnails(thumbnails);
 
+          const strContentImage = productData.strContentImage.split(",");
+          const contentImages = strContentImage.map(
+            (path) => `/images/products/${productData.cate}/${path}`
+          );
+          console.log(contentImages);
+          setContentImages(contentImages);
+
           // list에서 옵션 데이터 추출
           const sizes = [...new Set(productData.list.map((item) => item.size))];
           const colors = [
@@ -80,6 +89,7 @@ const ProductPage = () => {
     };
     fetchProduct();
   }, [id, uid]);
+
   // 상품이 없는 경우에는 빈 상태로 초기화
   const [mainImage, setMainImage] = useState(); // 초기 이미지 설정
   const [fade, setFade] = useState(false);
@@ -199,6 +209,100 @@ const ProductPage = () => {
     }
   };
 
+  const handleGoToCart = () => {
+    const userId = JSON.parse(localStorage.getItem("member")).id;
+    const data = new FormData();
+    data.append("productId", product.id);
+    data.append("memberId", userId);
+    data.append("color", selectedColor);
+    data.append("size", selectedOption);
+    data.append("count", quantity);
+
+    axiosInstance
+      .post("/basket/check", data)
+      .then((response) => {
+        if (response.data === 0) {
+          // 장바구니에 없는 상품일 경우
+          axiosInstance
+            .post("/basket/insert", data)
+            .then((response) => {
+              setLoading(false);
+              Swal.fire({
+                title: "상품이 장바구니에 추가되었습니다.",
+                text: "장바구니 페이지로 이동하시겠습니까?",
+                icon: "success",
+                showCancelButton: true,
+                confirmButtonText: "네",
+                cancelButtonText: "아니요",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  navigate("/cart", {
+                    state: {
+                      productId: product.id,
+                      selectedOption,
+                      selectedColor,
+                      quantity,
+                    },
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.error("Error adding to cart:", error);
+              setError("장바구니에 추가하는 도중 오류가 발생했습니다.");
+              setLoading(false);
+            });
+        } else {
+          Swal.fire({
+            title: "이미 장바구니에 등록된 상품입니다.",
+            text: "상품 개수를 증가시키겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "확인",
+            cancelButtonText: "취소",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              axiosInstance
+                .put(`/basket/countup?id=${response.data}`)
+                .then(() => {
+                  Swal.fire({
+                    title: "수량이 증가되었습니다.",
+                    text: "장바구니 페이지로 이동하시겠습니까?",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonText: "네",
+                    cancelButtonText: "아니요",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      navigate("/cart", {
+                        state: {
+                          productId: product.id,
+                          selectedOption,
+                          selectedColor,
+                          quantity: quantity + 1,
+                        },
+                      });
+                    }
+                  });
+                })
+                .catch((error) => {
+                  console.error("Failed to increase quantity:", error);
+                  Swal.fire(
+                    "오류",
+                    "장바구니 수량 증가 도중 오류가 발생했습니다.",
+                    "error"
+                  );
+                });
+            }
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error verifying cart:", error);
+        setError("장바구니 확인 도중 오류가 발생했습니다.");
+        setLoading(false);
+      });
+  };
   // 찜
   const [isLiked, setIsLiked] = useState(false); // 찜 상태 관리
 
@@ -233,7 +337,6 @@ const ProductPage = () => {
         });
     }
   };
-
   // 서버에서 관련 상품 데이터 가져오기
   useEffect(() => {
     axiosInstance
@@ -460,13 +563,13 @@ const ProductPage = () => {
                 </button>
 
                 {/* 장바구니 버튼 */}
-                {/* <button
+                <button
                   type="button"
                   className="bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs"
                   onClick={handleGoToCart} // 클릭 시 장바구니 페이지로 이동
                 >
                   장바구니
-                </button> */}
+                </button>
 
                 {/* 찜(하트) 버튼 */}
                 <button
@@ -508,33 +611,15 @@ const ProductPage = () => {
 
         {/* 이미지 */}
         <div>
-          <div className="flex items-center justify-center" ref={detailsRef}>
-            <img
-              src="/images/products/knees/shop1.jpg"
-              alt="상세1"
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <div>
-            <img
-              src="/images/products/knees/shop2.jpg"
-              alt="상세2"
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <div className="flex mb-6">
-            <img
-              src="/images/products/knees/shop3.jpg"
-              alt="상세3"
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <div className="flex mb-6">
-            <img
-              src="/images/products/knees/shop4.jpg"
-              alt="상세3"
-              className="w-full h-auto object-cover"
-            />
+          <div className="prose">
+            {contentImages.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Content ${index}`}
+                className="w-full h-auto object-cover"
+              />
+            ))}
           </div>
         </div>
 
@@ -631,13 +716,6 @@ const ProductPage = () => {
         {/* 상품 리뷰 섹션 */}
         <div ref={reviewRef}>
           <ProductReviewSection productId={product.id} />
-        </div>
-        <div className="flex mb-6">
-          <img
-            src="/images/products/productPage4.jpg"
-            alt="상세4"
-            className="w-full h-full object-cover"
-          />
         </div>
         <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
