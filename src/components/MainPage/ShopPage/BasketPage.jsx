@@ -1,30 +1,32 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axiosInstance from "../../api/AxiosInstance";
 
 const BasketPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "상품 1",
-      price: 20000,
-      quantity: 2,
-      image: "https://via.placeholder.com/150",
-    },
-    {
-      id: 2,
-      name: "상품 2",
-      price: 30000,
-      quantity: 1,
-      image: "https://via.placeholder.com/150",
-    },
-  ]);
-
+  const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const deliveryFee = 3000;
+
+  useEffect(() => {
+    // 페이지가 로드될 때 장바구니 데이터를 서버에서 가져옵니다.
+    axiosInstance
+      .get("/basket/cart") // 서버의 장바구니 데이터 API 경로
+      .then((response) => {
+        setCartItems(response.data.cartItems); // 서버 응답에서 장바구니 아이템 가져오기
+        setLoading(false); // 로딩 상태 업데이트
+      })
+      .catch((error) => {
+        console.error("장바구니 데이터 로딩 오류:", error);
+        setLoading(false); // 로딩 상태 업데이트
+        // 에러 처리 로직 추가 (예: 사용자에게 오류 메시지 표시)
+      });
+  }, []);
 
   const handleQuantityChange = (id, newQuantity) => {
     setCartItems((prevItems) =>
@@ -43,6 +45,10 @@ const BasketPage = () => {
   };
 
   const handleOrder = () => {
+    if (cartItems.length === 0) {
+      alert("장바구니에 상품이 없습니다.");
+      return;
+    }
     navigate("/payment", { state: { cartItems, totalPayment } });
   };
 
@@ -97,13 +103,12 @@ const BasketPage = () => {
   const handleQuantityUpdate = (newQuantity) => {
     if (currentItem) {
       handleQuantityChange(currentItem.id, newQuantity);
-      // Don't close the modal here
+      closeModal(); // 수량 업데이트 후 모달 닫기
     }
   };
 
   return (
     <div className="min-h-screen p-8">
-      {/* 장바구니 제목 부분 */}
       <h1 className="text-3xl font-bold text-center mb-4">장바구니</h1>
 
       <div className="max-w-6xl mx-auto bg-white p-6">
@@ -113,7 +118,6 @@ const BasketPage = () => {
           </p>
         ) : (
           <>
-            {/* 헤더 부분 */}
             <table className="w-full border-collapse mb-4">
               <thead>
                 <tr>
@@ -197,7 +201,6 @@ const BasketPage = () => {
               </tbody>
             </table>
 
-            {/* 배송비 표시 */}
             <div className="mb-4">
               <table className="w-full border-collapse">
                 <tbody>
@@ -220,7 +223,6 @@ const BasketPage = () => {
               </table>
             </div>
 
-            {/* 선택 상품 삭제 및 품절 상품 삭제 버튼 */}
             <div className="flex justify-between items-center mb-4 border-t border-gray-300 pt-4">
               <div>
                 <button
@@ -241,7 +243,6 @@ const BasketPage = () => {
               </p>
             </div>
 
-            {/* 총 결제 금액 */}
             <div className="mt-6">
               <table className="w-full border-collapse">
                 <tbody>
@@ -273,17 +274,15 @@ const BasketPage = () => {
               </table>
             </div>
 
-            {/* 주문하기 버튼 */}
             <div className="mt-6 text-center">
               <button
                 className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
-                onClick={handleOrder} // 주문하기 버튼 클릭 시 payment 페이지로 이동
+                onClick={handleOrder}
               >
                 주문하기
               </button>
             </div>
 
-            {/* 수량 및 옵션 변경 모달 */}
             {isModalOpen && (
               <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
@@ -315,7 +314,6 @@ const BasketPage = () => {
                     <button
                       onClick={() => {
                         handleQuantityUpdate(currentItem?.quantity);
-                        closeModal();
                       }}
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                     >

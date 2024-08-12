@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Address from "../../../openApi/Address";
+import axiosInstance from "../../api/AxiosInstance";
 
 const LeftSection = ({
   product,
@@ -7,16 +9,16 @@ const LeftSection = ({
   setDeliveryMemo,
   customMemo,
   setCustomMemo,
+  onSave, // 추가된 prop
 }) => {
   const { image, name, price } = product || {};
   const { username, email, tell, roadaddr, detailaddr, mailaddr } = user || {};
-
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(username);
   const [editTell, setEditTell] = useState(tell);
+  const [editMailaddr, setEditMailaddr] = useState(mailaddr);
   const [editRoadaddr, setEditRoadaddr] = useState(roadaddr);
   const [editDetailaddr, setEditDetailaddr] = useState(detailaddr);
-  const [editMailaddr, setEditMailaddr] = useState(mailaddr);
   const [activeTab, setActiveTab] = useState("existing");
 
   const handleMemoChange = (event) => {
@@ -28,7 +30,30 @@ const LeftSection = ({
   };
 
   const saveChanges = () => {
-    // 여기서 필요한 로직 추가 (예: 서버로 변경사항 전송)
+    const updatedDeliveryInfo = {
+      name: editName,
+      tell: editTell,
+      mailaddr: editMailaddr,
+      roadaddr: editRoadaddr,
+      detailaddr: editDetailaddr,
+    };
+
+    axiosInstance
+      .post("/updateBuyList", updatedDeliveryInfo, {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        console.log("배송 정보 업데이트 성공:", response.data);
+
+        // 부모 컴포넌트로 변경된 정보 전달
+        if (onSave) {
+          onSave(updatedDeliveryInfo);
+        }
+      })
+      .catch((error) => {
+        console.error("배송 정보 업데이트 오류:", error);
+      });
+
     toggleEdit();
   };
 
@@ -52,13 +77,13 @@ const LeftSection = ({
       <div className="mb-4 bg-white p-4 ">
         <h2 className="text-xl font-semibold mb-4">주문자 정보</h2>
         <div>
-          <p className="text-gray-700">{username}</p>
+          <p className="text-gray-700 font-bold">{username}</p>
           <p className="text-gray-700">{tell}</p>
           <p className="text-gray-700">{email}</p>
         </div>
       </div>
 
-      <div className="bg-white p-4  mb-2">
+      <div className="bg-white p-4 mb-2">
         <h2 className="text-xl font-semibold mb-4">배송 정보</h2>
         {isEditing ? (
           <div>
@@ -95,7 +120,7 @@ const LeftSection = ({
               </div>
             ) : (
               <div>
-                <div>
+                <div className="mb-4">
                   <label className="block mb-2 text-gray-700 font-semibold">
                     이름
                   </label>
@@ -103,8 +128,11 @@ const LeftSection = ({
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg mb-4"
+                    className="w-full p-2 border border-gray-300 "
+                    placeholder="이름을 입력하세요"
                   />
+                </div>
+                <div className="mb-4">
                   <label className="block mb-2 text-gray-700 font-semibold">
                     전화번호
                   </label>
@@ -112,36 +140,18 @@ const LeftSection = ({
                     type="text"
                     value={editTell}
                     onChange={(e) => setEditTell(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-                  />
-                  <label className="block mb-2 text-gray-700 font-semibold">
-                    도로명 주소
-                  </label>
-                  <input
-                    type="text"
-                    value={editRoadaddr}
-                    onChange={(e) => setEditRoadaddr(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-                  />
-                  <label className="block mb-2 text-gray-700 font-semibold">
-                    상세 주소
-                  </label>
-                  <input
-                    type="text"
-                    value={editDetailaddr}
-                    onChange={(e) => setEditDetailaddr(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-                  />
-                  <label className="block mb-2 text-gray-700 font-semibold">
-                    이메일
-                  </label>
-                  <input
-                    type="text"
-                    value={editMailaddr}
-                    onChange={(e) => setEditMailaddr(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg mb-4"
+                    className="w-full p-2 border border-gray-300 "
+                    placeholder="전화번호를 입력하세요"
                   />
                 </div>
+                <Address
+                  mailaddr={editMailaddr}
+                  setMailaddr={setEditMailaddr}
+                  roadaddr={editRoadaddr}
+                  setRoadaddr={setEditRoadaddr}
+                  detailaddr={editDetailaddr}
+                  setDetailaddr={setEditDetailaddr}
+                />
               </div>
             )}
             <button
@@ -160,7 +170,7 @@ const LeftSection = ({
         ) : (
           <div>
             <div>
-              <p className="text-gray-700 font-semibold">{name}</p>
+              <p className="text-gray-700 font-semibold">{username}</p>
               <p className="text-gray-700">{tell}</p>
               <p className="text-gray-700 font-semibold">{roadaddr}</p>
               <p className="text-gray-700 font-semibold">{detailaddr}</p>
