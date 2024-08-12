@@ -15,6 +15,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     sizeStock: [], // 사이즈와 색상에 대한 재고
     stock: "", // 재고 수량
   });
+  const [editingStockIndex, setEditingStockIndex] = useState(null); // 수정할 재고 인덱스
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -26,7 +27,10 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         image: product.image || [],
         content: product.content || "",
         contentImage: product.contentImage || [],
-        sizeStock: product.sizeStock || [],
+        sizeStock: product.list || [],
+        color: "",
+        size: "",
+        stock: "",
       });
     }
   }, [product]);
@@ -51,7 +55,10 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     if (color && size && stock) {
       setFormData((prevData) => ({
         ...prevData,
-        sizeStock: [...prevData.sizeStock, `${color}, ${size}, ${stock}`],
+        sizeStock: [
+          ...prevData.sizeStock,
+          { color, size, stock: parseInt(stock, 10) },
+        ],
         color: "",
         size: "",
         stock: "",
@@ -60,15 +67,58 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       alert("색상, 사이즈, 재고를 모두 입력해 주세요.");
     }
   };
+
   const handleRemoveStock = (index) => {
     setFormData((prevData) => ({
       ...prevData,
       sizeStock: prevData.sizeStock.filter((_, i) => i !== index),
     }));
   };
+
+  const handleUpdateStock = () => {
+    const { color, size, stock } = formData;
+    if (color && size && stock !== "") {
+      setFormData((prevData) => {
+        const updatedSizeStock = [...prevData.sizeStock];
+        updatedSizeStock[editingStockIndex] = {
+          color,
+          size,
+          stock: parseInt(stock, 10),
+        };
+        return {
+          ...prevData,
+          sizeStock: updatedSizeStock,
+          color: "",
+          size: "",
+          stock: "",
+        };
+      });
+      setEditingStockIndex(null);
+    } else {
+      alert("색상, 사이즈, 재고를 모두 입력해 주세요.");
+    }
+  };
+
+  const handleEditStock = (index) => {
+    const { color, size, stock } = formData.sizeStock[index];
+    setFormData((prevData) => ({
+      ...prevData,
+      color,
+      size,
+      stock,
+    }));
+    setEditingStockIndex(index);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Save sizeStock from formData back to product.list
+    const updatedProduct = {
+      ...product,
+      list: formData.sizeStock, // update product.list with formData.sizeStock
+    };
 
     const data = new FormData();
     data.append("cate", formData.cate);
@@ -105,6 +155,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         setIsSubmitting(false);
       });
   };
+
   return (
     <div className="fixed inset-0 bg-gray-700 bg-opacity-60 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-md max-h-[80vh] overflow-y-auto">
@@ -275,14 +326,23 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               onChange={handleChange}
               className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button
-              type="button"
-              onClick={handleAddStock}
-              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              disabled={!formData.color || !formData.size || !formData.stock}
-            >
-              추가
-            </button>
+            {editingStockIndex !== null ? (
+              <button
+                type="button"
+                onClick={handleUpdateStock}
+                className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              >
+                업데이트
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAddStock}
+                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                추가
+              </button>
+            )}
           </div>
           {/* 등록된 재고 목록 */}
           <div className="mb-4">
@@ -293,23 +353,31 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               {formData.sizeStock.length > 0 ? (
                 formData.sizeStock.map((item, index) => (
                   <li key={index} className="flex justify-between items-center">
-                    {item}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveStock(index)}
-                      className="ml-2 text-red-600 hover:text-red-800"
-                    >
-                      삭제
-                    </button>
+                    {`${item.color}, ${item.size}, ${item.stock}`}
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleEditStock(index)}
+                        className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                      >
+                        수정
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveStock(index)}
+                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                      >
+                        삭제
+                      </button>
+                    </div>
                   </li>
                 ))
               ) : (
-                <li className="text-gray-500">등록된 재고가 없습니다.</li>
+                <li>등록된 재고가 없습니다.</li>
               )}
             </ul>
           </div>
-
-          <div className="flex justify-end gap-2">
+          <div className="flex gap-4">
             <button
               type="button"
               onClick={onClose}
@@ -319,8 +387,8 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
             </button>
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               disabled={isSubmitting}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               {isSubmitting ? "저장 중..." : "저장"}
             </button>
