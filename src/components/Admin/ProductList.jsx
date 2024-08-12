@@ -87,6 +87,7 @@ const ProductList = () => {
   const handleEditClick = (product) => {
     setSelectedProduct(product);
     setIsFormOpen(true);
+    console.log(product);
   };
 
   const handleDeleteClick = (productId) => {
