@@ -56,19 +56,29 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     }
   };
 
+  const isDuplicateStock = (color, size) => {
+    return formData.sizeStock.some(
+      (item) => item.color === color && item.size === size
+    );
+  };
+
   const handleAddStock = () => {
     const { color, size, stock } = formData;
     if (color && size && stock) {
-      setFormData((prevData) => ({
-        ...prevData,
-        sizeStock: [
-          ...prevData.sizeStock,
-          { color, size, stock: parseInt(stock, 10) }, // 객체로 저장
-        ],
-        color: "",
-        size: "",
-        stock: "",
-      }));
+      if (isDuplicateStock(color, size)) {
+        alert("이미 등록된 색상과 사이즈의 재고가 있습니다.");
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          sizeStock: [
+            ...prevData.sizeStock,
+            { color, size, stock: parseInt(stock, 10) }, // 객체로 저장
+          ],
+          color: "",
+          size: "",
+          stock: "",
+        }));
+      }
     } else {
       alert("색상, 사이즈, 재고를 모두 입력해 주세요.");
     }
@@ -125,7 +135,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     data.append("name", formData.name);
     data.append("price", formData.price);
     data.append("content", formData.content);
-    data.append("sizeStock", JSON.stringify(formData.sizeStock));
+    data.append("sizeStock", formData.sizeStock);
     Array.from(formData.image).forEach((file) => data.append("image", file));
     Array.from(formData.contentImage).forEach((file) =>
       data.append("contentImage", file)
