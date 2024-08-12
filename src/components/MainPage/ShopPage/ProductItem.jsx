@@ -28,11 +28,11 @@ const ProductItem = ({ cate, name, price, image, content, inven, link }) => {
           src={imageUrl}
           alt={name}
           className={`absolute inset-0 object-contain w-full h-full transition-opacity duration-300 ${
-            isHovered ? "opacity-0" : "opacity-100"
+            isHovered && image ? "opacity-0" : "opacity-100"
           }`}
         />
         {/* 마우스 오버 이미지 */}
-        {image && (
+        {image && hoverImageUrl && (
           <img
             src={hoverImageUrl}
             alt={`${name} hover`}
