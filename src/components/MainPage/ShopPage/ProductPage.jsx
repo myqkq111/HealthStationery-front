@@ -24,12 +24,18 @@ const ProductPage = () => {
   const [stock, setStock] = useState({}); // 재고 상태 추가
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
-  const uid = JSON.parse(localStorage.getItem("member")).id;
-
+  // 로그인된 유저의 uid 가져오기 (localStorage에서 가져오고, null 처리)
+  const uid = localStorage.getItem("member")
+    ? JSON.parse(localStorage.getItem("member")).id
+    : null;
   useEffect(() => {
     const fetchProduct = () => {
+      // 로그인 상태에 따라 URL 결정
+      const url = uid
+        ? `/product/selectOne?id=${id}&uid=${uid}`
+        : `/product/selectOne?id=${id}`;
       axiosInstance
-        .get(`/product/selectOne?id=${id}&uid=${uid}`)
+        .get(url)
         .then((response) => {
           const productData = response.data;
           console.log(productData);
