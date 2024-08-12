@@ -5,6 +5,7 @@ import ProductReviewSection from "./ProductReviewSection";
 import ProductItem from "./ProductItem";
 import ScrollToTopButton from "../ScrollToTopButton";
 import axiosInstance from "../../api/AxiosInstance";
+import Swal from "sweetalert2";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -198,26 +199,92 @@ const ProductPage = () => {
     const data = new FormData();
     data.append("productId", product.id);
     data.append("memberId", userId);
-    data.append("color", selectedOption);
-    data.append("size", selectedColor);
+    data.append("color", selectedColor);
+    data.append("size", selectedOption);
     data.append("count", quantity);
+
     axiosInstance
-      .post("/basket/insert", data)
+      .post("/basket/check", data)
       .then((response) => {
-        console.log(response.data);
-        setLoading(false);
-        navigate("/cart", {
-          state: {
-            productId: product.id,
-            selectedOption,
-            selectedColor,
-            quantity, // 장바구니에 추가할 수량 (예: 1로 설정)
-          },
-        });
+        if (response.data === 0) {
+          // 장바구니에 없는 상품일 경우
+          axiosInstance
+            .post("/basket/insert", data)
+            .then((response) => {
+              setLoading(false);
+              Swal.fire({
+                title: "상품이 장바구니에 추가되었습니다.",
+                text: "장바구니 페이지로 이동하시겠습니까?",
+                icon: "success",
+                showCancelButton: true,
+                confirmButtonText: "네",
+                cancelButtonText: "아니요",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  navigate("/cart", {
+                    state: {
+                      productId: product.id,
+                      selectedOption,
+                      selectedColor,
+                      quantity,
+                    },
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.error("Error adding to cart:", error);
+              setError("장바구니에 추가하는 도중 오류가 발생했습니다.");
+              setLoading(false);
+            });
+        } else {
+          Swal.fire({
+            title: "이미 장바구니에 등록된 상품입니다.",
+            text: "상품 개수를 증가시키겠습니까?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "확인",
+            cancelButtonText: "취소",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              axiosInstance
+                .put(`/basket/countup?id=${response.data}`)
+                .then(() => {
+                  Swal.fire({
+                    title: "수량이 증가되었습니다.",
+                    text: "장바구니 페이지로 이동하시겠습니까?",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonText: "네",
+                    cancelButtonText: "아니요",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      navigate("/cart", {
+                        state: {
+                          productId: product.id,
+                          selectedOption,
+                          selectedColor,
+                          quantity: quantity + 1,
+                        },
+                      });
+                    }
+                  });
+                })
+                .catch((error) => {
+                  console.error("Failed to increase quantity:", error);
+                  Swal.fire(
+                    "오류",
+                    "장바구니 수량 증가 도중 오류가 발생했습니다.",
+                    "error"
+                  );
+                });
+            }
+          });
+        }
       })
       .catch((error) => {
-        console.error("Error verifying code:", error);
-        setError("인증 코드가 올바르지 않습니다.");
+        console.error("Error verifying cart:", error);
+        setError("장바구니 확인 도중 오류가 발생했습니다.");
         setLoading(false);
       });
   };

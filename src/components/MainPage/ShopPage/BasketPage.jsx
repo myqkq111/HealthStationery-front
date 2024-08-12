@@ -15,10 +15,13 @@ const BasketPage = () => {
 
   useEffect(() => {
     // 페이지가 로드될 때 장바구니 데이터를 서버에서 가져옵니다.
+    const userId = JSON.parse(localStorage.getItem("member")).id;
+
     axiosInstance
-      .get("/basket/cart") // 서버의 장바구니 데이터 API 경로
+      .get(`/basket/cart?memberId=${userId}`) // 서버의 장바구니 데이터 API 경로
       .then((response) => {
-        setCartItems(response.data.cartItems); // 서버 응답에서 장바구니 아이템 가져오기
+        console.log(response.data);
+        setCartItems(response.data); // 서버 응답에서 장바구니 아이템 가져오기
         setLoading(false); // 로딩 상태 업데이트
       })
       .catch((error) => {
@@ -173,7 +176,7 @@ const BasketPage = () => {
                     <td className="py-4 px-4 border-r border-gray-300 text-center">
                       <div className="flex flex-col items-center space-y-2">
                         <span className="text-lg font-semibold">
-                          {item.quantity}
+                          {item.count}
                         </span>
                         <button
                           onClick={() => openModal(item)}
@@ -185,7 +188,7 @@ const BasketPage = () => {
                     </td>
                     <td className="py-4 px-4 border-gray-300">
                       <span>
-                        {(item.price * item.quantity).toLocaleString()} 원
+                        {(item.price * item.count).toLocaleString()} 원
                       </span>
                       <div className="mt-2 flex items-center">
                         <button
