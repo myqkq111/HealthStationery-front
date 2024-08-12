@@ -22,16 +22,16 @@ const ProductPage = () => {
   const [stock, setStock] = useState({}); // 재고 상태 추가
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
-
+  const uid = JSON.parse(localStorage.getItem("member")).id;
   useEffect(() => {
     const fetchProduct = () => {
       axiosInstance
-        .get(`/product/selectOne?id=${id}`)
+        .get(`/product/selectOne?id=${id}&uid=${uid}`)
         .then((response) => {
           const productData = response.data;
           console.log(productData);
           setProduct(productData);
-
+          if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
           const strImage = productData.strImage.split(",");
           const defaultImage = strImage[0]
@@ -72,8 +72,7 @@ const ProductPage = () => {
         });
     };
     fetchProduct();
-  }, [id]);
-
+  }, [id, uid]);
   // 상품이 없는 경우에는 빈 상태로 초기화
   const [mainImage, setMainImage] = useState(); // 초기 이미지 설정
   const [fade, setFade] = useState(false);
@@ -193,33 +192,39 @@ const ProductPage = () => {
     }
   };
 
-  const handleGoToCart = () => {
-    const userId = JSON.parse(localStorage.getItem("member")).id;
-    const data = new FormData();
-    data.append("productId", product.id);
-    data.append("memberId", userId);
-    data.append("color", selectedOption);
-    data.append("size", selectedColor);
-    data.append("count", quantity);
-    axiosInstance
-      .post("/basket/insert", data)
-      .then((response) => {
-        console.log(response.data);
-        setLoading(false);
-        navigate("/cart", {
-          state: {
-            productId: product.id,
-            selectedOption,
-            selectedColor,
-            quantity, // 장바구니에 추가할 수량 (예: 1로 설정)
-          },
+  // 찜
+  const [isLiked, setIsLiked] = useState(false); // 찜 상태 관리
+
+  const handleWishlistToggle = async () => {
+    const newLikedStatus = !isLiked;
+
+    if (newLikedStatus) {
+      axiosInstance
+        .post("/wishlist/add", {
+          productId: product.id,
+          memberId: uid,
+        })
+        .then(() => {
+          setIsLiked(newLikedStatus);
+        })
+        .catch((error) => {
+          console.error("찜 목록 추가 실패:", error);
         });
-      })
-      .catch((error) => {
-        console.error("Error verifying code:", error);
-        setError("인증 코드가 올바르지 않습니다.");
-        setLoading(false);
-      });
+    } else {
+      axiosInstance
+        .delete("/wishlist/remove", {
+          data: {
+            productId: product.id,
+            memberId: uid,
+          },
+        })
+        .then(() => {
+          setIsLiked(newLikedStatus);
+        })
+        .catch((error) => {
+          console.error("찜 목록 제거 실패:", error);
+        });
+    }
   };
 
   // 서버에서 관련 상품 데이터 가져오기
@@ -448,20 +453,23 @@ const ProductPage = () => {
                 </button>
 
                 {/* 장바구니 버튼 */}
-                <button
+                {/* <button
                   type="button"
                   className="bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs"
                   onClick={handleGoToCart} // 클릭 시 장바구니 페이지로 이동
                 >
                   장바구니
-                </button>
+                </button> */}
 
                 {/* 찜(하트) 버튼 */}
                 <button
                   type="button"
-                  className="bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs"
+                  onClick={handleWishlistToggle}
+                  className={`bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs ${
+                    isLiked ? "text-red-500" : ""
+                  }`}
                 >
-                  ❤
+                  {isLiked ? "❤" : "🤍"}
                 </button>
               </div>
             </form>
