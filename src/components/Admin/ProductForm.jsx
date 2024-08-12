@@ -32,6 +32,11 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         size: "",
         stock: "",
       });
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        sizeStock: [], // 추가 시 재고 리스트를 빈 배열로 초기화합니다.
+      }));
     }
   }, [product]);
 
@@ -50,6 +55,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
       }));
     }
   };
+
   const handleAddStock = () => {
     const { color, size, stock } = formData;
     if (color && size && stock) {
@@ -57,7 +63,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
         ...prevData,
         sizeStock: [
           ...prevData.sizeStock,
-          { color, size, stock: parseInt(stock, 10) },
+          { color, size, stock: parseInt(stock, 10) }, // 객체로 저장
         ],
         color: "",
         size: "",
@@ -84,7 +90,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
           color,
           size,
           stock: parseInt(stock, 10),
-        };
+        }; // 객체로 업데이트
         return {
           ...prevData,
           sizeStock: updatedSizeStock,
@@ -114,18 +120,12 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Save sizeStock from formData back to product.list
-    const updatedProduct = {
-      ...product,
-      list: formData.sizeStock, // update product.list with formData.sizeStock
-    };
-
     const data = new FormData();
     data.append("cate", formData.cate);
     data.append("name", formData.name);
     data.append("price", formData.price);
     data.append("content", formData.content);
-    data.append("sizeStock", formData.sizeStock);
+    data.append("sizeStock", JSON.stringify(formData.sizeStock));
     Array.from(formData.image).forEach((file) => data.append("image", file));
     Array.from(formData.contentImage).forEach((file) =>
       data.append("contentImage", file)
@@ -246,7 +246,7 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               htmlFor="content"
               className="block text-sm font-medium text-gray-700"
             >
-              상품 설명
+              설명
             </label>
             <textarea
               id="content"
@@ -353,7 +353,8 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               {formData.sizeStock.length > 0 ? (
                 formData.sizeStock.map((item, index) => (
                   <li key={index} className="flex justify-between items-center">
-                    {`${item.color}, ${item.size}, ${item.stock}`}
+                    {`${item.color}, ${item.size}, ${item.stock}`}{" "}
+                    {/* 문자열로 렌더링 */}
                     <div className="flex gap-2">
                       <button
                         type="button"
