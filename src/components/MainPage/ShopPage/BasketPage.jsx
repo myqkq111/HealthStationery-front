@@ -40,7 +40,18 @@ const BasketPage = () => {
   };
 
   const handleRemoveItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
+      axiosInstance
+        .delete(`/basket/delete?id=${id}`)
+        .then(() => {
+          setCartItems((prevItems) =>
+            prevItems.filter((item) => item.id !== id)
+          );
+        })
+        .catch((error) => {
+          console.error("Failed to delete product", error);
+        });
+    }
   };
 
   const handleBuyNow = (item) => {
