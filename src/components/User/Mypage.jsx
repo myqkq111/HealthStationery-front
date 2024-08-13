@@ -31,6 +31,7 @@ const MyPage = () => {
         });
     }
   }, []);
+
   useEffect(() => {
     localStorage.setItem("myPageActiveTab", activeTab);
   }, [activeTab]);
@@ -113,16 +114,19 @@ const MyPage = () => {
           >
             회원 탈퇴
           </button>
-          <button
-            onClick={() => handleTabClick("resetPassword")}
-            className={`px-4 py-2 ${
-              activeTab === "resetPassword"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700"
-            } hover:bg-blue-700 transition duration-300`}
-          >
-            비밀번호 재설정
-          </button>
+          {/* 비밀번호 재설정 버튼은 cate가 "home"인 경우에만 표시 */}
+          {userInfo && userInfo.cate === "home" && (
+            <button
+              onClick={() => handleTabClick("resetPassword")}
+              className={`px-4 py-2 ${
+                activeTab === "resetPassword"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              } hover:bg-blue-700 transition duration-300`}
+            >
+              비밀번호 재설정
+            </button>
+          )}
         </div>
       </div>
 
