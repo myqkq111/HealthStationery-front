@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import UpdateProfile from "./UpdateProfile";
 import DeleteUser from "./DeleteUser";
 import UpdatePassword from "./UpdatePassword";
+import OrderList from "./BuyList";
 import Favorite from "./Favorite";
 import axiosInstance from "../api/AxiosInstance";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import BuyList from "./BuyList";
 
 const MyPage = () => {
   const [activeTab, setActiveTab] = useState(() => {
@@ -134,26 +138,26 @@ const MyPage = () => {
       <div className="flex-1 ml-64 p-6 bg-gray-100">
         {/* 사용자 정보 표시 */}
         {userInfo && (
-          <div className="mb-6 p-4 bg-white shadow rounded">
-            <h2 className="text-xl font-semibold mb-2">회원정보</h2>
-            <p>
-              <strong>이름 :</strong> {userInfo.name}
-            </p>
-            <p>
-              <strong>이메일 :</strong> {userInfo.email}
-            </p>
-            <p>
-              <strong>연락처 :</strong> {userInfo.tell}
-            </p>
-            <p>
-              <strong>주소 : </strong>
-              {userInfo.roadaddr && userInfo.detailaddr
-                ? `${userInfo.roadaddr} ${userInfo.detailaddr}`
-                : "정보 없음"}
-            </p>
-            <p>
-              <strong>생년월일 :</strong>{" "}
-              {formatDate(userInfo.birth) || "정보 없음"}
+          <div className="mb-6 p-4 bg-white flex items-center ">
+            {/* 기본 프로필 이미지 */}
+            <div
+              className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300 mr-4 cursor-pointer"
+              onClick={() => {
+                setActiveTab("updateProfile");
+                setIsUpdateProfileOpen(true);
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faUser}
+                className="text-gray-600"
+                style={{ fontSize: "2rem" }}
+              />
+            </div>
+            <p className="text-xl font-semibold mb-2">
+              <strong>
+                {userInfo.name}님 헬스문방구에 방문해주셔서 감사합니다!
+                어서오세요!
+              </strong>
             </p>
           </div>
         )}
@@ -174,6 +178,7 @@ const MyPage = () => {
           <UpdatePassword onClose={() => setIsPasswordModalOpen(false)} />
         )}
         {activeTab === "view" && <Favorite />}
+        {activeTab === "buylist" && <BuyList />}
       </div>
     </div>
   );
