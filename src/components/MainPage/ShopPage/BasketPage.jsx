@@ -165,7 +165,7 @@ const BasketPage = () => {
                     </td>
                     <td className="py-4 px-4 flex items-center border-r border-gray-300">
                       <img
-                        src={item.image}
+                        src={`/images/products/${item.cate}/1.JPG`}
                         alt={item.name}
                         className="w-24 h-24 object-cover rounded-md"
                       />
