@@ -22,9 +22,9 @@ const UpdatePassword = ({ onClose }) => {
     const user = JSON.parse(localStorage.getItem("member"));
     const { cate } = user;
     if (cate !== "home") {
-      setStep(2);
+      onclose();
     }
-  }, []);
+  }, [onClose]);
 
   const validatePassword = (password) => {
     const hasNumber = /[0-9]/.test(password);
