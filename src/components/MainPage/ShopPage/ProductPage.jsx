@@ -24,10 +24,12 @@ const ProductPage = () => {
   const [stock, setStock] = useState({}); // 재고 상태 추가
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
+
   // 로그인된 유저의 uid 가져오기 (localStorage에서 가져오고, null 처리)
   const uid = localStorage.getItem("member")
     ? JSON.parse(localStorage.getItem("member")).id
     : null;
+
   useEffect(() => {
     const fetchProduct = () => {
       // 로그인 상태에 따라 URL 결정
@@ -105,6 +107,36 @@ const ProductPage = () => {
         top: ref.current.offsetTop,
         behavior: "smooth",
       });
+    }
+  };
+
+  // 로그인 상태 확인 함수
+  const checkLoginStatus = () => {
+    return !!localStorage.getItem("member"); // 사용자 정보가 있으면 true, 없으면 false
+  };
+
+  // 로그인 알림 표시 및 페이지 리디렉션
+  const handleLoginPrompt = () => {
+    Swal.fire({
+      title: "로그인 필요",
+      text: "로그인 후 이용할 수 있습니다. 로그인 하시겠습니까?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "로그인",
+      cancelButtonText: "취소",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/login"); // 로그인 페이지로 이동
+      }
+    });
+  };
+
+  // 버튼 클릭 핸들러
+  const handleButtonClick = (action) => {
+    if (!checkLoginStatus()) {
+      handleLoginPrompt();
+    } else {
+      action();
     }
   };
 
@@ -191,12 +223,6 @@ const ProductPage = () => {
       setColorError(false);
     }
 
-    const maxStock = stock[selectedColor]?.[selectedOption] || 0;
-    if (quantity > maxStock) {
-      alert(`재고가 부족합니다. 최대 수량은 ${maxStock}개입니다.`);
-      valid = false;
-    }
-
     if (valid) {
       navigate("/payment", {
         state: {
@@ -217,6 +243,29 @@ const ProductPage = () => {
     data.append("color", selectedColor);
     data.append("size", selectedOption);
     data.append("count", quantity);
+
+    // 색상, 사이즈, 수량 선택 여부 확인
+    if (!selectedColor || !selectedOption || quantity <= 0) {
+      Swal.fire({
+        title: "선택 사항이 누락되었습니다.",
+        text: "색상, 사이즈, 수량을 모두 선택해 주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
+      return; // 선택이 완료되지 않으면 함수 종료
+    }
+
+    const maxStock = stock[selectedColor]?.[selectedOption] || 0;
+
+    if (quantity > maxStock) {
+      Swal.fire({
+        title: "재고 부족",
+        text: `재고가 부족합니다. 최대 수량은 ${maxStock}개입니다.`,
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
+      return; // 수량이 재고를 초과하면 함수 종료
+    }
 
     axiosInstance
       .post("/basket/check", data)
@@ -557,7 +606,7 @@ const ProductPage = () => {
                 <button
                   type="submit"
                   className="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition duration-300 ease-in-out flex-1 max-w-xs"
-                  onclick={handleSubmit}
+                  onClick={() => handleButtonClick(handleSubmit)}
                 >
                   바로 구매
                 </button>
@@ -566,7 +615,7 @@ const ProductPage = () => {
                 <button
                   type="button"
                   className="bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs"
-                  onClick={handleGoToCart} // 클릭 시 장바구니 페이지로 이동
+                  onClick={() => handleButtonClick(handleGoToCart)}
                 >
                   장바구니
                 </button>
@@ -574,7 +623,7 @@ const ProductPage = () => {
                 {/* 찜(하트) 버튼 */}
                 <button
                   type="button"
-                  onClick={handleWishlistToggle}
+                  onClick={() => handleButtonClick(handleWishlistToggle)}
                   className={`bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs ${
                     isLiked ? "text-red-500" : ""
                   }`}
