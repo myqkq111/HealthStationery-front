@@ -6,6 +6,7 @@ import ProductItem from "./ProductItem";
 import ScrollToTopButton from "../ScrollToTopButton";
 import axiosInstance from "../../api/AxiosInstance";
 import Swal from "sweetalert2";
+import InquiryList from "./InquiryList";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -13,6 +14,7 @@ const ProductPage = () => {
   const [product, setProduct] = useState();
   const [error, setError] = useState(null);
   const [thumbnails, setThumbnails] = useState([]);
+  const [inquiries, setInquiries] = useState("");
   const [options, setOptions] = useState({ sizes: [], colors: [] });
   const [contentImages, setContentImages] = useState([]); // 추가된 상태
   const [selectedOption, setSelectedOption] = useState("");
@@ -39,8 +41,9 @@ const ProductPage = () => {
       axiosInstance
         .get(url)
         .then((response) => {
-          const productData = response.data;
-          console.log(productData);
+          const productDetailsMap = response.data;
+          const productData = productDetailsMap.product;
+          setInquiries(productDetailsMap.inquiries);
           setProduct(productData);
           if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
@@ -98,6 +101,7 @@ const ProductPage = () => {
 
   const detailsRef = useRef(null);
   const reviewRef = useRef(null);
+  const Inquiry = useRef(null);
 
   // const defaultImage = `/images/products/${[product.cate]}/1.JPG`;
 
@@ -355,7 +359,7 @@ const ProductPage = () => {
   // 찜
   const [isLiked, setIsLiked] = useState(false); // 찜 상태 관리
 
-  const handleWishlistToggle = async () => {
+  const handleWishlistToggle = () => {
     const newLikedStatus = !isLiked;
 
     if (newLikedStatus) {
@@ -636,8 +640,7 @@ const ProductPage = () => {
         </div>
 
         {/* 중단 영역 */}
-        <div className="border border-gray-300 rounded-lg bg-white flex mb-8">
-          {/* 좌측 영역 */}
+        <div className="border border-gray-300  bg-white flex mb-8">
           <div className="flex-1 p-2 border-r border-gray-300 text-center">
             <p
               className="text-gray-700 font-medium cursor-pointer"
@@ -647,13 +650,20 @@ const ProductPage = () => {
             </p>
           </div>
 
-          {/* 우측 영역 */}
-          <div className="flex-1 p-2 text-center">
+          <div className="flex-1 p-2 border-r border-gray-300 text-center">
             <p
               className="text-gray-700 font-medium cursor-pointer"
               onClick={() => scrollToSection(reviewRef)}
             >
               리뷰
+            </p>
+          </div>
+          <div className="flex-1 p-2 text-center">
+            <p
+              className="text-gray-700 font-medium cursor-pointer"
+              onClick={() => scrollToSection(Inquiry)}
+            >
+              문의 게시판
             </p>
           </div>
         </div>
@@ -766,6 +776,11 @@ const ProductPage = () => {
         <div ref={reviewRef}>
           <ProductReviewSection productId={product.id} />
         </div>
+
+        <div ref={Inquiry} className="mb-4">
+          <InquiryList Inquiry={inquiries} />
+        </div>
+
         <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {relatedProducts.map((product) => (
@@ -782,6 +797,7 @@ const ProductPage = () => {
           ))}
         </div>
       </div>
+
       <ScrollToTopButton />
     </div>
   );
