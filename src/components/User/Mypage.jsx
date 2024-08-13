@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import UpdateProfile from "./UpdateProfile";
 import DeleteUser from "./DeleteUser";
 import UpdatePassword from "./UpdatePassword";
-import OrderList from "./BuyList";
+import BuyList from "./BuyList"; // 중복 import 제거
 import Favorite from "./Favorite";
 import axiosInstance from "../api/AxiosInstance";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import BuyList from "./BuyList";
 
 const MyPage = () => {
   const [activeTab, setActiveTab] = useState(() => {
@@ -19,6 +18,7 @@ const MyPage = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("member"));
     if (user) {
@@ -41,10 +41,10 @@ const MyPage = () => {
   }, [activeTab]);
 
   const handleProfileUpdate = (updatedInfo) => {
-    // Update local storage or perform any additional actions after profile update
     localStorage.setItem("member", JSON.stringify(updatedInfo));
     setIsUpdateProfileOpen(false);
   };
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
 
@@ -57,21 +57,14 @@ const MyPage = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "정보 없음";
-    const date = new Date(dateString);
-    return date.toLocaleDateString(); // 로케일에 맞는 날짜 형식으로 변환
-  };
-
   return (
     <div className="flex min-h-screen">
-      {/* 왼쪽 사이드바 */}
       <div className="w-64 bg-gray-200 p-4 border-r border-gray-300 fixed h-full">
         <div className="flex flex-col space-y-2">
           <button
-            onClick={() => setActiveTab("orders")}
+            onClick={() => setActiveTab("buylist")}
             className={`px-4 py-2 ${
-              activeTab === "orders"
+              activeTab === "buylist"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
             } hover:bg-blue-700 transition duration-300`}
@@ -79,7 +72,7 @@ const MyPage = () => {
             주문 조회
           </button>
           <button
-            onClick={() => handleTabClick("view")}
+            onClick={() => setActiveTab("view")}
             className={`px-4 py-2 ${
               activeTab === "view"
                 ? "bg-blue-600 text-white"
