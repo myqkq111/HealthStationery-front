@@ -2,19 +2,23 @@ import React, { useState, useEffect } from "react";
 import UpdateProfile from "./UpdateProfile";
 import DeleteUser from "./DeleteUser";
 import UpdatePassword from "./UpdatePassword";
+import BuyList from "./BuyList"; // 중복 import 제거
 import Favorite from "./Favorite";
 import axiosInstance from "../api/AxiosInstance";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 const MyPage = () => {
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem("myPageActiveTab");
-    return savedTab ? savedTab : "orders";
+    return savedTab ? savedTab : "buylist";
   });
 
   const [isUpdateProfileOpen, setIsUpdateProfileOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("member"));
     if (user) {
@@ -37,10 +41,10 @@ const MyPage = () => {
   }, [activeTab]);
 
   const handleProfileUpdate = (updatedInfo) => {
-    // Update local storage or perform any additional actions after profile update
     localStorage.setItem("member", JSON.stringify(updatedInfo));
     setIsUpdateProfileOpen(false);
   };
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
 
@@ -53,21 +57,14 @@ const MyPage = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "정보 없음";
-    const date = new Date(dateString);
-    return date.toLocaleDateString(); // 로케일에 맞는 날짜 형식으로 변환
-  };
-
   return (
     <div className="flex min-h-screen">
-      {/* 왼쪽 사이드바 */}
       <div className="w-64 bg-gray-200 p-4 border-r border-gray-300 fixed h-full">
         <div className="flex flex-col space-y-2">
           <button
-            onClick={() => setActiveTab("orders")}
+            onClick={() => setActiveTab("buylist")}
             className={`px-4 py-2 ${
-              activeTab === "orders"
+              activeTab === "buylist"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
             } hover:bg-blue-700 transition duration-300`}
@@ -75,7 +72,7 @@ const MyPage = () => {
             주문 조회
           </button>
           <button
-            onClick={() => handleTabClick("view")}
+            onClick={() => setActiveTab("view")}
             className={`px-4 py-2 ${
               activeTab === "view"
                 ? "bg-blue-600 text-white"
@@ -134,26 +131,26 @@ const MyPage = () => {
       <div className="flex-1 ml-64 p-6 bg-gray-100">
         {/* 사용자 정보 표시 */}
         {userInfo && (
-          <div className="mb-6 p-4 bg-white shadow rounded">
-            <h2 className="text-xl font-semibold mb-2">회원정보</h2>
-            <p>
-              <strong>이름 :</strong> {userInfo.name}
-            </p>
-            <p>
-              <strong>이메일 :</strong> {userInfo.email}
-            </p>
-            <p>
-              <strong>연락처 :</strong> {userInfo.tell}
-            </p>
-            <p>
-              <strong>주소 : </strong>
-              {userInfo.roadaddr && userInfo.detailaddr
-                ? `${userInfo.roadaddr} ${userInfo.detailaddr}`
-                : "정보 없음"}
-            </p>
-            <p>
-              <strong>생년월일 :</strong>{" "}
-              {formatDate(userInfo.birth) || "정보 없음"}
+          <div className="mb-6 p-4 bg-white flex items-center ">
+            {/* 기본 프로필 이미지 */}
+            <div
+              className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300 mr-4 cursor-pointer"
+              onClick={() => {
+                setActiveTab("updateProfile");
+                setIsUpdateProfileOpen(true);
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faUser}
+                className="text-gray-600"
+                style={{ fontSize: "2rem" }}
+              />
+            </div>
+            <p className="text-xl font-semibold mb-2">
+              <strong>
+                {userInfo.name}님 헬스문방구에 방문해주셔서 감사합니다!
+                어서오세요!
+              </strong>
             </p>
           </div>
         )}
@@ -174,6 +171,7 @@ const MyPage = () => {
           <UpdatePassword onClose={() => setIsPasswordModalOpen(false)} />
         )}
         {activeTab === "view" && <Favorite />}
+        {activeTab === "buylist" && <BuyList />}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import ProductItem from "./ProductItem";
 import ScrollToTopButton from "../ScrollToTopButton";
 import axiosInstance from "../../api/AxiosInstance";
 import Swal from "sweetalert2";
+import InquiryList from "./InquiryList";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -13,6 +14,7 @@ const ProductPage = () => {
   const [product, setProduct] = useState();
   const [error, setError] = useState(null);
   const [thumbnails, setThumbnails] = useState([]);
+  const [inquiries, setInquiries] = useState("");
   const [options, setOptions] = useState({ sizes: [], colors: [] });
   const [contentImages, setContentImages] = useState([]); // 추가된 상태
   const [selectedOption, setSelectedOption] = useState("");
@@ -24,10 +26,12 @@ const ProductPage = () => {
   const [stock, setStock] = useState({}); // 재고 상태 추가
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
+
   // 로그인된 유저의 uid 가져오기 (localStorage에서 가져오고, null 처리)
   const uid = localStorage.getItem("member")
     ? JSON.parse(localStorage.getItem("member")).id
     : null;
+
   useEffect(() => {
     const fetchProduct = () => {
       // 로그인 상태에 따라 URL 결정
@@ -37,8 +41,10 @@ const ProductPage = () => {
       axiosInstance
         .get(url)
         .then((response) => {
-          const productData = response.data;
-          console.log(productData);
+          const productDetailsMap = response.data;
+          const productData = productDetailsMap.product;
+          console.log(productDetailsMap.inquiries);
+          setInquiries(productDetailsMap.inquiries);
           setProduct(productData);
           if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
@@ -96,6 +102,7 @@ const ProductPage = () => {
 
   const detailsRef = useRef(null);
   const reviewRef = useRef(null);
+  const Inquiry = useRef(null);
 
   // const defaultImage = `/images/products/${[product.cate]}/1.JPG`;
 
@@ -105,6 +112,36 @@ const ProductPage = () => {
         top: ref.current.offsetTop,
         behavior: "smooth",
       });
+    }
+  };
+
+  // 로그인 상태 확인 함수
+  const checkLoginStatus = () => {
+    return !!localStorage.getItem("member"); // 사용자 정보가 있으면 true, 없으면 false
+  };
+
+  // 로그인 알림 표시 및 페이지 리디렉션
+  const handleLoginPrompt = () => {
+    Swal.fire({
+      title: "로그인 필요",
+      text: "로그인 후 이용할 수 있습니다. 로그인 하시겠습니까?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "로그인",
+      cancelButtonText: "취소",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/login"); // 로그인 페이지로 이동
+      }
+    });
+  };
+
+  // 버튼 클릭 핸들러
+  const handleButtonClick = (action) => {
+    if (!checkLoginStatus()) {
+      handleLoginPrompt();
+    } else {
+      action();
     }
   };
 
@@ -191,12 +228,6 @@ const ProductPage = () => {
       setColorError(false);
     }
 
-    const maxStock = stock[selectedColor]?.[selectedOption] || 0;
-    if (quantity > maxStock) {
-      alert(`재고가 부족합니다. 최대 수량은 ${maxStock}개입니다.`);
-      valid = false;
-    }
-
     if (valid) {
       navigate("/payment", {
         state: {
@@ -217,6 +248,29 @@ const ProductPage = () => {
     data.append("color", selectedColor);
     data.append("size", selectedOption);
     data.append("count", quantity);
+
+    // 색상, 사이즈, 수량 선택 여부 확인
+    if (!selectedColor || !selectedOption || quantity <= 0) {
+      Swal.fire({
+        title: "선택 사항이 누락되었습니다.",
+        text: "색상, 사이즈, 수량을 모두 선택해 주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
+      return; // 선택이 완료되지 않으면 함수 종료
+    }
+
+    const maxStock = stock[selectedColor]?.[selectedOption] || 0;
+
+    if (quantity > maxStock) {
+      Swal.fire({
+        title: "재고 부족",
+        text: `재고가 부족합니다. 최대 수량은 ${maxStock}개입니다.`,
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
+      return; // 수량이 재고를 초과하면 함수 종료
+    }
 
     axiosInstance
       .post("/basket/check", data)
@@ -306,7 +360,7 @@ const ProductPage = () => {
   // 찜
   const [isLiked, setIsLiked] = useState(false); // 찜 상태 관리
 
-  const handleWishlistToggle = async () => {
+  const handleWishlistToggle = () => {
     const newLikedStatus = !isLiked;
 
     if (newLikedStatus) {
@@ -557,7 +611,7 @@ const ProductPage = () => {
                 <button
                   type="submit"
                   className="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition duration-300 ease-in-out flex-1 max-w-xs"
-                  onclick={handleSubmit}
+                  onClick={() => handleButtonClick(handleSubmit)}
                 >
                   바로 구매
                 </button>
@@ -566,7 +620,7 @@ const ProductPage = () => {
                 <button
                   type="button"
                   className="bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs"
-                  onClick={handleGoToCart} // 클릭 시 장바구니 페이지로 이동
+                  onClick={() => handleButtonClick(handleGoToCart)}
                 >
                   장바구니
                 </button>
@@ -574,7 +628,7 @@ const ProductPage = () => {
                 {/* 찜(하트) 버튼 */}
                 <button
                   type="button"
-                  onClick={handleWishlistToggle}
+                  onClick={() => handleButtonClick(handleWishlistToggle)}
                   className={`bg-white text-black border border-gray-300 px-6 py-3 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out flex-1 max-w-xs ${
                     isLiked ? "text-red-500" : ""
                   }`}
@@ -587,8 +641,7 @@ const ProductPage = () => {
         </div>
 
         {/* 중단 영역 */}
-        <div className="border border-gray-300 rounded-lg bg-white flex mb-8">
-          {/* 좌측 영역 */}
+        <div className="border border-gray-300  bg-white flex mb-8">
           <div className="flex-1 p-2 border-r border-gray-300 text-center">
             <p
               className="text-gray-700 font-medium cursor-pointer"
@@ -598,13 +651,20 @@ const ProductPage = () => {
             </p>
           </div>
 
-          {/* 우측 영역 */}
-          <div className="flex-1 p-2 text-center">
+          <div className="flex-1 p-2 border-r border-gray-300 text-center">
             <p
               className="text-gray-700 font-medium cursor-pointer"
               onClick={() => scrollToSection(reviewRef)}
             >
               리뷰
+            </p>
+          </div>
+          <div className="flex-1 p-2 text-center">
+            <p
+              className="text-gray-700 font-medium cursor-pointer"
+              onClick={() => scrollToSection(Inquiry)}
+            >
+              문의 게시판
             </p>
           </div>
         </div>
@@ -714,9 +774,14 @@ const ProductPage = () => {
         </div>
 
         {/* 상품 리뷰 섹션 */}
-        <div ref={reviewRef}>
+        <div ref={reviewRef} className="">
           <ProductReviewSection productId={product.id} />
         </div>
+
+        <div ref={Inquiry} className="mb-4">
+          <InquiryList Inquiry={inquiries} />
+        </div>
+
         <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {relatedProducts.map((product) => (
@@ -733,6 +798,7 @@ const ProductPage = () => {
           ))}
         </div>
       </div>
+
       <ScrollToTopButton />
     </div>
   );
