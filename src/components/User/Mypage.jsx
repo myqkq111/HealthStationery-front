@@ -79,7 +79,7 @@ const MyPage = () => {
                 : "bg-gray-200 text-gray-700"
             } hover:bg-blue-700 transition duration-300`}
           >
-            좋아요
+            찜 목록
           </button>
           <button
             onClick={() => handleTabClick("updateProfile")}
