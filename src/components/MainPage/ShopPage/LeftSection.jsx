@@ -1,29 +1,16 @@
 import React, { useState } from "react";
 import Address from "../../../openApi/Address";
-import axiosInstance from "../../api/AxiosInstance";
 
-const LeftSection = ({
-  product,
-  user,
-  deliveryMemo,
-  setDeliveryMemo,
-  customMemo,
-  setCustomMemo,
-  onSave, // 추가된 prop
-}) => {
-  const { image, name, price } = product || {};
-  const { username, email, tell, roadaddr, detailaddr, mailaddr } = user || {};
+const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
+  const { id, name, email, tell, roadaddr, detailaddr, mailaddr } = user || {};
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(username);
+  const [editName, setEditName] = useState(name);
   const [editTell, setEditTell] = useState(tell);
   const [editMailaddr, setEditMailaddr] = useState(mailaddr);
   const [editRoadaddr, setEditRoadaddr] = useState(roadaddr);
   const [editDetailaddr, setEditDetailaddr] = useState(detailaddr);
   const [activeTab, setActiveTab] = useState("existing");
-
-  const handleMemoChange = (event) => {
-    setDeliveryMemo(event.target.value);
-  };
+  const [customRequest, setCustomRequest] = useState("");
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
@@ -31,55 +18,62 @@ const LeftSection = ({
 
   const saveChanges = () => {
     const updatedDeliveryInfo = {
+      id: id,
       name: editName,
+      email: email,
       tell: editTell,
       mailaddr: editMailaddr,
       roadaddr: editRoadaddr,
       detailaddr: editDetailaddr,
     };
-
-    axiosInstance
-      .post("/updateBuyList", updatedDeliveryInfo, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then((response) => {
-        console.log("배송 정보 업데이트 성공:", response.data);
-
-        // 부모 컴포넌트로 변경된 정보 전달
-        if (onSave) {
-          onSave(updatedDeliveryInfo);
-        }
-      })
-      .catch((error) => {
-        console.error("배송 정보 업데이트 오류:", error);
-      });
-
+    setOrderInfo(updatedDeliveryInfo);
     toggleEdit();
+  };
+
+  const handleRequestChange = (event) => {
+    setRequest(event.target.value);
+  };
+
+  const handleCustomRequestChange = (event) => {
+    setCustomRequest(event.target.value);
+    setRequest(event.target.value); // Automatically update request with textarea input
   };
 
   return (
     <div className="w-full lg:w-full lg:pr-2">
       <div className="mb-4 bg-white p-4 ">
         <h2 className="text-xl font-semibold mb-4">주문 상품 정보</h2>
-        <div className="flex items-center mb-4">
-          <img
-            src={image}
-            alt={name}
-            className="w-20 h-20 object-cover rounded-lg"
-          />
-          <div className="ml-4">
-            <h3 className="text-lg font-semibold">{name}</h3>
-            <p className="text-gray-600">{price}</p>
+        {product.map((item) => (
+          <div className="flex items-center mb-4">
+            <img
+              src={`/images/products/${item.cate}/${
+                item.strImage.split(",")[0]
+              }`}
+              alt={item.name}
+              className="w-20 h-20 object-cover rounded-lg"
+            />
+            <div className="ml-4">
+              <h3 className="text-lg font-semibold">{item.name}</h3>
+              <p className="text-gray-600">가격 : {item.price}원</p>
+              <p className="text-gray-600">
+                옵션 : {item.color} / {item.size}
+              </p>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
-
       <div className="mb-4 bg-white p-4 ">
         <h2 className="text-xl font-semibold mb-4">주문자 정보</h2>
         <div>
-          <p className="text-gray-700 font-bold">{username}</p>
-          <p className="text-gray-700">{tell}</p>
-          <p className="text-gray-700">{email}</p>
+          <p className="text-gray-700 font-bold">
+            {JSON.parse(localStorage.getItem("member")).name}
+          </p>
+          <p className="text-gray-700">
+            {JSON.parse(localStorage.getItem("member")).tell}
+          </p>
+          <p className="text-gray-700">
+            {JSON.parse(localStorage.getItem("member")).email}
+          </p>
         </div>
       </div>
 
@@ -170,7 +164,7 @@ const LeftSection = ({
         ) : (
           <div>
             <div>
-              <p className="text-gray-700 font-semibold">{username}</p>
+              <p className="text-gray-700 font-semibold">{name}</p>
               <p className="text-gray-700">{tell}</p>
               <p className="text-gray-700 font-semibold">{roadaddr}</p>
               <p className="text-gray-700 font-semibold">{detailaddr}</p>
@@ -186,34 +180,45 @@ const LeftSection = ({
         )}
 
         <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-4">배송 메모</h3>
+          <h3 className="text-lg font-semibold mb-4">배송 요청</h3>
           <div className="mb-4">
             <label className="block mb-2 text-gray-700 font-semibold">
-              배송 메시지 선택
+              요청 메시지 선택
             </label>
             <select
-              value={deliveryMemo}
-              onChange={handleMemoChange}
+              onChange={(e) => setRequest(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg"
             >
-              <option value="default">기본 메시지 선택</option>
-              <option value="leaveAtDoor">문 앞에 놓아주세요</option>
-              <option value="callBeforeDelivery">배송 전 연락주세요</option>
-              <option value="noSpecificInstructions">특별 요청 없음</option>
+              <option value="">기본 메시지 선택</option>
+              <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
+              <option value="배송 전 연락주세요">배송 전 연락주세요</option>
               <option value="custom">직접 입력</option>
             </select>
           </div>
-          {deliveryMemo === "custom" && (
+          {/* {request === "custom" && (
             <div className="mt-4">
               <label className="block mb-2 text-gray-700 font-semibold">
                 직접 입력
               </label>
               <textarea
-                value={customMemo}
-                onChange={(e) => setCustomMemo(e.target.value)}
+                onChange={(e) => setRequest(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-lg"
                 rows="4"
                 placeholder="배송 메모를 직접 입력하세요."
+              />
+            </div>
+          )} */}
+          {request === "custom" && (
+            <div className="mt-4">
+              <label className="block mb-2 text-gray-700 font-semibold">
+                직접 입력
+              </label>
+              <textarea
+                value={customRequest}
+                onChange={handleCustomRequestChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                rows="4"
+                placeholder="배송 요청을 직접 입력하세요."
               />
             </div>
           )}
