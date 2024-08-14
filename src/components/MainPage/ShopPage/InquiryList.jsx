@@ -12,7 +12,6 @@ const InquiryList = ({ Inquiry, product }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [expandedInquiries, setExpandedInquiries] = useState({});
-
   const navigate = useNavigate();
   const memberString = localStorage.getItem("member");
   const memberObject = memberString ? JSON.parse(memberString) : null;
@@ -94,7 +93,10 @@ const InquiryList = ({ Inquiry, product }) => {
   const handleInquiryClick = () => {
     if (!memberId) {
       const currentUrl = window.location.pathname + window.location.search;
-      navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
+      if (
+        window.confirm("로그인이 필요합니다. 로그인 창으로 이동하시겠습니까?")
+      )
+        navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
     } else {
       setIsModalOpen(true);
     }

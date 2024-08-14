@@ -58,14 +58,6 @@ const BasketPage = () => {
     navigate("/payment", { state: { item } });
   };
 
-  // const handleOrder = () => {
-  //   if (cartItems.length === 0) {
-  //     alert("장바구니에 상품이 없습니다.");
-  //     return;
-  //   }
-  //   navigate("/payment", { state: { cartItems, totalPayment } });
-  // };
-
   const handleOrder = () => {
     // 선택된 상품들만 필터링
     const selectedItemsDetails = cartItems.filter((item) =>
@@ -76,15 +68,6 @@ const BasketPage = () => {
       alert("선택한 상품이 없습니다.");
       return;
     }
-
-    // 선택된 상품들의 총 금액을 계산
-    // const selectedTotalAmount = selectedItemsDetails.reduce(
-    //   (total, item) => total + item.price * item.quantity,
-    //   0
-    // );
-    // const selectedFinalDeliveryFee =
-    //   selectedTotalAmount >= 50000 ? 0 : deliveryFee;
-    // const selectedTotalPayment = selectedTotalAmount + selectedFinalDeliveryFee;
 
     // 결제 페이지로 네비게이션
     navigate("/payment", {
@@ -100,10 +83,6 @@ const BasketPage = () => {
       prevItems.filter((item) => !selectedItems.includes(item.id))
     );
     setSelectedItems([]);
-  };
-
-  const handleRemoveOutOfStock = () => {
-    // 품절 상품 삭제 로직 구현
   };
 
   const calculateTotal = () => {
@@ -216,8 +195,10 @@ const BasketPage = () => {
                             삭제
                           </button>
                         </h2>
+                        <p className="text-gray-600">색상: {item.color}</p>
+                        <p className="text-gray-600">사이즈: {item.size}</p>
                         <p className="text-gray-600">
-                          가격: {item.price.toLocaleString()} 원
+                          가격: {item.price.toLocaleString()}원
                         </p>
                       </div>
                     </td>
@@ -236,16 +217,8 @@ const BasketPage = () => {
                     </td>
                     <td className="py-4 px-4 border-gray-300">
                       <span>
-                        {(item.price * item.count).toLocaleString()} 원
+                        {(item.price * item.count).toLocaleString()}원
                       </span>
-                      <div className="mt-2 flex items-center">
-                        <button
-                          onClick={() => handleBuyNow(item)}
-                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                        >
-                          바로 구매
-                        </button>
-                      </div>
                     </td>
                   </tr>
                 ))}
@@ -281,12 +254,6 @@ const BasketPage = () => {
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 mr-2"
                 >
                   선택상품 삭제
-                </button>
-                <button
-                  onClick={handleRemoveOutOfStock}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                >
-                  품절상품 삭제
                 </button>
               </div>
               <p className="text-gray-600">
