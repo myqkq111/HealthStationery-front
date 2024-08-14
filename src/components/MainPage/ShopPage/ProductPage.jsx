@@ -228,13 +228,33 @@ const ProductPage = () => {
       setColorError(false);
     }
 
+    let data = [
+      {
+        cate: product.cate,
+        color: selectedColor,
+        count: quantity,
+        memberId: JSON.parse(localStorage.getItem("member")).id,
+        name: product.name,
+        price: product.price,
+        productId: product.id,
+        size: selectedOption,
+        strImage: product.strImage,
+      },
+    ];
+
+    let totalPayment = 0;
+    if (product.price < 50000) {
+      totalPayment += product.price + 3000; // 50,000원 미만인 경우 3,000원을 더함
+    } else {
+      totalPayment += product.price; // 50,000원 이상인 경우 원래 가격 사용
+    }
+
     if (valid) {
       navigate("/payment", {
         state: {
-          productId: product.id,
-          selectedOption,
-          selectedColor,
-          quantity,
+          cartItems: data,
+          totalPayment: totalPayment,
+          purchaseSource: 0,
         },
       });
     }

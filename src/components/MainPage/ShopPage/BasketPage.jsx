@@ -77,20 +77,14 @@ const BasketPage = () => {
       return;
     }
 
-    // 선택된 상품들의 총 금액을 계산
-    // const selectedTotalAmount = selectedItemsDetails.reduce(
-    //   (total, item) => total + item.price * item.quantity,
-    //   0
-    // );
-    // const selectedFinalDeliveryFee =
-    //   selectedTotalAmount >= 50000 ? 0 : deliveryFee;
-    // const selectedTotalPayment = selectedTotalAmount + selectedFinalDeliveryFee;
+    console.log(selectedItemsDetails);
 
     // 결제 페이지로 네비게이션
     navigate("/payment", {
       state: {
         cartItems: selectedItemsDetails,
         totalPayment: totalPayment,
+        purchaseSource: 1,
       },
     });
   };

@@ -7,7 +7,7 @@ import axiosInstance from "../../api/AxiosInstance";
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { cartItems, totalPayment } = location.state || {};
+  const { cartItems, totalPayment, purchaseSource } = location.state || {};
   const [request, setRequest] = useState("");
 
   // 배송 정보 및 배송 메모 상태 관리
@@ -50,6 +50,7 @@ const Payment = () => {
             detailaddr: orderInfo.detailaddr,
             request: request,
             totalPrice: totalPayment,
+            purchaseSource: purchaseSource,
             products: cartItems.map((item) => ({
               productId: item.productId, // 상품 고유번호
               color: item.color,
