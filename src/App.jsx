@@ -21,6 +21,7 @@ import AdminPage from "./pages/AdminPage";
 import BasketPage from "./components/MainPage/ShopPage/BasketPage";
 import FNQ from "./components/MainPage/FNQPage/fnqpage.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
+
 const App = () => {
   return (
     <>

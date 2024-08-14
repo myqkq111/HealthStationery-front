@@ -58,12 +58,41 @@ const BasketPage = () => {
     navigate("/payment", { state: { item } });
   };
 
+  // const handleOrder = () => {
+  //   if (cartItems.length === 0) {
+  //     alert("장바구니에 상품이 없습니다.");
+  //     return;
+  //   }
+  //   navigate("/payment", { state: { cartItems, totalPayment } });
+  // };
+
   const handleOrder = () => {
-    if (cartItems.length === 0) {
-      alert("장바구니에 상품이 없습니다.");
+    // 선택된 상품들만 필터링
+    const selectedItemsDetails = cartItems.filter((item) =>
+      selectedItems.includes(item.id)
+    );
+
+    if (selectedItemsDetails.length === 0) {
+      alert("선택한 상품이 없습니다.");
       return;
     }
-    navigate("/payment", { state: { cartItems, totalPayment } });
+
+    // 선택된 상품들의 총 금액을 계산
+    // const selectedTotalAmount = selectedItemsDetails.reduce(
+    //   (total, item) => total + item.price * item.quantity,
+    //   0
+    // );
+    // const selectedFinalDeliveryFee =
+    //   selectedTotalAmount >= 50000 ? 0 : deliveryFee;
+    // const selectedTotalPayment = selectedTotalAmount + selectedFinalDeliveryFee;
+
+    // 결제 페이지로 네비게이션
+    navigate("/payment", {
+      state: {
+        cartItems: selectedItemsDetails,
+        totalPayment: totalPayment,
+      },
+    });
   };
 
   const handleRemoveSelected = () => {
@@ -78,8 +107,14 @@ const BasketPage = () => {
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+    // 선택된 상품 ID를 기준으로 필터링
+    const selectedItemsDetails = cartItems.filter((item) =>
+      selectedItems.includes(item.id)
+    );
+
+    // 필터링된 상품들의 총합 계산
+    return selectedItemsDetails.reduce(
+      (total, item) => total + item.price * item.count,
       0
     );
   };
@@ -102,7 +137,7 @@ const BasketPage = () => {
 
   const totalAmount = calculateTotal();
   const finalDeliveryFee = totalAmount >= 50000 ? 0 : deliveryFee;
-  const totalPayment = totalAmount + finalDeliveryFee;
+  const totalPayment = totalAmount === 0 ? 0 : totalAmount + finalDeliveryFee;
 
   const openModal = (item) => {
     setCurrentItem(item);
@@ -165,7 +200,9 @@ const BasketPage = () => {
                     </td>
                     <td className="py-4 px-4 flex items-center border-r border-gray-300">
                       <img
-                        src={`/images/products/${item.cate}/1.JPG`}
+                        src={`/images/products/${item.cate}/${
+                          item.strImage.split(",")[0]
+                        }`}
                         alt={item.name}
                         className="w-24 h-24 object-cover rounded-md"
                       />
@@ -281,7 +318,7 @@ const BasketPage = () => {
                       총 주문 금액:
                     </td>
                     <td className="py-2 px-4 text-right font-bold border-t border-gray-300">
-                      {(totalAmount + finalDeliveryFee).toLocaleString()} 원
+                      {totalPayment.toLocaleString()} 원
                     </td>
                   </tr>
                 </tbody>

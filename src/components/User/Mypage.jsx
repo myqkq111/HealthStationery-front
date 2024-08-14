@@ -11,7 +11,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 const MyPage = () => {
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem("myPageActiveTab");
-    return savedTab ? savedTab : "orders";
+    return savedTab ? savedTab : "buylist";
   });
 
   const [isUpdateProfileOpen, setIsUpdateProfileOpen] = useState(false);
