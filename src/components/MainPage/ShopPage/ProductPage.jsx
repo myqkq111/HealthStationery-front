@@ -26,6 +26,7 @@ const ProductPage = () => {
   const [stock, setStock] = useState({}); // 재고 상태 추가
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
+  const currentUrl = window.location.pathname + window.location.search;
 
   // 로그인된 유저의 uid 가져오기 (localStorage에서 가져오고, null 처리)
   const uid = localStorage.getItem("member")
@@ -131,7 +132,7 @@ const ProductPage = () => {
       cancelButtonText: "취소",
     }).then((result) => {
       if (result.isConfirmed) {
-        navigate("/login"); // 로그인 페이지로 이동
+        navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
       }
     });
   };
