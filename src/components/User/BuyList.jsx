@@ -1,69 +1,80 @@
-// BuyList.jsx
+// src/components/Admin/OrderList.jsx
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosInstance";
 
 const BuyList = () => {
-  const [buylist, setBuylist] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [buylists, setBuylists] = useState([]);
 
+  // 주문 목록을 가져오는 함수
   useEffect(() => {
     axiosInstance
-      .get("/buylist")
+      .get("/buylist") // 실제 API 엔드포인트에 맞게 수정
       .then((response) => {
-        setBuylist(response.data);
+        setBuylists(response.data);
       })
-      .catch((error) => {
-        console.error("주문 목록 가져오기 실패:", error);
-        setError("주문 목록을 가져오는 데 실패했습니다.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch(() => {});
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-
   return (
-    <div className="overflow-x-auto">
-      <h2 className="text-xl font-semibold mb-4">주문 목록</h2>
-      {buylist.length === 0 ? (
-        <p className="text-gray-600">주문이 없습니다.</p>
-      ) : (
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead>
-            <tr className="border-b">
-              <th className="p-3 text-left">주문 번호</th>
-              <th className="p-3 text-left">상품 이미지</th>
-              <th className="p-3 text-left">상품 이름</th>
-              <th className="p-3 text-left">상품 수량</th>
-              <th className="p-3 text-left">상품 가격</th>
-              <th className="p-3 text-left">구매 일자</th>
+    <div className="p-6">
+      <h2 className="text-2xl font-semibold mb-4">주문 목록</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+          <thead className="bg-gray-100 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                주문 번호
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                상품명
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                수량
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                가격
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
+                구매일자
+              </th>
             </tr>
           </thead>
           <tbody>
-            {buylist.map((item) => (
-              <tr key={item.id} className="border-b">
-                <td className="p-3">{item.id}</td>
-                <td className="p-3">
-                  <img
-                    src={item.imageUrl || "/default-image.png"}
-                    alt={item.productName}
-                    className="w-16 h-16 object-cover"
-                  />
-                </td>
-                <td className="p-3">{item.name}</td>
-                <td className="p-3">{item.quantity}</td>
-                <td className="p-3">{item.price.toLocaleString()} 원</td>
-                <td className="p-3">
-                  {new Date(item.purchaseDate).toLocaleDateString()}
+            {buylists.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                  데이터가 없습니다.
                 </td>
               </tr>
-            ))}
+            ) : (
+              buylists.map((buylist) => (
+                <tr key={buylist.id} className="border-b border-gray-200">
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {buylist.id}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {buylist.productName}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {buylist.quantity}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {buylist.status}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900 flex space-x-2">
+                    <button className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
+                      수정
+                    </button>
+                    <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-      )}
+      </div>
     </div>
   );
 };
