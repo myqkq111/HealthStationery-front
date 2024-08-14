@@ -3,20 +3,20 @@ import Address from "../../../openApi/Address";
 
 const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
   const { id, name, email, tell, roadaddr, detailaddr, mailaddr } = user || {};
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(name);
-  const [editTell, setEditTell] = useState(tell);
-  const [editMailaddr, setEditMailaddr] = useState(mailaddr);
-  const [editRoadaddr, setEditRoadaddr] = useState(roadaddr);
-  const [editDetailaddr, setEditDetailaddr] = useState(detailaddr);
-  const [activeTab, setActiveTab] = useState("existing");
-  const [customRequest, setCustomRequest] = useState("");
+  const [isEditing, setIsEditing] = useState(false); // 수정 모드 상태
+  const [editName, setEditName] = useState(name); // 편집할 이름
+  const [editTell, setEditTell] = useState(tell); // 편집할 전화번호
+  const [editMailaddr, setEditMailaddr] = useState(mailaddr); // 편집할 이메일 주소
+  const [editRoadaddr, setEditRoadaddr] = useState(roadaddr); // 편집할 도로 주소
+  const [editDetailaddr, setEditDetailaddr] = useState(detailaddr); // 편집할 상세 주소
+  const [activeTab, setActiveTab] = useState("existing"); // 현재 활성 탭
+  const [customRequest, setCustomRequest] = useState(""); // 사용자 요청 메시지
 
   useEffect(() => {
     if (request === "custom") {
-      setCustomRequest(customRequest); // Ensure customRequest is correctly initialized
+      setCustomRequest(customRequest); // request가 'custom'일 때 customRequest를 설정합니다.
     }
-  }, [request]); // Update customRequest when request changes
+  }, [request]);
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
@@ -31,27 +31,31 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
       mailaddr: editMailaddr,
       roadaddr: editRoadaddr,
       detailaddr: editDetailaddr,
+      request: request === "custom" ? customRequest : request, // 요청 메시지 설정
     };
-    setOrderInfo(updatedDeliveryInfo);
+    console.log("저장할 주문 정보:", updatedDeliveryInfo); // 콘솔에 출력
+    setOrderInfo(updatedDeliveryInfo); // 주문 정보 업데이트
     toggleEdit();
   };
 
   const handleRequestChange = (event) => {
     const value = event.target.value;
-    if (value === "custom") {
-      setRequest("custom"); // Set request to custom
-    } else {
-      setRequest(value); // Set request to other values
+    setRequest(value); // request 상태 업데이트
+    if (value !== "custom") {
+      setCustomRequest(""); // 'custom'이 아닌 경우 customRequest를 비웁니다.
     }
   };
 
   const handleCustomRequestChange = (event) => {
-    setCustomRequest(event.target.value); // Update customRequest state
+    setCustomRequest(event.target.value);
   };
 
   const handleCustomRequestSubmit = () => {
-    setRequest("custom"); // Ensure request is set to custom
-    setCustomRequest(customRequest); // Ensure customRequest is saved
+    if (customRequest.trim()) {
+      // 공백이 아닌 요청 메시지가 있을 때만 설정합니다.
+      console.log("직접 입력한 요청 메시지:", customRequest); // 콘솔에 출력
+      setRequest(customRequest); // 요청 메시지를 직접 입력한 값으로 설정
+    }
   };
 
   return (
@@ -213,7 +217,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
           </div>
 
           {request === "custom" && (
-            <div className="mt-4">
+            <div>
               <label className="block mb-2 text-gray-700 font-semibold">
                 직접 입력
               </label>
@@ -230,6 +234,22 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
               >
                 확인
               </button>
+            </div>
+          )}
+
+          {request !== "custom" && request && (
+            <div className="mt-4">
+              <h4 className="text-lg font-semibold mb-2">요청 메시지</h4>
+              <p>{request}</p>
+            </div>
+          )}
+
+          {request === "custom" && customRequest && (
+            <div className="mt-4">
+              <h4 className="text-lg font-semibold mb-2">
+                직접 입력한 요청 내용
+              </h4>
+              <p>{customRequest}</p>
             </div>
           )}
         </div>
