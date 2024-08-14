@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Address from "../../../openApi/Address";
 
 const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
@@ -11,6 +11,12 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
   const [editDetailaddr, setEditDetailaddr] = useState(detailaddr);
   const [activeTab, setActiveTab] = useState("existing");
   const [customRequest, setCustomRequest] = useState("");
+
+  useEffect(() => {
+    if (request === "custom") {
+      setCustomRequest(customRequest); // Ensure customRequest is correctly initialized
+    }
+  }, [request]); // Update customRequest when request changes
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
@@ -31,20 +37,29 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
   };
 
   const handleRequestChange = (event) => {
-    setRequest(event.target.value);
+    const value = event.target.value;
+    if (value === "custom") {
+      setRequest("custom"); // Set request to custom
+    } else {
+      setRequest(value); // Set request to other values
+    }
   };
 
   const handleCustomRequestChange = (event) => {
-    setCustomRequest(event.target.value);
-    setRequest(event.target.value); // Automatically update request with textarea input
+    setCustomRequest(event.target.value); // Update customRequest state
+  };
+
+  const handleCustomRequestSubmit = () => {
+    setRequest("custom"); // Ensure request is set to custom
+    setCustomRequest(customRequest); // Ensure customRequest is saved
   };
 
   return (
     <div className="w-full lg:w-full lg:pr-2">
-      <div className="mb-4 bg-white p-4 ">
+      <div className="mb-4 bg-white p-4">
         <h2 className="text-xl font-semibold mb-4">주문 상품 정보</h2>
-        {product.map((item) => (
-          <div className="flex items-center mb-4">
+        {product.map((item, index) => (
+          <div key={index} className="flex items-center mb-4">
             <img
               src={`/images/products/${item.cate}/${
                 item.strImage.split(",")[0]
@@ -62,7 +77,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
           </div>
         ))}
       </div>
-      <div className="mb-4 bg-white p-4 ">
+      <div className="mb-4 bg-white p-4">
         <h2 className="text-xl font-semibold mb-4">주문자 정보</h2>
         <div>
           <p className="text-gray-700 font-bold">
@@ -122,7 +137,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="w-full p-2 border border-gray-300 "
+                    className="w-full p-2 border border-gray-300"
                     placeholder="이름을 입력하세요"
                   />
                 </div>
@@ -134,7 +149,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
                     type="text"
                     value={editTell}
                     onChange={(e) => setEditTell(e.target.value)}
-                    className="w-full p-2 border border-gray-300 "
+                    className="w-full p-2 border border-gray-300"
                     placeholder="전화번호를 입력하세요"
                   />
                 </div>
@@ -186,7 +201,8 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
               요청 메시지 선택
             </label>
             <select
-              onChange={(e) => setRequest(e.target.value)}
+              value={request}
+              onChange={handleRequestChange}
               className="w-full p-2 border border-gray-300 rounded-lg"
             >
               <option value="">기본 메시지 선택</option>
@@ -195,19 +211,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
               <option value="custom">직접 입력</option>
             </select>
           </div>
-          {/* {request === "custom" && (
-            <div className="mt-4">
-              <label className="block mb-2 text-gray-700 font-semibold">
-                직접 입력
-              </label>
-              <textarea
-                onChange={(e) => setRequest(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                rows="4"
-                placeholder="배송 메모를 직접 입력하세요."
-              />
-            </div>
-          )} */}
+
           {request === "custom" && (
             <div className="mt-4">
               <label className="block mb-2 text-gray-700 font-semibold">
@@ -216,10 +220,16 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
               <textarea
                 value={customRequest}
                 onChange={handleCustomRequestChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
+                className="w-full p-2 border border-gray-300"
                 rows="4"
                 placeholder="배송 요청을 직접 입력하세요."
               />
+              <button
+                onClick={handleCustomRequestSubmit}
+                className="mt-2 bg-blue-500 text-white py-2 px-4 rounded"
+              >
+                확인
+              </button>
             </div>
           )}
         </div>
