@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import InquiryWrite from "./InquiryWrite";
 import axiosInstance from "./../../api/AxiosInstance";
 
@@ -17,8 +17,15 @@ const InquiryList = ({ Inquiry }) => {
   const [currentPage, setCurrentPage] = useState(1);
   // 페이지당 항목 수
   const itemsPerPage = 5;
+  // 펼쳐진 문의 상태
+  const [expandedInquiries, setExpandedInquiries] = useState({});
+  // 비밀번호 입력 상태
+  const [password, setPassword] = useState("");
+  // 현재 선택된 비밀글 ID
+  const [selectedSecretId, setSelectedSecretId] = useState(null);
+  // 비밀번호 오류 상태
+  const [passwordError, setPasswordError] = useState(null);
 
-  console.log(Inquiry);
   // 문의 추가 핸들러
   const handleAddInquiry = useCallback(
     (newInquiry) => {
@@ -60,6 +67,34 @@ const InquiryList = ({ Inquiry }) => {
     startIndex + itemsPerPage
   );
 
+  // 제목 클릭 시 펼쳐진 상태 토글
+  const handleToggleExpand = (id) => {
+    setExpandedInquiries((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  // 비밀번호 확인 핸들러
+  const handlePasswordSubmit = (id) => {
+    axiosInstance
+      .post(`/product/inq/${id}/verify`, { password }) // 비밀번호 검증 엔드포인트
+      .then((response) => {
+        if (response.data.valid) {
+          setExpandedInquiries((prev) => ({
+            ...prev,
+            [id]: true,
+          }));
+          setSelectedSecretId(null);
+        } else {
+          setPasswordError("비밀번호가 틀렸습니다.");
+        }
+      })
+      .catch((err) => {
+        setPasswordError("비밀번호 검증에 실패했습니다.");
+      });
+  };
+
   return (
     <div className="">
       <div className="max-w-4xl mx-auto bg-white">
@@ -93,7 +128,7 @@ const InquiryList = ({ Inquiry }) => {
                   excludePrivate ? "text-black font-semibold" : "text-gray-300"
                 }`}
               >
-                {excludePrivate ? "√ 비밀글 제외" : "√ 비밀글 제외"}
+                {excludePrivate ? "비밀글 제외" : "비밀글 제외"}
               </button>
             </div>
             {/* 문의 목록이 없는 경우 */}
@@ -104,13 +139,50 @@ const InquiryList = ({ Inquiry }) => {
                 {currentInquiries.map((inquiry) => (
                   <li
                     key={inquiry.id}
-                    className="border-t border-gray-200 rounded p-2 flex justify-between items-start"
+                    className="border-t border-gray-200 rounded p-2"
                   >
-                    <div className="flex-1">
-                      {inquiry.is_secret ? (
-                        <p className="text-gray-800">비밀글입니다.</p>
-                      ) : (
-                        <p className="text-gray-800">{inquiry.content}</p>
+                    <div className="flex flex-col">
+                      {/* 제목 클릭 시 펼쳐진 상태 토글 */}
+                      <button
+                        onClick={() => {
+                          if (inquiry.is_secret) {
+                            setSelectedSecretId(inquiry.id);
+                          } else {
+                            handleToggleExpand(inquiry.id);
+                          }
+                        }}
+                        className="text-left w-full"
+                      >
+                        <h3 className="text-gray-800 font-semibold">
+                          {inquiry.title}
+                        </h3>
+                      </button>
+                      {/* 비밀번호 입력 */}
+                      {selectedSecretId === inquiry.id && (
+                        <div className="mt-2">
+                          <input
+                            type="password"
+                            placeholder="비밀번호를 입력하세요"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="border p-2 w-full mb-2"
+                          />
+                          <button
+                            onClick={() => handlePasswordSubmit(inquiry.id)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                          >
+                            확인
+                          </button>
+                          {passwordError && (
+                            <p className="text-red-600 mt-2">{passwordError}</p>
+                          )}
+                        </div>
+                      )}
+                      {/* 문의 내용 조건부 렌더링 */}
+                      {expandedInquiries[inquiry.id] && (
+                        <div className="mt-2">
+                          <p className="text-gray-800">{inquiry.content}</p>
+                        </div>
                       )}
                     </div>
                     <div className="ml-4 text-right">

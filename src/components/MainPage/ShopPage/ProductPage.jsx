@@ -43,6 +43,7 @@ const ProductPage = () => {
         .then((response) => {
           const productDetailsMap = response.data;
           const productData = productDetailsMap.product;
+          console.log(productDetailsMap.inquiries);
           setInquiries(productDetailsMap.inquiries);
           setProduct(productData);
           if (productData.likeToggle) setIsLiked(true);
@@ -773,7 +774,7 @@ const ProductPage = () => {
         </div>
 
         {/* 상품 리뷰 섹션 */}
-        <div ref={reviewRef}>
+        <div ref={reviewRef} className="">
           <ProductReviewSection productId={product.id} />
         </div>
 
