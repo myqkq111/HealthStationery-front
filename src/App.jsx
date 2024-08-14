@@ -21,6 +21,7 @@ import AdminPage from "./pages/AdminPage";
 import BasketPage from "./components/MainPage/ShopPage/BasketPage";
 import FNQ from "./components/MainPage/FNQPage/fnqpage.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
+import PaymentSuccess from "./components/MainPage/ShopPage/PaymentSuccess.jsx";
 
 const App = () => {
   return (
@@ -52,6 +53,10 @@ const App = () => {
             <Route path="/oauth" element={<AuthCallback />} />
             <Route path="/cart" element={<BasketPage />} />
             <Route path="/fnq" element={<FNQ />} />
+            <Route
+              path="/payment-success/:buylistId"
+              element={<PaymentSuccess />}
+            />
           </Routes>
           <Footer /> {/* Footer를 페이지 하단에 표시 */}
           <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}

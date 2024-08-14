@@ -59,8 +59,8 @@ const Payment = () => {
             })),
           });
           alert("주문 정보가 성공적으로 전송되었습니다.");
-
-          const buylistId = orderResponse.data.buylistId;
+          console.log(orderResponse.data);
+          const buylistId = orderResponse.data;
 
           // 결제완료페이지로 리디렉션
           navigate(`/payment-success/${buylistId}`);

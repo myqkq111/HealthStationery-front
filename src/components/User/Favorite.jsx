@@ -19,6 +19,7 @@ const Favorite = () => {
         .get(`/wishlist/view?id=${userId}`) // 서버 API 호출
         .then((response) => {
           const fetchedFavorites = response.data;
+          console.log(fetchedFavorites);
           setFavorites(fetchedFavorites);
         })
         .catch((err) => {
@@ -29,7 +30,6 @@ const Favorite = () => {
           setLoading(false);
         });
     };
-
     fetchFavorites();
   }, []);
 

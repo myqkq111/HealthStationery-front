@@ -244,10 +244,10 @@ const ProductPage = () => {
     ];
 
     let totalPayment = 0;
-    if (product.price < 50000) {
-      totalPayment += product.price + 3000; // 50,000원 미만인 경우 3,000원을 더함
+    if (product.price * quantity < 50000) {
+      totalPayment += product.price * quantity + 3000; // 50,000원 미만인 경우 3,000원을 더함
     } else {
-      totalPayment += product.price; // 50,000원 이상인 경우 원래 가격 사용
+      totalPayment += product.price * quantity; // 50,000원 이상인 경우 원래 가격 사용
     }
 
     if (valid) {
