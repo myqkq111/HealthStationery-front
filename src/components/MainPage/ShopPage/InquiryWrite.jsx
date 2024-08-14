@@ -1,40 +1,48 @@
 import React, { useState } from "react";
 
-const InquiryWrite = ({ onAddInquiry, onClose }) => {
+const InquiryWrite = ({
+  onAddInquiry,
+  onClose,
+  productId,
+  memberId,
+  memberName,
+}) => {
+  // 입력 상태 초기화
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isSecret, setIsSecret] = useState(false);
 
-  // product_id와 member_id를 상위 컴포넌트에서 props로 전달 받도록 설정할 수 있습니다.
-  // 현재 예제에서는 하드코딩된 값으로 설정합니다.
-  const productId = 1; // 예제 값
-  const memberId = 1; // 예제 값
-
+  // 문의 추가 핸들러
   const handleAddInquiry = (event) => {
     event.preventDefault();
 
+    // 제목과 내용이 모두 입력되었는지 확인
     if (!title.trim() || !content.trim()) {
       alert("제목과 내용을 입력해 주세요.");
       return;
     }
 
+    // 새로운 문의 데이터 객체 생성
     const newInquiry = {
       title,
       content,
-      secret: isSecret,
+      secret: isSecret, // 비밀글 여부
       productId: productId,
       memberId: memberId,
+      name: memberName,
     };
 
+    // 문의 추가 함수 호출
     onAddInquiry(newInquiry);
-    resetForm();
+    resetForm(); // 폼 초기화
   };
 
+  // 폼 초기화 함수
   const resetForm = () => {
     setTitle("");
     setContent("");
     setIsSecret(false);
-    onClose();
+    onClose(); // 모달 닫기
   };
 
   return (

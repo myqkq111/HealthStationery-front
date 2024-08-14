@@ -43,8 +43,8 @@ const ProductPage = () => {
         .then((response) => {
           const productDetailsMap = response.data;
           const productData = productDetailsMap.product;
-          console.log(productDetailsMap.inquiries);
           setInquiries(productDetailsMap.inquiries);
+          console.log(productDetailsMap.inquiries);
           setProduct(productData);
           if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
@@ -799,7 +799,7 @@ const ProductPage = () => {
         </div>
 
         <div ref={Inquiry} className="mb-4">
-          <InquiryList Inquiry={inquiries} />
+          <InquiryList Inquiry={inquiries} product={product} />
         </div>
 
         <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>

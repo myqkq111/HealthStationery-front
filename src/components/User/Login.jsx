@@ -1,6 +1,6 @@
 // src/components/User/Login.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../api/AxiosInstance.jsx";
 import Forgot from "./Forgot";
 import FindID from "./FindID";
@@ -14,7 +14,12 @@ const Login = () => {
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [isFindIDOpen, setIsFindIDOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+
+  // Get redirect URL from query params
+  const queryParams = new URLSearchParams(location.search);
+  const redirectUrl = queryParams.get("redirect") || "/";
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,7 +38,7 @@ const Login = () => {
       login(token, member);
 
       // 메인으로 전환
-      navigate("/");
+      navigate(redirectUrl);
     } catch (error) {
       console.error("Login failed:", error);
       setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
