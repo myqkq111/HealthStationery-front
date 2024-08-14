@@ -20,6 +20,7 @@ const Favorite = () => {
         .get(`/wishlist/view?id=${userId}`) // 서버 API 호출
         .then((response) => {
           const fetchedFavorites = response.data;
+          console.log(fetchedFavorites);
           setFavorites(fetchedFavorites);
         })
         .catch((err) => {
@@ -30,7 +31,6 @@ const Favorite = () => {
           setLoading(false);
         });
     };
-
     fetchFavorites();
   }, []);
 
@@ -72,7 +72,9 @@ const Favorite = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {favorites.map((item) => {
-            const imageUrl = `${IMAGE_BASE_URL}${item.cate}/${item.id}.JPG`;
+            const imageUrl = `${IMAGE_BASE_URL}${item.cate}/${
+              item.strImage.split(",")[0]
+            }`;
 
             return (
               <div

@@ -12,7 +12,7 @@ const PaymentSuccess = () => {
     // 주문 정보 가져오기
     const fetchBuylist = () => {
       axiosInstance
-        .get(`/buylist/${buylistId}`) // 실제 API 엔드포인트에 맞게 수정
+        .get(`/buylist/selectOne?id=${buylistId}`) // 실제 API 엔드포인트에 맞게 수정
         .then((response) => {
           setBuylist(response.data);
         })
@@ -38,7 +38,7 @@ const PaymentSuccess = () => {
         </p>
         <div className="mb-4">
           <h2 className="text-lg font-semibold mb-2">주문 번호:</h2>
-          <p className="text-gray-700">{buylist.regdt}</p>{" "}
+          <p className="text-gray-700">{buylist.id}</p>{" "}
         </div>
         <div className="mb-4">
           <h2 className="text-lg font-semibold mb-2">결제 금액:</h2>

@@ -42,7 +42,9 @@ const BasketPage = () => {
   const handleRemoveItem = (id) => {
     if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
       axiosInstance
-        .delete(`/basket/delete?id=${id}`)
+        .delete("/basket/delete", {
+          data: { ids: [id] }, // 요청 본문에 선택된 상품 ID를 포함
+        })
         .then(() => {
           setCartItems((prevItems) =>
             prevItems.filter((item) => item.id !== id)
@@ -94,6 +96,35 @@ const BasketPage = () => {
       prevItems.filter((item) => !selectedItems.includes(item.id))
     );
     setSelectedItems([]);
+
+    if (selectedItems.length === 0) {
+      alert("선택된 상품이 없습니다.");
+      return;
+    }
+
+    // 사용자 확인
+    if (window.confirm("선택한 상품을 삭제하시겠습니까?")) {
+      // 선택된 상품 ID를 포함한 배열 생성
+      const selectedIds = selectedItems;
+      console.log(selectedIds);
+
+      // 서버에 삭제 요청
+      axiosInstance
+        .delete("/basket/delete", {
+          data: { ids: selectedIds }, // 요청 본문에 선택된 상품 ID를 포함
+        })
+        .then(() => {
+          // 서버에서 성공적으로 삭제된 후 로컬 상태 업데이트
+          setCartItems((prevItems) =>
+            prevItems.filter((item) => !selectedIds.includes(item.id))
+          );
+          setSelectedItems([]); // 선택된 항목 목록 비우기
+        })
+        .catch((error) => {
+          console.error("Failed to delete selected products", error);
+          // 에러 처리 로직 추가 (예: 사용자에게 오류 메시지 표시)
+        });
+    }
   };
 
   const handleRemoveOutOfStock = () => {
@@ -215,7 +246,7 @@ const BasketPage = () => {
                         </p>
                       </div>
                     </td>
-                    <td className="py-4 px-4 border-r border-gray-300 text-center">
+                    {/* <td className="py-4 px-4 border-r border-gray-300 text-center">
                       <div className="flex flex-col items-center space-y-2">
                         <span className="text-lg font-semibold">
                           {item.count}
@@ -227,7 +258,40 @@ const BasketPage = () => {
                           수량/옵션변경
                         </button>
                       </div>
+                    </td> */}
+                    <td className="py-4 px-4 border-r border-gray-300 text-center">
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item.id, item.count - 1)
+                            }
+                            className="bg-gray-300 text-black px-2 py-1 rounded-lg hover:bg-gray-400"
+                            disabled={item.count <= 1}
+                          >
+                            -
+                          </button>
+                          <span className="text-lg font-semibold">
+                            {item.count}
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item.id, item.count + 1)
+                            }
+                            className="bg-gray-300 text-black px-2 py-1 rounded-lg hover:bg-gray-400"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => openModal(item)}
+                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                        >
+                          옵션 변경
+                        </button>
+                      </div>
                     </td>
+
                     <td className="py-4 px-4 border-gray-300">
                       <span>
                         {(item.price * item.count).toLocaleString()} 원
