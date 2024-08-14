@@ -74,6 +74,7 @@ const BasketPage = () => {
       state: {
         cartItems: selectedItemsDetails,
         totalPayment: totalPayment,
+        purchaseSource: 1,
       },
     });
   };

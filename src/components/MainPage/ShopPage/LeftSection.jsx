@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Address from "../../../openApi/Address";
 
 const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
   const { id, name, email, tell, roadaddr, detailaddr, mailaddr } = user || {};
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(name);
-  const [editTell, setEditTell] = useState(tell);
-  const [editMailaddr, setEditMailaddr] = useState(mailaddr);
-  const [editRoadaddr, setEditRoadaddr] = useState(roadaddr);
-  const [editDetailaddr, setEditDetailaddr] = useState(detailaddr);
-  const [activeTab, setActiveTab] = useState("existing");
-  const [customRequest, setCustomRequest] = useState("");
+  const [isEditing, setIsEditing] = useState(false); // 수정 모드 상태
+  const [editName, setEditName] = useState(name); // 편집할 이름
+  const [editTell, setEditTell] = useState(tell); // 편집할 전화번호
+  const [editMailaddr, setEditMailaddr] = useState(mailaddr); // 편집할 이메일 주소
+  const [editRoadaddr, setEditRoadaddr] = useState(roadaddr); // 편집할 도로 주소
+  const [editDetailaddr, setEditDetailaddr] = useState(detailaddr); // 편집할 상세 주소
+  const [activeTab, setActiveTab] = useState("existing"); // 현재 활성 탭
+  const [customRequest, setCustomRequest] = useState(""); // 사용자 요청 메시지
+
+  useEffect(() => {
+    if (request === "custom") {
+      setCustomRequest(customRequest); // request가 'custom'일 때 customRequest를 설정합니다.
+    }
+  }, [request]);
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
@@ -25,26 +31,39 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
       mailaddr: editMailaddr,
       roadaddr: editRoadaddr,
       detailaddr: editDetailaddr,
+      request: request === "custom" ? customRequest : request, // 요청 메시지 설정
     };
-    setOrderInfo(updatedDeliveryInfo);
+    console.log("저장할 주문 정보:", updatedDeliveryInfo); // 콘솔에 출력
+    setOrderInfo(updatedDeliveryInfo); // 주문 정보 업데이트
     toggleEdit();
   };
 
   const handleRequestChange = (event) => {
-    setRequest(event.target.value);
+    const value = event.target.value;
+    setRequest(value); // request 상태 업데이트
+    if (value !== "custom") {
+      setCustomRequest(""); // 'custom'이 아닌 경우 customRequest를 비웁니다.
+    }
   };
 
   const handleCustomRequestChange = (event) => {
     setCustomRequest(event.target.value);
-    setRequest(event.target.value); // Automatically update request with textarea input
+  };
+
+  const handleCustomRequestSubmit = () => {
+    if (customRequest.trim()) {
+      // 공백이 아닌 요청 메시지가 있을 때만 설정합니다.
+      console.log("직접 입력한 요청 메시지:", customRequest); // 콘솔에 출력
+      setRequest(customRequest); // 요청 메시지를 직접 입력한 값으로 설정
+    }
   };
 
   return (
     <div className="w-full lg:w-full lg:pr-2">
-      <div className="mb-4 bg-white p-4 ">
+      <div className="mb-4 bg-white p-4">
         <h2 className="text-xl font-semibold mb-4">주문 상품 정보</h2>
-        {product.map((item) => (
-          <div className="flex items-center mb-4">
+        {product.map((item, index) => (
+          <div key={index} className="flex items-center mb-4">
             <img
               src={`/images/products/${item.cate}/${
                 item.strImage.split(",")[0]
@@ -62,7 +81,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
           </div>
         ))}
       </div>
-      <div className="mb-4 bg-white p-4 ">
+      <div className="mb-4 bg-white p-4">
         <h2 className="text-xl font-semibold mb-4">주문자 정보</h2>
         <div>
           <p className="text-gray-700 font-bold">
@@ -122,7 +141,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="w-full p-2 border border-gray-300 "
+                    className="w-full p-2 border border-gray-300"
                     placeholder="이름을 입력하세요"
                   />
                 </div>
@@ -134,7 +153,7 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
                     type="text"
                     value={editTell}
                     onChange={(e) => setEditTell(e.target.value)}
-                    className="w-full p-2 border border-gray-300 "
+                    className="w-full p-2 border border-gray-300"
                     placeholder="전화번호를 입력하세요"
                   />
                 </div>
@@ -186,7 +205,8 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
               요청 메시지 선택
             </label>
             <select
-              onChange={(e) => setRequest(e.target.value)}
+              value={request}
+              onChange={handleRequestChange}
               className="w-full p-2 border border-gray-300 rounded-lg"
             >
               <option value="">기본 메시지 선택</option>
@@ -195,31 +215,41 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
               <option value="custom">직접 입력</option>
             </select>
           </div>
-          {/* {request === "custom" && (
-            <div className="mt-4">
-              <label className="block mb-2 text-gray-700 font-semibold">
-                직접 입력
-              </label>
-              <textarea
-                onChange={(e) => setRequest(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                rows="4"
-                placeholder="배송 메모를 직접 입력하세요."
-              />
-            </div>
-          )} */}
+
           {request === "custom" && (
-            <div className="mt-4">
+            <div>
               <label className="block mb-2 text-gray-700 font-semibold">
                 직접 입력
               </label>
               <textarea
                 value={customRequest}
                 onChange={handleCustomRequestChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
+                className="w-full p-2 border border-gray-300"
                 rows="4"
                 placeholder="배송 요청을 직접 입력하세요."
               />
+              <button
+                onClick={handleCustomRequestSubmit}
+                className="mt-2 bg-blue-500 text-white py-2 px-4 rounded"
+              >
+                확인
+              </button>
+            </div>
+          )}
+
+          {request !== "custom" && request && (
+            <div className="mt-4">
+              <h4 className="text-lg font-semibold mb-2">요청 메시지</h4>
+              <p>{request}</p>
+            </div>
+          )}
+
+          {request === "custom" && customRequest && (
+            <div className="mt-4">
+              <h4 className="text-lg font-semibold mb-2">
+                직접 입력한 요청 내용
+              </h4>
+              <p>{customRequest}</p>
             </div>
           )}
         </div>
