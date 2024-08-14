@@ -213,7 +213,7 @@ const ProductPage = () => {
 
   // 제출 처리
   const handleSubmit = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     let valid = true;
     if (!selectedOption) {
       setOptionError(true);

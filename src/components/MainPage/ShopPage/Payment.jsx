@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LeftSection from "./LeftSection";
 import RightSection from "./RightSection";
 import axiosInstance from "../../api/AxiosInstance";
 
 const Payment = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { cartItems, totalPayment } = location.state || {};
   const [request, setRequest] = useState("");
 
@@ -40,7 +41,7 @@ const Payment = () => {
 
         // 결제 성공 시 주문 정보 서버에 전송
         try {
-          await axiosInstance.post("/buylist/insert", {
+          const orderResponse = await axiosInstance.post("/buylist/insert", {
             memberId: orderInfo.id, // 회원 고유번호
             name: orderInfo.name,
             tell: orderInfo.tell,
@@ -57,6 +58,11 @@ const Payment = () => {
             })),
           });
           alert("주문 정보가 성공적으로 전송되었습니다.");
+
+          const buylistId = orderResponse.data.buylistId;
+
+          // 결제완료페이지로 리디렉션
+          navigate(`/payment-success/${buylistId}`);
         } catch (error) {
           console.error("주문 정보 전송 실패:", error);
           alert("주문 정보 전송에 실패했습니다.");

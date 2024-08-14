@@ -82,16 +82,6 @@ const MyPage = () => {
             좋아요
           </button>
           <button
-            onClick={() => setActiveTab("returns")}
-            className={`px-4 py-2 ${
-              activeTab === "returns"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700"
-            } hover:bg-blue-700 transition duration-300`}
-          >
-            취소/교환/반품
-          </button>
-          <button
             onClick={() => handleTabClick("updateProfile")}
             className={`px-4 py-2 ${
               activeTab === "updateProfile"
