@@ -43,7 +43,7 @@ const BuyList = () => {
             {buylists.length === 0 ? (
               <tr>
                 <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                  데이터가 없습니다.
+                  주문목록이 없습니다.
                 </td>
               </tr>
             ) : (
