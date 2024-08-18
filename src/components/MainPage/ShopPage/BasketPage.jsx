@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../api/AxiosInstance";
+import { FaTrash } from 'react-icons/fa';
 
 const BasketPage = () => {
   const navigate = useNavigate();
@@ -10,34 +11,57 @@ const BasketPage = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [stocks, setStocks] = useState([]);
+  const [outOfStockItems, setOutOfStockItems] = useState([]);
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const deliveryFee = 3000;
 
   useEffect(() => {
     // 페이지가 로드될 때 장바구니 데이터를 서버에서 가져옵니다.
     const userId = JSON.parse(localStorage.getItem("member")).id;
-
+  
     axiosInstance
-      .get(`/basket/cart?memberId=${userId}`) // 서버의 장바구니 데이터 API 경로
+      .get(`/basket/cart?memberId=${userId}`)
       .then((response) => {
-        console.log(response.data);
-        setCartItems(response.data); // 서버 응답에서 장바구니 아이템 가져오기
+        const items = response.data;
+        setCartItems(items); // 서버 응답에서 장바구니 아이템 가져오기
+        // 품절된 상품을 추적
+        setOutOfStockItems(items.filter(item => item.stock === 0));
         setLoading(false); // 로딩 상태 업데이트
       })
       .catch((error) => {
         console.error("장바구니 데이터 로딩 오류:", error);
         setLoading(false); // 로딩 상태 업데이트
-        // 에러 처리 로직 추가 (예: 사용자에게 오류 메시지 표시)
       });
   }, []);
 
-  const handleQuantityChange = (id, newQuantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const handleQuantityChange = (item, newQuantity) => {
+    if (newQuantity <= 0) return; // 수량이 0 이하로 떨어지지 않도록 조건 추가
+  
+    // 재고가 있는지 확인
+    if (newQuantity > item.stock) {
+      alert("재고가 부족합니다.");
+      return;
+    }
+  
+    const updatedItem = { ...item, count: newQuantity };
+    axiosInstance
+      .put(`/basket/optionUpdate`, updatedItem)
+      .then(() => {
+        // 서버 업데이트 성공 후 로컬 상태도 업데이트
+        setCartItems((prevItems) =>
+          prevItems.map((i) =>
+            i.id === item.id ? updatedItem : i
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("상품 수량 업데이트 오류:", error);
+      });
   };
+  
 
   const handleRemoveItem = (id) => {
     if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
@@ -96,7 +120,6 @@ const BasketPage = () => {
     if (window.confirm("선택한 상품을 삭제하시겠습니까?")) {
       // 선택된 상품 ID를 포함한 배열 생성
       const selectedIds = selectedItems;
-      console.log(selectedIds);
 
       // 서버에 삭제 요청
       axiosInstance
@@ -122,7 +145,7 @@ const BasketPage = () => {
     const selectedItemsDetails = cartItems.filter((item) =>
       selectedItems.includes(item.id)
     );
-
+  
     // 필터링된 상품들의 총합 계산
     return selectedItemsDetails.reduce(
       (total, item) => total + item.price * item.count,
@@ -149,11 +172,38 @@ const BasketPage = () => {
   const totalAmount = calculateTotal();
   const finalDeliveryFee = totalAmount >= 50000 ? 0 : deliveryFee;
   const totalPayment = totalAmount === 0 ? 0 : totalAmount + finalDeliveryFee;
-
   const openModal = (item) => {
-    setCurrentItem(item);
-    setIsModalOpen(true);
+    axiosInstance
+      .get(`/product/oneOption?id=${item.productId}`)
+      .then((response) => {
+        const options = response.data;
+    
+        // 색상별 사이즈와 재고를 담을 객체
+        const stockByColorAndSize = options.reduce((acc, option) => {
+          if (!acc[option.color]) {
+            acc[option.color] = {};
+          }
+          acc[option.color][option.size] = option.stock;
+          return acc;
+        }, {});
+    
+        // 색상과 사이즈의 리스트를 생성
+        const uniqueColors = [...new Set(options.map(option => option.color))];
+        const uniqueSizes = [...new Set(options.map(option => option.size))];
+    
+        setColors(uniqueColors);
+        setSizes(uniqueSizes);
+        setStocks(stockByColorAndSize);
+        setCurrentItem(item);
+        setIsModalOpen(true);
+      })
+      .catch((error) => {
+        console.error("옵션 데이터 로딩 오류:", error);
+        setLoading(false);
+      });
   };
+  
+  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -167,6 +217,105 @@ const BasketPage = () => {
     }
   };
 
+  const handleUpdateItem = () => {
+    if (currentItem) {
+      // 현재 변경하려는 아이템 제외한 다른 장바구니 아이템들에서 중복 체크
+      const isDuplicate = cartItems.some(
+        (item) =>
+          item.id !== currentItem.id && // 현재 변경하려는 상품 제외
+          item.productId === currentItem.productId &&
+          item.color === currentItem.color &&
+          item.size === currentItem.size
+      );
+  
+      if (isDuplicate) {
+        alert("장바구니에 동일한 색상과 사이즈의 상품이 이미 존재합니다.");
+        return; // 중복이 확인되면 업데이트 진행하지 않음
+      }
+  
+      // 수량을 1로 설정
+      const updatedItem = { ...currentItem, count: 1 };
+   
+      // 업데이트 요청
+      axiosInstance
+        .put(`/basket/optionUpdate`, updatedItem)
+        .then(() => {
+          setCartItems((prevItems) =>
+            prevItems.map((item) =>
+              item.id === currentItem.id ? updatedItem : item
+            )
+          );
+          closeModal();
+        })
+        .catch((error) => {
+          console.error("Failed to update product", error);
+        });
+    }
+  };
+  
+
+  const handleRemoveOutOfStock = () => {
+    if (window.confirm("품절된 상품을 삭제하시겠습니까?")) {
+      const outOfStockIds = outOfStockItems.map(item => item.id);
+  
+      axiosInstance
+        .delete("/basket/delete", {
+          data: { ids: outOfStockIds },
+        })
+        .then(() => {
+          setCartItems((prevItems) =>
+            prevItems.filter((item) => !outOfStockIds.includes(item.id))
+          );
+          setOutOfStockItems([]); // 품절된 상품 목록 비우기
+        })
+        .catch((error) => {
+          console.error("Failed to delete out of stock products", error);
+          // 에러 처리 로직 추가 (예: 사용자에게 오류 메시지 표시)
+        });
+    }
+  };
+
+  const handleColorChange = (e) => {
+    const newColor = e.target.value;
+    setCurrentItem((prev) => ({
+      ...prev,
+      color: newColor,
+      size: '', // 색상 변경 시 사이즈를 초기화
+    }));
+  };
+
+  const handleSizeChange = (e) => {
+    const newSize = e.target.value;
+    setCurrentItem((prev) => ({
+      ...prev,
+      size: newSize,
+    }));
+  };
+
+  // 모든 사이즈가 품절인 색상 찾기
+const getColorOptions = () => {
+  return colors.map((color) => {
+    const sizes = stocks[color];
+    const allSizesOutOfStock = Object.values(sizes).every((stock) => stock <= 0);
+    return {
+      color,
+      isOutOfStock: allSizesOutOfStock,
+    };
+  });
+};
+
+// 사이즈 select box에서 색상 변경 시 품절 처리
+const getAvailableSizes = (color) => {
+  const sizes = stocks[color] || {};
+  return Object.keys(sizes).map((size) => ({
+    size,
+    isOutOfStock: sizes[size] <= 0,
+  }));
+};
+
+const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOption => colorOption.color === currentItem?.color)?.isOutOfStock;
+
+
   return (
     <div className="min-h-screen p-8">
       <h1 className="text-3xl font-bold text-center mb-4">장바구니</h1>
@@ -178,83 +327,87 @@ const BasketPage = () => {
           </p>
         ) : (
           <>
-            <table className="w-full border-collapse mb-4">
-              <thead>
-                <tr>
-                  <td className="py-2 px-4 text-left border-b border-gray-300 border-t border-gray-300">
+           <table className="w-full border-collapse mb-4">
+            <thead className="bg-gray-200 text-gray-700">
+              <tr>
+                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center">
+                  <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={selectedItems.length === cartItems.length}
+                    className="w-5 h-5" // selectbox 크기 조정
+                  />
+                </td>
+                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
+                  상품정보
+                </td>
+                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
+                  수량
+                </td>
+                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
+                  주문금액
+                </td>
+                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
+                  
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {cartItems.map((item) => (
+                <tr
+                  key={item.id}
+                  className={`border-b border-gray-300 ${item.stock === 0 ? 'bg-gray-100 text-gray-400' : 'bg-white'}`}
+                >
+                  <td className={`py-4 px-4 border-r border-gray-300 text-center ${item.stock === 0 ? 'text-gray-400' : ''}`}>
                     <input
                       type="checkbox"
-                      onChange={handleSelectAll}
-                      checked={selectedItems.length === cartItems.length}
+                      checked={selectedItems.includes(item.id)}
+                      onChange={() => handleSelectItem(item.id)}
+                      disabled={item.stock === 0}
+                      className={`w-5 h-5 ${item.stock === 0 ? 'cursor-not-allowed' : ''}`}
                     />
                   </td>
-                  <td className="py-2 px-4 text-left border-b border-gray-300 border-t border-gray-300">
-                    상품정보
-                  </td>
-                  <td className="py-2 px-4 text-left border-b border-gray-300 border-t border-gray-300">
-                    수량
-                  </td>
-                  <td className="py-2 px-4 text-left border-b border-gray-300 border-t border-gray-300">
-                    주문금액
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.id} className="border-b border-gray-300">
-                    <td className="py-4 px-4 border-r border-gray-300">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        onChange={() => handleSelectItem(item.id)}
-                      />
-                    </td>
-                    <td className="py-4 px-4 flex items-center border-r border-gray-300">
+                  <td className={`py-4 px-4 border-r border-gray-300 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
+                    <div className="flex items-center">
                       <img
-                        src={`/images/products/${item.cate}/${
-                          item.strImage.split(",")[0]
-                        }`}
+                        src={`/images/products/${item.cate}/${item.strImage.split(",")[0]}`}
                         alt={item.name}
-                        className="w-24 h-24 object-cover rounded-md"
+                        className={`w-24 h-24 object-cover rounded-md cursor-pointer ${item.stock === 0 ? 'opacity-50' : ''}`}
+                        onClick={() => navigate(`/product/${item.productId}`)} // 제품 상세 페이지로 이동
                       />
-                      <div className="ml-4 flex flex-col flex-grow">
-                        <h2 className="text-lg font-semibold flex justify-between items-center">
-                          {item.name}
-                          <button
-                            onClick={() => handleRemoveItem(item.id)}
-                            className="text-red-500 hover:text-red-700 ml-4"
+                      <div className="ml-4 flex flex-col justify-center flex-grow">
+                        <div className="mb-2">
+                          <h2
+                            className={`text-lg font-semibold cursor-pointer ${item.stock === 0 ? 'text-gray-400' : ''}`}
+                            onClick={() => navigate(`/product/${item.productId}`)} // 제품 상세 페이지로 이동
                           >
-                            삭제
-                          </button>
-                        </h2>
-                        <p className="text-gray-600">색상: {item.color}</p>
-                        <p className="text-gray-600">사이즈: {item.size}</p>
-                        <p className="text-gray-600">
-                          가격: {item.price.toLocaleString()}원
-                        </p>
+                            {item.name}
+                          </h2>
+                          <p className={`text-gray-600 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
+                            색상: <span className="font-medium">{item.color}</span>
+                          </p>
+                          <p className={`text-gray-600 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
+                            사이즈: <span className="font-medium">{item.size}</span>
+                          </p>
+                          {item.stock > 0 && (
+                            <p className={`text-gray-600 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
+                              가격: <span className="font-medium">{item.price.toLocaleString()}원</span>
+                            </p>
+                          )}
+                          {item.stock === 0 && (
+                            <p className="text-red-500 font-semibold">품절</p>
+                          )}
+                        </div>
                       </div>
-                    </td>
-                    {/* <td className="py-4 px-4 border-r border-gray-300 text-center">
-                      <div className="flex flex-col items-center space-y-2">
-                        <span className="text-lg font-semibold">
-                          {item.count}
-                        </span>
-                        <button
-                          onClick={() => openModal(item)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600"
-                        >
-                          수량/옵션변경
-                        </button>
-                      </div>
-                    </td> */}
-                    <td className="py-4 px-4 border-r border-gray-300 text-center">
+                    </div>
+                  </td>
+                  <td className={`py-4 px-4 border-r border-gray-300 text-center ${item.stock === 0 ? 'text-gray-400' : ''}`}>
+                    {item.stock > 0 ? (
                       <div className="flex flex-col items-center space-y-2">
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() =>
-                              handleQuantityChange(item.id, item.count - 1)
-                            }
-                            className="bg-gray-300 text-black px-2 py-1 rounded-lg hover:bg-gray-400"
+                            onClick={() => handleQuantityChange(item, item.count - 1)}
+                            className="bg-gray-300 text-gray-800 px-3 py-1 rounded-lg hover:bg-gray-400"
                             disabled={item.count <= 1}
                           >
                             -
@@ -263,10 +416,9 @@ const BasketPage = () => {
                             {item.count}
                           </span>
                           <button
-                            onClick={() =>
-                              handleQuantityChange(item.id, item.count + 1)
-                            }
-                            className="bg-gray-300 text-black px-2 py-1 rounded-lg hover:bg-gray-400"
+                            onClick={() => handleQuantityChange(item, item.count + 1)}
+                            className="bg-gray-300 text-gray-800 px-3 py-1 rounded-lg hover:bg-gray-400"
+                            disabled={item.count >= item.stock}
                           >
                             +
                           </button>
@@ -278,18 +430,30 @@ const BasketPage = () => {
                           옵션 변경
                         </button>
                       </div>
-                    </td>
-
-                    <td className="py-4 px-4 border-gray-300">
-                      <span>
+                    ) : (
+                      <div className="text-gray-400">-</div>
+                    )}
+                  </td>
+                  <td className="py-4 px-4 border-r border-gray-300 text-center">
+                    {item.stock > 0 ? (
+                      <span className="font-medium">
                         {(item.price * item.count).toLocaleString()}원
                       </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                  <td className="py-4 px-4 border-gray-300 text-center border-l">
+                    <button
+                      onClick={() => handleRemoveItem(item.id)}                  
+                    >
+                      <FaTrash className="text-red-500 w-6 h-6" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
             <div className="mb-4">
               <table className="w-full border-collapse">
                 <tbody>
@@ -319,6 +483,12 @@ const BasketPage = () => {
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 mr-2"
                 >
                   선택상품 삭제
+                </button>
+                <button
+                  onClick={handleRemoveOutOfStock}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+                >
+                  품절상품 삭제
                 </button>
               </div>
               <p className="text-gray-600">
@@ -366,26 +536,49 @@ const BasketPage = () => {
               </button>
             </div>
 
-            {isModalOpen && (
-              <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+            {isModalOpen && currentItem && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                  <h2 className="text-xl font-semibold mb-4">
-                    {currentItem?.name}
-                  </h2>
+                  <h2 className="text-xl font-semibold mb-4">{currentItem?.name}</h2>
                   <div className="mb-4">
-                    <label className="block text-gray-700">새로운 수량:</label>
-                    <input
-                      type="number"
-                      min="1"
-                      defaultValue={currentItem?.quantity}
-                      onChange={(e) =>
-                        setCurrentItem((prev) => ({
-                          ...prev,
-                          quantity: parseInt(e.target.value, 10),
-                        }))
-                      }
+                    <label className="block text-gray-700">색상:</label>
+                    <select
+                      value={currentItem?.color}
+                      onChange={handleColorChange}
                       className="w-full p-2 border border-gray-300 rounded"
-                    />
+                    >
+                      {getColorOptions().map(({ color, isOutOfStock }) => (
+                        <option
+                          key={color}
+                          value={color}
+                          disabled={isOutOfStock}
+                          className={isOutOfStock ? "text-gray-400" : ""}
+                        >
+                          {color} {isOutOfStock ? "(품절)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">사이즈:</label>
+                    <select
+                      value={currentItem?.size || ''}
+                      onChange={handleSizeChange}
+                      className="w-full p-2 border border-gray-300 rounded"
+                      disabled={!currentItem?.color || getColorOptions().find(colorOption => colorOption.color === currentItem?.color)?.isOutOfStock}
+                    >
+                      <option value="" disabled>사이즈 선택</option>
+                      {getAvailableSizes(currentItem?.color).map(({ size, isOutOfStock }) => (
+                        <option
+                          key={size}
+                          value={size}
+                          disabled={isOutOfStock}
+                        >
+                          {size} {isOutOfStock ? "(품절)" : ""}
+                        </option>
+                      ))}
+                    </select>
+
                   </div>
                   <div className="flex justify-end">
                     <button
@@ -395,10 +588,9 @@ const BasketPage = () => {
                       취소
                     </button>
                     <button
-                      onClick={() => {
-                        handleQuantityUpdate(currentItem?.quantity);
-                      }}
+                      onClick={handleUpdateItem}
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                      disabled={isUpdateDisabled} // 사이즈가 선택되지 않거나 색상이 품절이면 비활성화
                     >
                       확인
                     </button>

@@ -16,7 +16,6 @@ const Payment = () => {
   );
 
   const handlePayment = () => {
-    // 결제 데이터 정의하기
     const data = {
       pg: "html5_inicis", // PG사
       pay_method: "card", // 결제수단
@@ -29,50 +28,49 @@ const Payment = () => {
       buyer_addr: orderInfo.roadaddr, // 구매자 주소
       buyer_postcode: orderInfo.mailaddr, // 구매자 우편번호
     };
-
-    // IMP 객체가 정의되어 있어야 합니다.
+  
     window.IMP.init("imp66777782");
-
-    window.IMP.request_pay(data, async (response) => {
-      const { success, error_msg } = response;
-
+  
+    window.IMP.request_pay(data, (response) => {
+      const { success, error_msg, imp_uid } = response;
+  
       if (success) {
         alert("결제 성공");
-
-        // 결제 성공 시 주문 정보 서버에 전송
-        try {
-          const orderResponse = await axiosInstance.post("/buylist/insert", {
-            memberId: orderInfo.id, // 회원 고유번호
-            name: orderInfo.name,
-            tell: orderInfo.tell,
-            mailaddr: orderInfo.mailaddr,
-            roadaddr: orderInfo.roadaddr,
-            detailaddr: orderInfo.detailaddr,
-            request: request,
-            totalPrice: totalPayment,
-            purchaseSource: purchaseSource,
-            products: cartItems.map((item) => ({
-              productId: item.productId, // 상품 고유번호
-              color: item.color,
-              size: item.size,
-              count: item.count, // 구매 개수
-            })),
-          });
-          alert("주문 정보가 성공적으로 전송되었습니다.");
-          console.log(orderResponse.data);
+  
+        // imp_uid를 로컬 스토리지에 저장
+        localStorage.setItem('imp_uid', imp_uid);
+  
+        axiosInstance.post("/buylist/insert", {
+          memberId: orderInfo.id,
+          name: orderInfo.name,
+          tell: orderInfo.tell,
+          mailaddr: orderInfo.mailaddr,
+          roadaddr: orderInfo.roadaddr,
+          detailaddr: orderInfo.detailaddr,
+          request: request,
+          totalPrice: totalPayment,
+          purchaseSource: purchaseSource,
+          products: cartItems.map((item) => ({
+            productId: item.productId,
+            color: item.color,
+            size: item.size,
+            count: item.count,
+          })),
+        })
+        .then((orderResponse) => {
           const buylistId = orderResponse.data;
-
-          // 결제완료페이지로 리디렉션
           navigate(`/payment-success/${buylistId}`);
-        } catch (error) {
+        })
+        .catch((error) => {
           console.error("주문 정보 전송 실패:", error);
           alert("주문 정보 전송에 실패했습니다.");
-        }
+        });
       } else {
         alert(`결제 실패: ${error_msg}`);
       }
     });
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 p-16">
