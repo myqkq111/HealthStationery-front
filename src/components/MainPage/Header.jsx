@@ -131,6 +131,12 @@ const Header = () => {
               >
                 <button
                   className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "clothing")}
+                >
+                  모두보기
+                </button>
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
                   onClick={(e) => handleLinkClick(e, "tops")}
                 >
                   상의
