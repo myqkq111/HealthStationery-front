@@ -63,7 +63,7 @@ const MyPage = () => {
         <div className="flex flex-col space-y-2">
           <button
             onClick={() => setActiveTab("buylist")}
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 text-lg font-bold ${
               activeTab === "buylist"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
@@ -73,7 +73,7 @@ const MyPage = () => {
           </button>
           <button
             onClick={() => setActiveTab("view")}
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 text-lg font-bold ${
               activeTab === "view"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
@@ -83,7 +83,7 @@ const MyPage = () => {
           </button>
           <button
             onClick={() => handleTabClick("updateProfile")}
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 text-lg font-bold ${
               activeTab === "updateProfile"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
@@ -93,7 +93,7 @@ const MyPage = () => {
           </button>
           <button
             onClick={() => handleTabClick("deleteAccount")}
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 text-lg font-bold ${
               activeTab === "deleteAccount"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
@@ -105,7 +105,7 @@ const MyPage = () => {
           {userInfo && userInfo.cate === "home" && (
             <button
               onClick={() => handleTabClick("resetPassword")}
-              className={`px-4 py-2 ${
+              className={`px-4 py-2 text-lg font-bold ${
                 activeTab === "resetPassword"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-700"

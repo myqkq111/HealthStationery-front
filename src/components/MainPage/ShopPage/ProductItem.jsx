@@ -1,15 +1,27 @@
+// ProductItem.js
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const IMAGE_BASE_URL = "/images/products/"; // 서버의 기본 URL
 
-const ProductItem = ({ cate, name, price, image, content, inven, link }) => {
+const ProductItem = ({
+  cate,
+  name,
+  price,
+  image,
+  content,
+  isSoldOut,
+  link,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
 
   // 카드 클릭 시 이동할 함수
   const handleClick = () => {
-    navigate(link);
+    if (!isSoldOut) {
+      navigate(link);
+    }
   };
 
   const imageUrl = `${IMAGE_BASE_URL}/${cate}/1.JPG`;
@@ -17,7 +29,9 @@ const ProductItem = ({ cate, name, price, image, content, inven, link }) => {
 
   return (
     <div
-      className="p-1 cursor-pointer flex flex-col max-w-xs w-full h-auto"
+      className={`p-1 cursor-pointer flex flex-col max-w-xs w-full h-auto ${
+        isSoldOut ? "opacity-50 pointer-events-none" : ""
+      }`} // 품절 시 흐리게 표시하고 클릭 비활성화
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -41,12 +55,18 @@ const ProductItem = ({ cate, name, price, image, content, inven, link }) => {
             }`}
           />
         )}
+        {/* 품절 상품인 경우 "SOLD OUT" 표시 */}
+        {isSoldOut && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <p className="text-white text-2xl font-bold">SOLD OUT</p>
+          </div>
+        )}
       </div>
-      <h3 className="text-sm mb-2">{name}</h3>
-      <p className="text-lg font-semibold text-gray-700 mb-2">{price}원</p>
-      <p className="text-sm text-gray-600 mb-2">{content}</p> {/* 상품 설명 */}
-      <p className="text-sm text-red-600 mb-4">재고: {inven}개</p>{" "}
-      {/* 재고 수량 */}
+      <h3 className="text-sm ">{name}</h3>
+      <p className="text-lg font-semibold text-gray-700 mb-6">{price}원</p>
+      <p className="text-sm font-bold text-gray-600 mb-2">{content}</p>{" "}
+      {/* 상품 설명 */}
+      <p className="text-sm text-red-600 mb-4">리뷰:</p>{" "}
     </div>
   );
 };

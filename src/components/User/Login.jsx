@@ -21,28 +21,28 @@ const Login = () => {
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get("redirect") || "/";
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    try {
-      // Perform login request
-      const response = await axiosInstance.post("/member/login", {
+    axiosInstance
+      .post("/member/login", {
         email,
         password,
+      })
+      .then((response) => {
+        // 토큰이랑 사용자정보 추출
+        const { token, member } = response.data;
+
+        // 로그인 업데이트
+        login(token, member);
+
+        // 메인으로 전환
+        navigate(redirectUrl);
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+        setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
       });
-
-      // 토큰이랑 사용자정보 추출
-      const { token, member } = response.data;
-
-      // 로그인 업데이트
-      login(token, member);
-
-      // 메인으로 전환
-      navigate(redirectUrl);
-    } catch (error) {
-      console.error("Login failed:", error);
-      setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
-    }
   };
 
   const handleForgotClick = () => setIsForgotOpen(true);
@@ -87,7 +87,8 @@ const Login = () => {
             onClick={() => socialLogin("naver")}
             className="btn btn-primary flex items-center justify-center py-3 px-4 text-white bg-[#03C75A] hover:bg-[#02B34E] transition duration-300 ease-in-out"
           >
-            <i className="fab fa-naver mr-2"></i> 네이버로 시작하기
+            <img src="/naver.svg" alt="Naver" className="w-5 h-5 mr-2" />
+            네이버로 시작하기
           </button>
           <button
             onClick={() => socialLogin("google")}
@@ -95,12 +96,12 @@ const Login = () => {
           >
             <i className="fab fa-google mr-2"></i> 구글로 시작하기
           </button>
-
           <button
             onClick={() => socialLogin("kakao")}
             className="btn btn-primary flex items-center justify-center py-3 px-4 text-white bg-[#F7E300] hover:bg-[#E0D700] transition duration-300 ease-in-out"
           >
-            <i className="fab fa-kakao mr-2"></i> 카카오로 시작하기
+            <img src="/kakaotalk.svg" alt="Naver" className="w-5 h-5 mr-2" />
+            카카오로 시작하기
           </button>
         </div>
 

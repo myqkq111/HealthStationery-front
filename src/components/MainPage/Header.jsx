@@ -53,7 +53,7 @@ const Header = () => {
             </a>
             {isDropdownOpen && (
               <div
-                className="absolute left-0 w-44 bg-white border border-gray-300 shadow-lg rounded-md z-20"
+                className="absolute left-0 w-44 bg-white border border-gray-300 z-20"
                 style={{ top: "100%" }}
               >
                 <button
@@ -126,9 +126,15 @@ const Header = () => {
             </a>
             {isClothingDropdownOpen && (
               <div
-                className="absolute left-0 w-44 bg-white border border-gray-300 shadow-lg rounded-md z-20"
+                className="absolute left-0 w-44 bg-white border border-gray-300 z-20"
                 style={{ top: "100%" }}
               >
+                <button
+                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
+                  onClick={(e) => handleLinkClick(e, "clothing")}
+                >
+                  모두보기
+                </button>
                 <button
                   className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
                   onClick={(e) => handleLinkClick(e, "tops")}
