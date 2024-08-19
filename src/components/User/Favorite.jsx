@@ -122,7 +122,7 @@ const Favorite = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M6 18L18 18M9 8V18M15 8V18M5 9L19 9M9 9V6H15V9M9 9V6H15V9"
+                        d="M4 7h16M10 11v6m4-6v6M5 7V4a1 1 0 011-1h12a1 1 0 011 1v3M9 7v12a2 2 0 002 2h4a2 2 0 002-2V7"
                       />
                     </svg>
                     <span className="text-xs text-gray-600 hover:text-red-500">

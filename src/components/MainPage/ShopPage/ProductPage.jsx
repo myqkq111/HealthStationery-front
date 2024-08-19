@@ -45,6 +45,7 @@ const ProductPage = () => {
           const productDetailsMap = response.data;
           const productData = productDetailsMap.product;
           setInquiries(productDetailsMap.inquiries);
+          console.log(productDetailsMap.inquiries);
           setProduct(productData);
           if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
@@ -266,18 +267,36 @@ const ProductPage = () => {
     data.append("productId", product.id);
     data.append("memberId", userId);
     data.append("color", selectedColor);
-    data.append("size", selectedOption);
+    data.append("size", selectedOption); // 사이즈는 옵션일 수 있음
     data.append("count", quantity);
 
-    // 색상, 사이즈, 수량 선택 여부 확인
-    if (!selectedColor || !selectedOption || quantity <= 0) {
+    // 색상, 수량 선택 여부 확인
+    if (!selectedColor || quantity <= 0) {
       Swal.fire({
         title: "선택 사항이 누락되었습니다.",
-        text: "색상, 사이즈, 수량을 모두 선택해 주세요.",
+        text: "색상, 수량을 모두 선택해 주세요.",
         icon: "warning",
         confirmButtonText: "확인",
       });
       return; // 선택이 완료되지 않으면 함수 종료
+    }
+
+    // 상품이 사이즈를 필요로 하는 경우
+    const requiresSize = product.sizes && product.sizes.length > 0;
+
+    if (requiresSize && !selectedOption) {
+      Swal.fire({
+        title: "사이즈 선택 누락",
+        text: "사이즈를 선택해 주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
+      return; // 사이즈가 필요한 상품인데 사이즈가 선택되지 않은 경우
+    }
+
+    // 사이즈가 필요 없지만 사이즈 선택이 제공된 경우, size 필드를 빈 값으로 설정
+    if (!requiresSize) {
+      data.delete("size"); // 사이즈 필드를 삭제
     }
 
     const maxStock = stock[selectedColor]?.[selectedOption] || 0;
@@ -299,7 +318,7 @@ const ProductPage = () => {
           // 장바구니에 없는 상품일 경우
           axiosInstance
             .post("/basket/insert", data)
-            .then((response) => {
+            .then(() => {
               setLoading(false);
               Swal.fire({
                 title: "상품이 장바구니에 추가되었습니다.",
@@ -579,33 +598,41 @@ const ProductPage = () => {
                 )}
               </div>
               <div className="flex flex-col mb-6">
-                <label className="font-semibold mb-2" htmlFor="size">
-                  사이즈(필수선택)
-                </label>
-                <select
-                  id="size"
-                  value={selectedOption}
-                  onChange={handleOptionChange}
-                  className="border border-gray-300 p-2 rounded"
-                  disabled={!selectedColor} // 색상이 선택되지 않은 경우 선택 불가
-                >
-                  <option value="">선택하세요</option>
-                  {options.sizes.map((size) => {
-                    const sizeStock = stock[selectedColor]?.[size] || 0;
-                    return (
-                      <option
-                        key={size}
-                        value={size}
-                        disabled={sizeStock === 0} // 재고가 0인 경우 선택 불가
-                      >
-                        {sizeStock === 0 ? `${size} (품절)` : size}
-                      </option>
-                    );
-                  })}
-                </select>
-                {optionError && (
-                  <p className="text-red-500 text-sm">
-                    사이즈를 선택하세요.(필수)
+                {options.sizes && options.sizes.length > 0 ? (
+                  <>
+                    <label className="font-semibold mb-2" htmlFor="size">
+                      사이즈(필수선택)
+                    </label>
+                    <select
+                      id="size"
+                      value={selectedOption}
+                      onChange={handleOptionChange}
+                      className="border border-gray-300 p-2 rounded"
+                      disabled={!selectedColor} // 색상이 선택되지 않은 경우 선택 불가
+                    >
+                      <option value="">선택하세요</option>
+                      {options.sizes.map((size) => {
+                        const sizeStock = stock[selectedColor]?.[size] || 0;
+                        return (
+                          <option
+                            key={size}
+                            value={size}
+                            disabled={sizeStock === 0} // 재고가 0인 경우 선택 불가
+                          >
+                            {sizeStock === 0 ? `${size} (품절)` : size}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    {optionError && (
+                      <p className="text-red-500 text-sm">
+                        사이즈를 선택하세요.(필수)
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-gray-700">
+                    이 상품은 사이즈가 필요 없습니다.
                   </p>
                 )}
               </div>
