@@ -50,7 +50,7 @@ const ShopDetail = () => {
       case "workoutgear":
         return "기타운동장비";
       case "clothing":
-        return "의류";
+        return "모두보기";
       case "tops":
         return "상의";
       case "bottoms":
