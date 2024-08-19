@@ -413,7 +413,7 @@ const ProductPage = () => {
   };
   // 서버에서 관련 상품 데이터 가져오기
   useEffect(() => {
-    const member = localStorage.getItem('member');
+    const member = localStorage.getItem("member");
     const viewKey = `viewed_${member}`;
     axiosInstance
       .get("/product/selectAll")
@@ -426,22 +426,22 @@ const ProductPage = () => {
         setLoading(false); // 로딩 상태 업데이트
       });
 
-      if (member) {
-        // 조회수 증가 처리
-        const hasViewed = localStorage.getItem(viewKey);
-        if (!hasViewed) {
-          axiosInstance.put(`/product/viewUp?id=${id}`)
-            .then(() => {
-              localStorage.setItem(viewKey, 'true');
-            })
-            .catch((error) => {
-              console.error("조회수 증가 실패:", error);
-              setError(error);
-            });
-        }
+    if (member) {
+      // 조회수 증가 처리
+      const hasViewed = localStorage.getItem(viewKey);
+      if (!hasViewed) {
+        axiosInstance
+          .put(`/product/viewUp?id=${id}`)
+          .then(() => {
+            localStorage.setItem(viewKey, "true");
+          })
+          .catch((error) => {
+            console.error("조회수 증가 실패:", error);
+            setError(error);
+          });
       }
+    }
   }, []); // 컴포넌트 마운트 시 데이터 요청
-  
 
   const totalPrice = price * quantity; // 총 가격 계산
 
