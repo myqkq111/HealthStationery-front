@@ -816,7 +816,7 @@ const ProductPage = () => {
 
         {/* 상품 리뷰 섹션 */}
         <div ref={reviewRef} className="">
-          <ProductReviewSection productId={product.id} />
+          <ProductReviewSection productId={product.id} product={product} />
         </div>
 
         <div ref={Inquiry} className="mb-4">

@@ -3,12 +3,17 @@ import axiosInstance from "../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { AiOutlineDown } from "react-icons/ai";
+import ReviewModal from "./ReviewModal"; // 리뷰 모달 컴포넌트 임포트
 
 const BuyList = () => {
   const navigate = useNavigate();
   const [buylists, setBuylists] = useState([]);
   const [expandedOrderIds, setExpandedOrderIds] = useState(new Set());
   const [confirmedOrders, setConfirmedOrders] = useState(new Set());
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [selectedBuylistId, setSelectedBuylistId] = useState(null);
+  const [reviewedOrders, setReviewedOrders] = useState(new Set()); // 이미 리뷰를 쓴 주문의 ID를 저장하는 상태
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("member")).id;
@@ -18,6 +23,11 @@ const BuyList = () => {
       .then((response) => {
         setBuylists(response.data);
         console.log(response.data);
+
+        // 로컬 스토리지에서 리뷰 작성 여부 확인
+        const storedReviewedOrders =
+          JSON.parse(localStorage.getItem("reviewedOrders")) || [];
+        setReviewedOrders(new Set(storedReviewedOrders));
       })
       .catch(() => {});
   }, []);
@@ -58,7 +68,6 @@ const BuyList = () => {
   };
 
   const handleConfirmOrder = (id, buylistProductId) => {
-    console.log(buylistProductId);
     axiosInstance
       .put(`/buylist/confirmation?id=${buylistProductId}`)
       .then(() => {
@@ -68,6 +77,36 @@ const BuyList = () => {
       .catch((error) => {
         console.error("구매 확정 실패:", error);
         alert("구매 확정에 실패했습니다.");
+      });
+  };
+
+  const handleReviewSubmit = (reviewData) => {
+    const { buylist_id, product_id, score, content } = reviewData;
+
+    console.log(reviewData);
+    axiosInstance
+      .post("/review/insert", {
+        buylistId: buylist_id,
+        productId: product_id,
+        score,
+        content,
+      })
+      .then(() => {
+        alert("리뷰가 성공적으로 등록되었습니다.");
+
+        // 리뷰 작성 후 로컬 스토리지 업데이트
+        const updatedReviewedOrders = new Set([...reviewedOrders, buylist_id]);
+        localStorage.setItem(
+          "reviewedOrders",
+          JSON.stringify([...updatedReviewedOrders])
+        );
+        setReviewedOrders(updatedReviewedOrders);
+        setShowReviewModal(false);
+        console.log(updatedReviewedOrders);
+      })
+      .catch((error) => {
+        console.error("리뷰 등록 실패:", error);
+        alert("리뷰 등록에 실패했습니다.");
       });
   };
 
@@ -223,12 +262,20 @@ const BuyList = () => {
                           </>
                         ) : (
                           <button
-                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                            className={`${
+                              reviewedOrders.has(buylist.id)
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-green-500 hover:bg-green-600"
+                            } text-white px-3 py-1 rounded`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              // 리뷰쓰기 버튼 클릭 핸들러 추가
-                              alert("리뷰쓰기를 클릭했습니다."); // 리뷰쓰기 버튼에 실제 동작 추가
+                              if (!reviewedOrders.has(buylist.id)) {
+                                setSelectedProductId(buylist.productId);
+                                setSelectedBuylistId(buylist.id);
+                                setShowReviewModal(true);
+                              }
                             }}
+                            disabled={reviewedOrders.has(buylist.id)}
                           >
                             리뷰쓰기
                           </button>
@@ -242,6 +289,17 @@ const BuyList = () => {
           ))
         )}
       </div>
+      <ReviewModal
+        isOpen={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        onSubmit={(reviewData) => {
+          handleReviewSubmit({
+            ...reviewData,
+            buylist_id: selectedBuylistId,
+            product_id: selectedProductId,
+          });
+        }}
+      />
     </div>
   );
 };
