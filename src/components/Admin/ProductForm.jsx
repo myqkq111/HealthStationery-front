@@ -213,7 +213,9 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               <option value="back">등/허리</option>
               <option value="powerlifting">파워리프팅/스트렝스</option>
               <option value="workoutgear">기타운동장비</option>
-              <option value="clothing">의류</option>
+              <option value="tops">상의</option>
+              <option value="bottoms">하의</option>
+              <option value="other-clothing">기타 의류</option>
             </select>
           </div>
           <div className="mb-4">
