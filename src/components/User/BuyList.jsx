@@ -3,11 +3,17 @@ import axiosInstance from "../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { AiOutlineDown } from "react-icons/ai";
+import ReviewModal from "./ReviewModal"; // 리뷰 모달 컴포넌트 임포트
 
 const BuyList = () => {
   const navigate = useNavigate();
   const [buylists, setBuylists] = useState([]);
   const [expandedOrderIds, setExpandedOrderIds] = useState(new Set());
+  const [confirmedOrders, setConfirmedOrders] = useState(new Set());
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [selectedBuylistId, setSelectedBuylistId] = useState(null);
+  const [reviewedOrders, setReviewedOrders] = useState(new Set()); // 이미 리뷰를 쓴 주문의 ID를 저장하는 상태
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("member")).id;
@@ -17,12 +23,16 @@ const BuyList = () => {
       .then((response) => {
         setBuylists(response.data);
         console.log(response.data);
+
+        // 로컬 스토리지에서 리뷰 작성 여부 확인
+        const storedReviewedOrders =
+          JSON.parse(localStorage.getItem("reviewedOrders")) || [];
+        setReviewedOrders(new Set(storedReviewedOrders));
       })
       .catch(() => {});
   }, []);
 
   const handleCancelOrder = (id, pid, color, size, count) => {
-    // 주문 취소 후 imp_uid 가져오기
     const impUid = localStorage.getItem("imp_uid");
 
     if (!impUid) {
@@ -30,22 +40,19 @@ const BuyList = () => {
       return;
     }
 
-    // 환불 요청
     axiosInstance
       .post("/api/refund", {
-        impUid: impUid, // 로컬 스토리지에서 가져온 imp_uid 사용
-        amount: 100, // 환불할 금액 (예시로 50으로 설정)
+        impUid: impUid,
+        amount: 100,
         reason: "주문 취소에 따른 환불",
       })
       .then((refundResponse) => {
-        // 환불 성공 후 주문 취소
         axiosInstance
           .delete(
             `/buylist/delete?id=${id}&pid=${pid}&color=${color}&size=${size}&count=${count}`
           )
           .then(() => {
             alert("주문이 성공적으로 취소되었습니다.");
-            // 주문 취소 후 리스트 새로고침
             setBuylists(buylists.filter((item) => item.id !== id));
           })
           .catch((error) => {
@@ -57,6 +64,49 @@ const BuyList = () => {
       .catch((error) => {
         console.error("환불 요청 실패:", error);
         alert("환불 요청에 실패했습니다.");
+      });
+  };
+
+  const handleConfirmOrder = (id, buylistProductId) => {
+    axiosInstance
+      .put(`/buylist/confirmation?id=${buylistProductId}`)
+      .then(() => {
+        setConfirmedOrders((prev) => new Set(prev).add(id));
+        alert("구매가 확정되었습니다.");
+      })
+      .catch((error) => {
+        console.error("구매 확정 실패:", error);
+        alert("구매 확정에 실패했습니다.");
+      });
+  };
+
+  const handleReviewSubmit = (reviewData) => {
+    const { buylist_id, product_id, score, content } = reviewData;
+
+    console.log(reviewData);
+    axiosInstance
+      .post("/review/insert", {
+        buylistId: buylist_id,
+        productId: product_id,
+        score,
+        content,
+      })
+      .then(() => {
+        alert("리뷰가 성공적으로 등록되었습니다.");
+
+        // 리뷰 작성 후 로컬 스토리지 업데이트
+        const updatedReviewedOrders = new Set([...reviewedOrders, buylist_id]);
+        localStorage.setItem(
+          "reviewedOrders",
+          JSON.stringify([...updatedReviewedOrders])
+        );
+        setReviewedOrders(updatedReviewedOrders);
+        setShowReviewModal(false);
+        console.log(updatedReviewedOrders);
+      })
+      .catch((error) => {
+        console.error("리뷰 등록 실패:", error);
+        alert("리뷰 등록에 실패했습니다.");
       });
   };
 
@@ -73,9 +123,9 @@ const BuyList = () => {
     setExpandedOrderIds((prev) => {
       const newExpandedOrderIds = new Set(prev);
       if (newExpandedOrderIds.has(id)) {
-        newExpandedOrderIds.delete(id); // 이미 열려 있는 항목은 닫기
+        newExpandedOrderIds.delete(id);
       } else {
-        newExpandedOrderIds.add(id); // 새로 열기
+        newExpandedOrderIds.add(id);
       }
       return newExpandedOrderIds;
     });
@@ -101,7 +151,7 @@ const BuyList = () => {
                     className="flex items-center justify-between px-6 py-4 border-b border-gray-200 cursor-pointer"
                     onClick={() =>
                       handleToggleDetails(buylist.buylistProductId)
-                    } // 화살표 클릭 시 상세 토글
+                    }
                   >
                     <div className="flex items-center space-x-4">
                       <img
@@ -111,7 +161,7 @@ const BuyList = () => {
                         alt={buylist.productName}
                         className="w-32 h-32 object-cover rounded-md cursor-pointer"
                         onClick={(e) => {
-                          e.stopPropagation(); // 클릭 이벤트 전파 방지
+                          e.stopPropagation();
                           navigate(`/product/${buylist.productId}`);
                         }}
                       />
@@ -178,21 +228,59 @@ const BuyList = () => {
                           </p>
                         </div>
                       </div>
-                      <button
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-4"
-                        onClick={(e) => {
-                          e.stopPropagation(); // 클릭 이벤트 전파 방지
-                          handleCancelOrder(
-                            buylist.id,
-                            buylist.productId,
-                            buylist.color,
-                            buylist.size,
-                            buylist.count
-                          );
-                        }}
-                      >
-                        주문취소
-                      </button>
+                      <div className="flex space-x-4 mt-4">
+                        {!confirmedOrders.has(buylist.id) &&
+                        buylist.confirmation !== 1 ? (
+                          <>
+                            <button
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCancelOrder(
+                                  buylist.id,
+                                  buylist.productId,
+                                  buylist.color,
+                                  buylist.size,
+                                  buylist.count
+                                );
+                              }}
+                            >
+                              주문취소
+                            </button>
+                            <button
+                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleConfirmOrder(
+                                  buylist.id,
+                                  buylist.buylistProductId
+                                );
+                              }}
+                            >
+                              구매확정
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            className={`${
+                              reviewedOrders.has(buylist.id)
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-green-500 hover:bg-green-600"
+                            } text-white px-3 py-1 rounded`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!reviewedOrders.has(buylist.id)) {
+                                setSelectedProductId(buylist.productId);
+                                setSelectedBuylistId(buylist.id);
+                                setShowReviewModal(true);
+                              }
+                            }}
+                            disabled={reviewedOrders.has(buylist.id)}
+                          >
+                            리뷰쓰기
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -201,6 +289,17 @@ const BuyList = () => {
           ))
         )}
       </div>
+      <ReviewModal
+        isOpen={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        onSubmit={(reviewData) => {
+          handleReviewSubmit({
+            ...reviewData,
+            buylist_id: selectedBuylistId,
+            product_id: selectedProductId,
+          });
+        }}
+      />
     </div>
   );
 };

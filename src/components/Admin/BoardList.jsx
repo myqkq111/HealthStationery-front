@@ -34,18 +34,17 @@ const BoardList = () => {
       })
       .then(() => {
         // 댓글 작성 후 게시물 데이터 업데이트
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.id === selectedInquiryId
-              ? {
-                  ...post,
-                  comments: [...(post.comments || []), newComment], // 새 댓글 추가
-                }
-              : post
-          )
-        );
-        setNewComment(""); // 입력 필드 초기화
-        setShowModal(false); // 모달 닫기
+        // 게시물 데이터 새로 불러오기
+        axiosInstance
+          .get("/Inquiry/selectAll")
+          .then((response) => {
+            setPosts(response.data); // 새 데이터로 상태 업데이트
+            setNewComment(""); // 입력 필드 초기화
+            setShowModal(false); // 모달 닫기
+          })
+          .catch((error) => {
+            console.error("Error fetching inquiries:", error);
+          });
       })
       .catch((error) => {
         console.error("Error updating comment:", error);
@@ -92,6 +91,9 @@ const BoardList = () => {
                 내용
               </th>
               <th className="px-4 py-3 text-sm font-medium text-gray-700">
+                답글
+              </th>
+              <th className="px-4 py-3 text-sm font-medium text-gray-700">
                 댓글
               </th>
               <th className="px-4 py-3 text-sm font-medium text-gray-700">
@@ -126,6 +128,9 @@ const BoardList = () => {
                       {inquiry.content}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900">
+                      {inquiry.comment}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-900">
                       <button
                         onClick={() => {
                           setSelectedInquiryId(inquiry.id);
@@ -145,24 +150,6 @@ const BoardList = () => {
                       </button>
                     </td>
                   </tr>
-                  {inquiry.comments &&
-                    inquiry.comments.map((comment) => (
-                      <tr key={comment.id} className="border-b border-gray-200">
-                        <td
-                          colSpan="8"
-                          className="px-6 py-4 text-sm text-gray-900"
-                        >
-                          <div className="ml-8 p-4 bg-gray-100 rounded-lg shadow-sm">
-                            <p className="font-semibold text-gray-800">
-                              {comment.member_id}
-                            </p>
-                            <p className="text-gray-700 mt-1">
-                              {comment.content}
-                            </p>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
                 </React.Fragment>
               ))
             )}
