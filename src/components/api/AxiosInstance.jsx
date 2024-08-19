@@ -8,6 +8,7 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   },
+  withCredentials: true, // 세션 쿠키를 요청에 포함
 });
 
 export default axiosInstance;

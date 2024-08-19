@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Address from "../../../openApi/Address";
+import { useNavigate } from "react-router-dom";
 
 const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
   const { id, name, email, tell, roadaddr, detailaddr, mailaddr } = user || {};
@@ -11,6 +12,8 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
   const [editDetailaddr, setEditDetailaddr] = useState(detailaddr); // 편집할 상세 주소
   const [activeTab, setActiveTab] = useState("existing"); // 현재 활성 탭
   const [customRequest, setCustomRequest] = useState(""); // 사용자 요청 메시지
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (request === "custom") {
@@ -69,10 +72,16 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
                 item.strImage.split(",")[0]
               }`}
               alt={item.name}
-              className="w-20 h-20 object-cover rounded-lg"
+              className="w-20 h-20 object-cover rounded-lg cursor-pointer"
+              onClick={() => navigate(`/product/${item.productId}`)} // 제품 상세 페이지로 이동
             />
             <div className="ml-4">
-              <h3 className="text-lg font-semibold">{item.name}</h3>
+              <h3
+                className="text-lg font-semibold cursor-pointer"
+                onClick={() => navigate(`/product/${item.productId}`)}
+              >
+                {item.name}
+              </h3>
               <p className="text-gray-600">가격 : {item.price}원</p>
               <p className="text-gray-600">
                 옵션 : {item.color} / {item.size}
