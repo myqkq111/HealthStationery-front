@@ -124,16 +124,17 @@ const MyPage = () => {
           <div className="mb-6 p-4 bg-white flex items-center ">
             {/* 기본 프로필 이미지 */}
             <div
-              className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300 mr-4 cursor-pointer"
+              className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-200 mr-5 cursor-pointer"
               onClick={() => {
                 setActiveTab("updateProfile");
                 setIsUpdateProfileOpen(true);
               }}
             >
-              <FontAwesomeIcon
-                icon={faUser}
-                className="text-gray-600"
-                style={{ fontSize: "2rem" }}
+              <img
+                src="/카톡프사.png" // 이미지 파일 경로
+                alt="Default Profile"
+                className="w-full h-full object-cover rounded-full"
+                style={{ objectPosition: "center" }} // 이미지를 가운데 정렬
               />
             </div>
             <p className="text-xl font-semibold mb-2">

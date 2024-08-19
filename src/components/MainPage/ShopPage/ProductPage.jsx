@@ -24,6 +24,7 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1); // 수량 상태 추가
   const [price, setPrice] = useState(0); // 가격 상태 추가
   const [stock, setStock] = useState({}); // 재고 상태 추가
+  const [likeCount, setLikeCount] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
   const currentUrl = window.location.pathname + window.location.search;
@@ -47,6 +48,7 @@ const ProductPage = () => {
           setInquiries(productDetailsMap.inquiries);
           console.log(productDetailsMap.inquiries);
           setProduct(productData);
+          setLikeCount(productData.like);
           if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
           const strImage = productData.strImage.split(",");
@@ -294,11 +296,6 @@ const ProductPage = () => {
       return; // 사이즈가 필요한 상품인데 사이즈가 선택되지 않은 경우
     }
 
-    // 사이즈가 필요 없지만 사이즈 선택이 제공된 경우, size 필드를 빈 값으로 설정
-    if (!requiresSize) {
-      data.delete("size"); // 사이즈 필드를 삭제
-    }
-
     const maxStock = stock[selectedColor]?.[selectedOption] || 0;
 
     if (quantity > maxStock) {
@@ -410,6 +407,7 @@ const ProductPage = () => {
         })
         .then(() => {
           setIsLiked(newLikedStatus);
+          setLikeCount(likeCount + 1);
         })
         .catch((error) => {
           console.error("찜 목록 추가 실패:", error);
@@ -424,13 +422,13 @@ const ProductPage = () => {
         })
         .then(() => {
           setIsLiked(newLikedStatus);
+          setLikeCount(likeCount - 1);
         })
         .catch((error) => {
           console.error("찜 목록 제거 실패:", error);
         });
     }
   };
-
   // 서버에서 관련 상품 데이터 가져오기
   useEffect(() => {
     axiosInstance
@@ -444,23 +442,6 @@ const ProductPage = () => {
         setLoading(false); // 로딩 상태 업데이트
       });
   }, []); // 컴포넌트 마운트 시 데이터 요청
-
-  useEffect(() => {
-    const member = localStorage.getItem("member");
-
-    if (member) {
-      // 조회수 증가 처리
-      axiosInstance
-        .put(`/product/viewUp?id=${id}`)
-        .then(() => {
-          // 조회수가 증가했음을 sessionStorage에 저장
-        })
-        .catch((error) => {
-          console.error("조회수 증가 실패:", error);
-          setError(error);
-        });
-    }
-  }, [id]);
 
   const totalPrice = price * quantity; // 총 가격 계산
 
@@ -598,41 +579,33 @@ const ProductPage = () => {
                 )}
               </div>
               <div className="flex flex-col mb-6">
-                {options.sizes && options.sizes.length > 0 ? (
-                  <>
-                    <label className="font-semibold mb-2" htmlFor="size">
-                      사이즈(필수선택)
-                    </label>
-                    <select
-                      id="size"
-                      value={selectedOption}
-                      onChange={handleOptionChange}
-                      className="border border-gray-300 p-2 rounded"
-                      disabled={!selectedColor} // 색상이 선택되지 않은 경우 선택 불가
-                    >
-                      <option value="">선택하세요</option>
-                      {options.sizes.map((size) => {
-                        const sizeStock = stock[selectedColor]?.[size] || 0;
-                        return (
-                          <option
-                            key={size}
-                            value={size}
-                            disabled={sizeStock === 0} // 재고가 0인 경우 선택 불가
-                          >
-                            {sizeStock === 0 ? `${size} (품절)` : size}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    {optionError && (
-                      <p className="text-red-500 text-sm">
-                        사이즈를 선택하세요.(필수)
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-gray-700">
-                    이 상품은 사이즈가 필요 없습니다.
+                <label className="font-semibold mb-2" htmlFor="size">
+                  사이즈(필수선택)
+                </label>
+                <select
+                  id="size"
+                  value={selectedOption}
+                  onChange={handleOptionChange}
+                  className="border border-gray-300 p-2"
+                  disabled={!selectedColor} // 색상이 선택되지 않은 경우 선택 불가
+                >
+                  <option value="">선택하세요</option>
+                  {options.sizes.map((size) => {
+                    const sizeStock = stock[selectedColor]?.[size] || 0;
+                    return (
+                      <option
+                        key={size}
+                        value={size}
+                        disabled={sizeStock === 0} // 재고가 0인 경우 선택 불가
+                      >
+                        {sizeStock === 0 ? `${size} (품절)` : size}
+                      </option>
+                    );
+                  })}
+                </select>
+                {optionError && (
+                  <p className="text-red-500 text-sm">
+                    사이즈를 선택하세요.(필수)
                   </p>
                 )}
               </div>
@@ -699,6 +672,9 @@ const ProductPage = () => {
                   }`}
                 >
                   {isLiked ? "❤" : "🤍"}
+                  <span className="text-base text-black font-semibold">
+                    {likeCount}
+                  </span>
                 </button>
               </div>
             </form>

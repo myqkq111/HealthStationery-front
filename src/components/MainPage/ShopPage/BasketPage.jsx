@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../api/AxiosInstance";
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash } from "react-icons/fa";
 
 const BasketPage = () => {
   const navigate = useNavigate();
@@ -21,14 +21,14 @@ const BasketPage = () => {
   useEffect(() => {
     // 페이지가 로드될 때 장바구니 데이터를 서버에서 가져옵니다.
     const userId = JSON.parse(localStorage.getItem("member")).id;
-  
+
     axiosInstance
       .get(`/basket/cart?memberId=${userId}`)
       .then((response) => {
         const items = response.data;
         setCartItems(items); // 서버 응답에서 장바구니 아이템 가져오기
         // 품절된 상품을 추적
-        setOutOfStockItems(items.filter(item => item.stock === 0));
+        setOutOfStockItems(items.filter((item) => item.stock === 0));
         setLoading(false); // 로딩 상태 업데이트
       })
       .catch((error) => {
@@ -39,29 +39,26 @@ const BasketPage = () => {
 
   const handleQuantityChange = (item, newQuantity) => {
     if (newQuantity <= 0) return; // 수량이 0 이하로 떨어지지 않도록 조건 추가
-  
+
     // 재고가 있는지 확인
     if (newQuantity > item.stock) {
       alert("재고가 부족합니다.");
       return;
     }
-  
+
     const updatedItem = { ...item, count: newQuantity };
     axiosInstance
       .put(`/basket/optionUpdate`, updatedItem)
       .then(() => {
         // 서버 업데이트 성공 후 로컬 상태도 업데이트
         setCartItems((prevItems) =>
-          prevItems.map((i) =>
-            i.id === item.id ? updatedItem : i
-          )
+          prevItems.map((i) => (i.id === item.id ? updatedItem : i))
         );
       })
       .catch((error) => {
         console.error("상품 수량 업데이트 오류:", error);
       });
   };
-  
 
   const handleRemoveItem = (id) => {
     if (window.confirm("정말로 이 상품을 삭제하시겠습니까?")) {
@@ -145,7 +142,7 @@ const BasketPage = () => {
     const selectedItemsDetails = cartItems.filter((item) =>
       selectedItems.includes(item.id)
     );
-  
+
     // 필터링된 상품들의 총합 계산
     return selectedItemsDetails.reduce(
       (total, item) => total + item.price * item.count,
@@ -177,7 +174,7 @@ const BasketPage = () => {
       .get(`/product/oneOption?id=${item.productId}`)
       .then((response) => {
         const options = response.data;
-    
+
         // 색상별 사이즈와 재고를 담을 객체
         const stockByColorAndSize = options.reduce((acc, option) => {
           if (!acc[option.color]) {
@@ -186,11 +183,13 @@ const BasketPage = () => {
           acc[option.color][option.size] = option.stock;
           return acc;
         }, {});
-    
+
         // 색상과 사이즈의 리스트를 생성
-        const uniqueColors = [...new Set(options.map(option => option.color))];
-        const uniqueSizes = [...new Set(options.map(option => option.size))];
-    
+        const uniqueColors = [
+          ...new Set(options.map((option) => option.color)),
+        ];
+        const uniqueSizes = [...new Set(options.map((option) => option.size))];
+
         setColors(uniqueColors);
         setSizes(uniqueSizes);
         setStocks(stockByColorAndSize);
@@ -202,8 +201,6 @@ const BasketPage = () => {
         setLoading(false);
       });
   };
-  
-  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -227,15 +224,15 @@ const BasketPage = () => {
           item.color === currentItem.color &&
           item.size === currentItem.size
       );
-  
+
       if (isDuplicate) {
         alert("장바구니에 동일한 색상과 사이즈의 상품이 이미 존재합니다.");
         return; // 중복이 확인되면 업데이트 진행하지 않음
       }
-  
+
       // 수량을 1로 설정
       const updatedItem = { ...currentItem, count: 1 };
-   
+
       // 업데이트 요청
       axiosInstance
         .put(`/basket/optionUpdate`, updatedItem)
@@ -252,12 +249,11 @@ const BasketPage = () => {
         });
     }
   };
-  
 
   const handleRemoveOutOfStock = () => {
     if (window.confirm("품절된 상품을 삭제하시겠습니까?")) {
-      const outOfStockIds = outOfStockItems.map(item => item.id);
-  
+      const outOfStockIds = outOfStockItems.map((item) => item.id);
+
       axiosInstance
         .delete("/basket/delete", {
           data: { ids: outOfStockIds },
@@ -280,7 +276,7 @@ const BasketPage = () => {
     setCurrentItem((prev) => ({
       ...prev,
       color: newColor,
-      size: '', // 색상 변경 시 사이즈를 초기화
+      size: "", // 색상 변경 시 사이즈를 초기화
     }));
   };
 
@@ -293,28 +289,33 @@ const BasketPage = () => {
   };
 
   // 모든 사이즈가 품절인 색상 찾기
-const getColorOptions = () => {
-  return colors.map((color) => {
-    const sizes = stocks[color];
-    const allSizesOutOfStock = Object.values(sizes).every((stock) => stock <= 0);
-    return {
-      color,
-      isOutOfStock: allSizesOutOfStock,
-    };
-  });
-};
+  const getColorOptions = () => {
+    return colors.map((color) => {
+      const sizes = stocks[color];
+      const allSizesOutOfStock = Object.values(sizes).every(
+        (stock) => stock <= 0
+      );
+      return {
+        color,
+        isOutOfStock: allSizesOutOfStock,
+      };
+    });
+  };
 
-// 사이즈 select box에서 색상 변경 시 품절 처리
-const getAvailableSizes = (color) => {
-  const sizes = stocks[color] || {};
-  return Object.keys(sizes).map((size) => ({
-    size,
-    isOutOfStock: sizes[size] <= 0,
-  }));
-};
+  // 사이즈 select box에서 색상 변경 시 품절 처리
+  const getAvailableSizes = (color) => {
+    const sizes = stocks[color] || {};
+    return Object.keys(sizes).map((size) => ({
+      size,
+      isOutOfStock: sizes[size] <= 0,
+    }));
+  };
 
-const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOption => colorOption.color === currentItem?.color)?.isOutOfStock;
-
+  const isUpdateDisabled =
+    !currentItem?.size ||
+    getColorOptions().find(
+      (colorOption) => colorOption.color === currentItem?.color
+    )?.isOutOfStock;
 
   return (
     <div className="min-h-screen p-8">
@@ -327,133 +328,176 @@ const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOptio
           </p>
         ) : (
           <>
-           <table className="w-full border-collapse mb-4">
-            <thead className="bg-gray-200 text-gray-700">
-              <tr>
-                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center">
-                  <input
-                    type="checkbox"
-                    onChange={handleSelectAll}
-                    checked={selectedItems.length === cartItems.length}
-                    className="w-5 h-5" // selectbox 크기 조정
-                  />
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
-                  상품정보
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
-                  수량
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
-                  주문금액
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
-                  
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              {cartItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className={`border-b border-gray-300 ${item.stock === 0 ? 'bg-gray-100 text-gray-400' : 'bg-white'}`}
-                >
-                  <td className={`py-4 px-4 border-r border-gray-300 text-center ${item.stock === 0 ? 'text-gray-400' : ''}`}>
+            <table className="w-full border-collapse mb-4">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center">
                     <input
                       type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => handleSelectItem(item.id)}
-                      disabled={item.stock === 0}
-                      className={`w-5 h-5 ${item.stock === 0 ? 'cursor-not-allowed' : ''}`}
+                      onChange={handleSelectAll}
+                      checked={selectedItems.length === cartItems.length}
+                      className="w-5 h-5" // selectbox 크기 조정
                     />
                   </td>
-                  <td className={`py-4 px-4 border-r border-gray-300 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
-                    <div className="flex items-center">
-                      <img
-                        src={`/images/products/${item.cate}/${item.strImage.split(",")[0]}`}
-                        alt={item.name}
-                        className={`w-24 h-24 object-cover rounded-md cursor-pointer ${item.stock === 0 ? 'opacity-50' : ''}`}
-                        onClick={() => navigate(`/product/${item.productId}`)} // 제품 상세 페이지로 이동
-                      />
-                      <div className="ml-4 flex flex-col justify-center flex-grow">
-                        <div className="mb-2">
-                          <h2
-                            className={`text-lg font-semibold cursor-pointer ${item.stock === 0 ? 'text-gray-400' : ''}`}
-                            onClick={() => navigate(`/product/${item.productId}`)} // 제품 상세 페이지로 이동
-                          >
-                            {item.name}
-                          </h2>
-                          <p className={`text-gray-600 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
-                            색상: <span className="font-medium">{item.color}</span>
-                          </p>
-                          <p className={`text-gray-600 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
-                            사이즈: <span className="font-medium">{item.size}</span>
-                          </p>
-                          {item.stock > 0 && (
-                            <p className={`text-gray-600 ${item.stock === 0 ? 'text-gray-400' : ''}`}>
-                              가격: <span className="font-medium">{item.price.toLocaleString()}원</span>
-                            </p>
-                          )}
-                          {item.stock === 0 && (
-                            <p className="text-red-500 font-semibold">품절</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                  <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
+                    상품정보
                   </td>
-                  <td className={`py-4 px-4 border-r border-gray-300 text-center ${item.stock === 0 ? 'text-gray-400' : ''}`}>
-                    {item.stock > 0 ? (
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleQuantityChange(item, item.count - 1)}
-                            className="bg-gray-300 text-gray-800 px-3 py-1 rounded-lg hover:bg-gray-400"
-                            disabled={item.count <= 1}
-                          >
-                            -
-                          </button>
-                          <span className="text-lg font-semibold">
-                            {item.count}
-                          </span>
-                          <button
-                            onClick={() => handleQuantityChange(item, item.count + 1)}
-                            className="bg-gray-300 text-gray-800 px-3 py-1 rounded-lg hover:bg-gray-400"
-                            disabled={item.count >= item.stock}
-                          >
-                            +
-                          </button>
-                        </div>
-                        <button
-                          onClick={() => openModal(item)}
-                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                        >
-                          옵션 변경
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="text-gray-400">-</div>
-                    )}
+                  <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
+                    수량
                   </td>
-                  <td className="py-4 px-4 border-r border-gray-300 text-center">
-                    {item.stock > 0 ? (
-                      <span className="font-medium">
-                        {(item.price * item.count).toLocaleString()}원
-                      </span>
-                    ) : (
-                      <span className="text-gray-400">-</span>
-                    )}
+                  <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold">
+                    주문금액
                   </td>
-                  <td className="py-4 px-4 border-gray-300 text-center border-l">
-                    <button
-                      onClick={() => handleRemoveItem(item.id)}                  
-                    >
-                      <FaTrash className="text-red-500 w-6 h-6" />
-                    </button>
-                  </td>
+                  <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center font-semibold"></td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {cartItems.map((item) => (
+                  <tr
+                    key={item.id}
+                    className={`border-b border-gray-300 ${
+                      item.stock === 0
+                        ? "bg-gray-100 text-gray-400"
+                        : "bg-white"
+                    }`}
+                  >
+                    <td
+                      className={`py-4 px-4 border-r border-gray-300 text-center ${
+                        item.stock === 0 ? "text-gray-400" : ""
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleSelectItem(item.id)}
+                        disabled={item.stock === 0}
+                        className={`w-5 h-5 ${
+                          item.stock === 0 ? "cursor-not-allowed" : ""
+                        }`}
+                      />
+                    </td>
+                    <td
+                      className={`py-4 px-4 border-r border-gray-300 ${
+                        item.stock === 0 ? "text-gray-400" : ""
+                      }`}
+                    >
+                      <div className="flex items-center">
+                        <img
+                          src={`/images/products/${item.cate}/${
+                            item.strImage.split(",")[0]
+                          }`}
+                          alt={item.name}
+                          className={`w-24 h-24 object-cover cursor-pointer ${
+                            item.stock === 0 ? "opacity-50" : ""
+                          }`}
+                          onClick={() => navigate(`/product/${item.productId}`)} // 제품 상세 페이지로 이동
+                        />
+                        <div className="ml-4 flex flex-col justify-center flex-grow">
+                          <div className="mb-2">
+                            <h2
+                              className={`text-lg font-semibold cursor-pointer ${
+                                item.stock === 0 ? "text-gray-400" : ""
+                              }`}
+                              onClick={() =>
+                                navigate(`/product/${item.productId}`)
+                              } // 제품 상세 페이지로 이동
+                            >
+                              {item.name}
+                            </h2>
+                            <p
+                              className={`text-gray-600 ${
+                                item.stock === 0 ? "text-gray-400" : ""
+                              }`}
+                            >
+                              색상:{" "}
+                              <span className="font-medium">{item.color}</span>
+                            </p>
+                            <p
+                              className={`text-gray-600 ${
+                                item.stock === 0 ? "text-gray-400" : ""
+                              }`}
+                            >
+                              사이즈:{" "}
+                              <span className="font-medium">{item.size}</span>
+                            </p>
+                            {item.stock > 0 && (
+                              <p
+                                className={`text-gray-600 ${
+                                  item.stock === 0 ? "text-gray-400" : ""
+                                }`}
+                              >
+                                가격:{" "}
+                                <span className="font-medium">
+                                  {item.price.toLocaleString()}원
+                                </span>
+                              </p>
+                            )}
+                            {item.stock === 0 && (
+                              <p className="text-red-500 font-semibold">품절</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td
+                      className={`py-4 px-4 border-r border-gray-300 text-center ${
+                        item.stock === 0 ? "text-gray-400" : ""
+                      }`}
+                    >
+                      {item.stock > 0 ? (
+                        <div className="flex flex-col items-center space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() =>
+                                handleQuantityChange(item, item.count - 1)
+                              }
+                              className="bg-gray-100 text-gray-800 px-3 py-1 hover:bg-gray-300"
+                              disabled={item.count <= 1}
+                            >
+                              -
+                            </button>
+                            <span className="text-lg font-semibold">
+                              {item.count}
+                            </span>
+                            <button
+                              onClick={() =>
+                                handleQuantityChange(item, item.count + 1)
+                              }
+                              className="bg-gray-100 text-gray-800 px-3 py-1 hover:bg-gray-300"
+                              disabled={item.count >= item.stock}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => openModal(item)}
+                            className="bg-blue-400 text-white px-4 py-2 hover:bg-blue-600"
+                          >
+                            옵션 변경
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="text-gray-400">-</div>
+                      )}
+                    </td>
+                    <td className="py-4 px-4 border-r border-gray-300 text-center">
+                      {item.stock > 0 ? (
+                        <span className="font-medium">
+                          {(item.price * item.count).toLocaleString()}원
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4 border-gray-300 text-center border-l">
+                      <button onClick={() => handleRemoveItem(item.id)}>
+                        <FaTrash className="text-red-500 w-6 h-6" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             <div className="mb-4">
               <table className="w-full border-collapse">
                 <tbody>
@@ -468,7 +512,7 @@ const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOptio
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-t border-gray-300 text-sm font-bold text-gray-600 text-center">
+                    <td className="py-2 px-4 border-t border-gray-300 text-sm font-bold text-red-600 text-center">
                       ※조건부 무료배송: 50,000원 이상시 무료배송※
                     </td>
                   </tr>
@@ -480,13 +524,13 @@ const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOptio
               <div>
                 <button
                   onClick={handleRemoveSelected}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 mr-2"
+                  className="bg-red-500 text-white px-4 py-2 hover:bg-red-600 mr-2"
                 >
                   선택상품 삭제
                 </button>
                 <button
                   onClick={handleRemoveOutOfStock}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-4 py-2 hover:bg-gray-600"
                 >
                   품절상품 삭제
                 </button>
@@ -529,7 +573,7 @@ const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOptio
 
             <div className="mt-6 text-center">
               <button
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                className="bg-yellow-500 text-white px-4 py-2 hover:bg-yellow-600"
                 onClick={handleOrder}
               >
                 주문하기
@@ -537,15 +581,17 @@ const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOptio
             </div>
 
             {isModalOpen && currentItem && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                  <h2 className="text-xl font-semibold mb-4">{currentItem?.name}</h2>
+              <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                <div className="bg-white p-6 max-w-sm w-full">
+                  <h2 className="text-xl font-semibold mb-4">
+                    {currentItem?.name}
+                  </h2>
                   <div className="mb-4">
                     <label className="block text-gray-700">색상:</label>
                     <select
                       value={currentItem?.color}
                       onChange={handleColorChange}
-                      className="w-full p-2 border border-gray-300 rounded"
+                      className="w-full p-2 border border-gray-300"
                     >
                       {getColorOptions().map(({ color, isOutOfStock }) => (
                         <option
@@ -562,34 +608,43 @@ const isUpdateDisabled = !currentItem?.size || getColorOptions().find(colorOptio
                   <div className="mb-4">
                     <label className="block text-gray-700">사이즈:</label>
                     <select
-                      value={currentItem?.size || ''}
+                      value={currentItem?.size || ""}
                       onChange={handleSizeChange}
-                      className="w-full p-2 border border-gray-300 rounded"
-                      disabled={!currentItem?.color || getColorOptions().find(colorOption => colorOption.color === currentItem?.color)?.isOutOfStock}
+                      className="w-full p-2 border border-gray-300"
+                      disabled={
+                        !currentItem?.color ||
+                        getColorOptions().find(
+                          (colorOption) =>
+                            colorOption.color === currentItem?.color
+                        )?.isOutOfStock
+                      }
                     >
-                      <option value="" disabled>사이즈 선택</option>
-                      {getAvailableSizes(currentItem?.color).map(({ size, isOutOfStock }) => (
-                        <option
-                          key={size}
-                          value={size}
-                          disabled={isOutOfStock}
-                        >
-                          {size} {isOutOfStock ? "(품절)" : ""}
-                        </option>
-                      ))}
+                      <option value="" disabled>
+                        사이즈 선택
+                      </option>
+                      {getAvailableSizes(currentItem?.color).map(
+                        ({ size, isOutOfStock }) => (
+                          <option
+                            key={size}
+                            value={size}
+                            disabled={isOutOfStock}
+                          >
+                            {size} {isOutOfStock ? "(품절)" : ""}
+                          </option>
+                        )
+                      )}
                     </select>
-
                   </div>
                   <div className="flex justify-end">
                     <button
                       onClick={closeModal}
-                      className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 mr-2"
+                      className="bg-gray-500 text-white px-4 py-2hover:bg-gray-600 mr-2"
                     >
                       취소
                     </button>
                     <button
                       onClick={handleUpdateItem}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                      className="bg-blue-500 text-white px-4 py-2 hover:bg-blue-600"
                       disabled={isUpdateDisabled} // 사이즈가 선택되지 않거나 색상이 품절이면 비활성화
                     >
                       확인

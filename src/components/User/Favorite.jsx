@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
+import { FaTrash } from "react-icons/fa";
 
 const IMAGE_BASE_URL = "/images/products/"; // 이미지 기본 경로
 
@@ -111,20 +112,7 @@ const Favorite = () => {
                     className="mt-4 flex justify-center items-center cursor-pointer"
                     onClick={() => handleRemoveFavorite(item.productId)}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-6 h-6 text-gray-600 hover:text-red-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M4 7h16M10 11v6m4-6v6M5 7V4a1 1 0 011-1h12a1 1 0 011 1v3M9 7v12a2 2 0 002 2h4a2 2 0 002-2V7"
-                      />
-                    </svg>
+                    <FaTrash className="text-red-500 w-6 h-6" />
                     <span className="text-xs text-gray-600 hover:text-red-500">
                       삭제
                     </span>
