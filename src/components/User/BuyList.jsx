@@ -88,7 +88,7 @@ const BuyList = () => {
           <p className="text-center text-gray-500">주문목록이 없습니다.</p>
         ) : (
           Object.entries(groupedByDate).map(([date, orders]) => (
-            <div key={date} className="bg-white rounded-lg shadow-md mb-6">
+            <div key={date} className="bg-white mb-6">
               <div className="bg-orange-300 px-6 py-3 border-b border-gray-200">
                 <h3 className="text-lg font-semibold">
                   {moment(date).format("YYYY년 MM월 DD일")}

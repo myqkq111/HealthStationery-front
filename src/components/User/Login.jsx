@@ -21,28 +21,28 @@ const Login = () => {
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get("redirect") || "/";
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    try {
-      // Perform login request
-      const response = await axiosInstance.post("/member/login", {
+    axiosInstance
+      .post("/member/login", {
         email,
         password,
+      })
+      .then((response) => {
+        // 토큰이랑 사용자정보 추출
+        const { token, member } = response.data;
+
+        // 로그인 업데이트
+        login(token, member);
+
+        // 메인으로 전환
+        navigate(redirectUrl);
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+        setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
       });
-
-      // 토큰이랑 사용자정보 추출
-      const { token, member } = response.data;
-
-      // 로그인 업데이트
-      login(token, member);
-
-      // 메인으로 전환
-      navigate(redirectUrl);
-    } catch (error) {
-      console.error("Login failed:", error);
-      setError("로그인 실패. 이메일과 비밀번호를 확인해 주세요.");
-    }
   };
 
   const handleForgotClick = () => setIsForgotOpen(true);

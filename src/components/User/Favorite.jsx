@@ -63,8 +63,8 @@ const Favorite = () => {
   return (
     <div className="p-4">
       <div className="flex items-center mb-4">
-        <h2 className="text-xm font-semibold mr-2">찜 목록</h2>
-        <span className="text-lg font-medium text-gray-600">
+        <h2 className="text-2xl font-semibold mb-4">찜 목록</h2>
+        <span className="text-2xl font-semibold mb-4">
           ({favorites.length})
         </span>
       </div>
