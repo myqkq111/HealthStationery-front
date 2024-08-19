@@ -28,7 +28,7 @@ const MainHeader = () => {
     fetchCartItemCount();
 
     // 1초마다 장바구니 아이템 수를 새로 고침
-    const intervalId = setInterval(fetchCartItemCount, 1000);
+    const intervalId = setInterval(fetchCartItemCount, 100);
 
     // 클린업: 컴포넌트 언마운트 시 interval 종료
     return () => clearInterval(intervalId);
