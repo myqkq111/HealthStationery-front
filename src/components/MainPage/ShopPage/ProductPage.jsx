@@ -28,6 +28,8 @@ const ProductPage = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const currentUrl = window.location.pathname + window.location.search;
 
+  console.log(id);
+
   // 로그인된 유저의 uid 가져오기 (localStorage에서 가져오고, null 처리)
   const uid = localStorage.getItem("member")
     ? JSON.parse(localStorage.getItem("member")).id

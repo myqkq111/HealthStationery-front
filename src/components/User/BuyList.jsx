@@ -16,6 +16,7 @@ const BuyList = () => {
       .get(`/buylist/mypage?id=${userId}`)
       .then((response) => {
         setBuylists(response.data);
+        console.log(response.data);
       })
       .catch(() => {});
   }, []);
