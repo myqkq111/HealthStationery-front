@@ -97,8 +97,8 @@ const MainHeader = () => {
             href="/cart"
             className="flex items-center text-xs hover:text-yellow-500 relative"
           >
-            <FaShoppingCart className="mr-1 text-sm" />
-            <span className="ml-2 text-xs">장바구니</span>{" "}
+            <FaShoppingCart className="text-sm" />
+            <span className="ml-1 text-xs">장바구니</span>{" "}
             {/* 텍스트와 숫자 사이의 간격 조정 */}
             {cartItemCount > 0 && (
               <span className="absolute -right-4 top-[-10%] bg-red-500 text-white rounded-full text-[10px] font-bold px-1 py-0.5">
