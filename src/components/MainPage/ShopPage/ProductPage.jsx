@@ -24,6 +24,7 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1); // 수량 상태 추가
   const [price, setPrice] = useState(0); // 가격 상태 추가
   const [stock, setStock] = useState({}); // 재고 상태 추가
+  const [likeCount, setLikeCount] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
   const currentUrl = window.location.pathname + window.location.search;
@@ -46,6 +47,7 @@ const ProductPage = () => {
           const productData = productDetailsMap.product;
           setInquiries(productDetailsMap.inquiries);
           setProduct(productData);
+          setLikeCount(productData.like);
           if (productData.likeToggle) setIsLiked(true);
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
           const strImage = productData.strImage.split(",");
@@ -391,6 +393,7 @@ const ProductPage = () => {
         })
         .then(() => {
           setIsLiked(newLikedStatus);
+          setLikeCount(likeCount + 1);
         })
         .catch((error) => {
           console.error("찜 목록 추가 실패:", error);
@@ -405,6 +408,7 @@ const ProductPage = () => {
         })
         .then(() => {
           setIsLiked(newLikedStatus);
+          setLikeCount(likeCount - 1);
         })
         .catch((error) => {
           console.error("찜 목록 제거 실패:", error);
@@ -672,6 +676,9 @@ const ProductPage = () => {
                   }`}
                 >
                   {isLiked ? "❤" : "🤍"}
+                  <span className="text-base text-black font-semibold">
+                    {likeCount}
+                  </span>
                 </button>
               </div>
             </form>
