@@ -191,6 +191,19 @@ const InquiryList = ({ Inquiry, product }) => {
                               ? "비밀글입니다."
                               : inquiry.content}
                           </p>
+                          {/* 댓글 표시 */}
+                          {inquiry.comment && (
+                            <div className="mt-4 border-t border-gray-300 pt-2">
+                              <h4 className="text-gray-700 font-medium">
+                                답변:
+                              </h4>
+                              <div className="mt-2 p-2 bg-gray-100 rounded">
+                                <p className="text-gray-600">
+                                  {inquiry.comment}
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

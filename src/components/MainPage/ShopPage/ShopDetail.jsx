@@ -12,11 +12,7 @@ const ShopDetail = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       axiosInstance
-        .get(
-          category === "shop"
-            ? "/product/selectAll"
-            : `/product/selectCate?cate=${category}`
-        )
+        .get(`/product/selectCate?cate=${category}`)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);

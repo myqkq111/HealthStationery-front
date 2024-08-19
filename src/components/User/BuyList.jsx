@@ -8,6 +8,7 @@ const BuyList = () => {
   const navigate = useNavigate();
   const [buylists, setBuylists] = useState([]);
   const [expandedOrderIds, setExpandedOrderIds] = useState(new Set());
+  const [confirmedOrders, setConfirmedOrders] = useState(new Set());
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("member")).id;
@@ -16,12 +17,12 @@ const BuyList = () => {
       .get(`/buylist/mypage?id=${userId}`)
       .then((response) => {
         setBuylists(response.data);
+        console.log(response.data);
       })
       .catch(() => {});
   }, []);
 
   const handleCancelOrder = (id, pid, color, size, count) => {
-    // 주문 취소 후 imp_uid 가져오기
     const impUid = localStorage.getItem("imp_uid");
 
     if (!impUid) {
@@ -29,22 +30,19 @@ const BuyList = () => {
       return;
     }
 
-    // 환불 요청
     axiosInstance
       .post("/api/refund", {
-        impUid: impUid, // 로컬 스토리지에서 가져온 imp_uid 사용
-        amount: 100, // 환불할 금액 (예시로 50으로 설정)
+        impUid: impUid,
+        amount: 100,
         reason: "주문 취소에 따른 환불",
       })
       .then((refundResponse) => {
-        // 환불 성공 후 주문 취소
         axiosInstance
           .delete(
             `/buylist/delete?id=${id}&pid=${pid}&color=${color}&size=${size}&count=${count}`
           )
           .then(() => {
             alert("주문이 성공적으로 취소되었습니다.");
-            // 주문 취소 후 리스트 새로고침
             setBuylists(buylists.filter((item) => item.id !== id));
           })
           .catch((error) => {
@@ -56,6 +54,20 @@ const BuyList = () => {
       .catch((error) => {
         console.error("환불 요청 실패:", error);
         alert("환불 요청에 실패했습니다.");
+      });
+  };
+
+  const handleConfirmOrder = (id, buylistProductId) => {
+    console.log(buylistProductId);
+    axiosInstance
+      .put(`/buylist/confirmation?id=${buylistProductId}`)
+      .then(() => {
+        setConfirmedOrders((prev) => new Set(prev).add(id));
+        alert("구매가 확정되었습니다.");
+      })
+      .catch((error) => {
+        console.error("구매 확정 실패:", error);
+        alert("구매 확정에 실패했습니다.");
       });
   };
 
@@ -72,9 +84,9 @@ const BuyList = () => {
     setExpandedOrderIds((prev) => {
       const newExpandedOrderIds = new Set(prev);
       if (newExpandedOrderIds.has(id)) {
-        newExpandedOrderIds.delete(id); // 이미 열려 있는 항목은 닫기
+        newExpandedOrderIds.delete(id);
       } else {
-        newExpandedOrderIds.add(id); // 새로 열기
+        newExpandedOrderIds.add(id);
       }
       return newExpandedOrderIds;
     });
@@ -100,7 +112,7 @@ const BuyList = () => {
                     className="flex items-center justify-between px-6 py-4 border-b border-gray-200 cursor-pointer"
                     onClick={() =>
                       handleToggleDetails(buylist.buylistProductId)
-                    } // 화살표 클릭 시 상세 토글
+                    }
                   >
                     <div className="flex items-center space-x-4">
                       <img
@@ -110,7 +122,7 @@ const BuyList = () => {
                         alt={buylist.productName}
                         className="w-32 h-32 object-cover rounded-md cursor-pointer"
                         onClick={(e) => {
-                          e.stopPropagation(); // 클릭 이벤트 전파 방지
+                          e.stopPropagation();
                           navigate(`/product/${buylist.productId}`);
                         }}
                       />
@@ -177,21 +189,51 @@ const BuyList = () => {
                           </p>
                         </div>
                       </div>
-                      <button
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-4"
-                        onClick={(e) => {
-                          e.stopPropagation(); // 클릭 이벤트 전파 방지
-                          handleCancelOrder(
-                            buylist.id,
-                            buylist.productId,
-                            buylist.color,
-                            buylist.size,
-                            buylist.count
-                          );
-                        }}
-                      >
-                        주문취소
-                      </button>
+                      <div className="flex space-x-4 mt-4">
+                        {!confirmedOrders.has(buylist.id) &&
+                        buylist.confirmation !== 1 ? (
+                          <>
+                            <button
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCancelOrder(
+                                  buylist.id,
+                                  buylist.productId,
+                                  buylist.color,
+                                  buylist.size,
+                                  buylist.count
+                                );
+                              }}
+                            >
+                              주문취소
+                            </button>
+                            <button
+                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleConfirmOrder(
+                                  buylist.id,
+                                  buylist.buylistProductId
+                                );
+                              }}
+                            >
+                              구매확정
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // 리뷰쓰기 버튼 클릭 핸들러 추가
+                              alert("리뷰쓰기를 클릭했습니다."); // 리뷰쓰기 버튼에 실제 동작 추가
+                            }}
+                          >
+                            리뷰쓰기
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
