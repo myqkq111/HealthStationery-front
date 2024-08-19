@@ -329,7 +329,7 @@ const BasketPage = () => {
         ) : (
           <>
             <table className="w-full border-collapse mb-4">
-              <thead className="bg-gray-200 text-gray-700">
+              <thead className="bg-gray-100 text-gray-700">
                 <tr>
                   <td className="py-2 px-4 border-b border-gray-300 border-t border-gray-300 text-center">
                     <input
@@ -451,7 +451,7 @@ const BasketPage = () => {
                               onClick={() =>
                                 handleQuantityChange(item, item.count - 1)
                               }
-                              className="bg-gray-300 text-gray-800 px-3 py-1 hover:bg-gray-400"
+                              className="bg-gray-100 text-gray-800 px-3 py-1 hover:bg-gray-300"
                               disabled={item.count <= 1}
                             >
                               -
@@ -463,7 +463,7 @@ const BasketPage = () => {
                               onClick={() =>
                                 handleQuantityChange(item, item.count + 1)
                               }
-                              className="bg-gray-300 text-gray-800 px-3 py-1 hover:bg-gray-400"
+                              className="bg-gray-100 text-gray-800 px-3 py-1 hover:bg-gray-300"
                               disabled={item.count >= item.stock}
                             >
                               +
@@ -471,7 +471,7 @@ const BasketPage = () => {
                           </div>
                           <button
                             onClick={() => openModal(item)}
-                            className="bg-blue-500 text-white px-4 py-2 hover:bg-blue-600"
+                            className="bg-blue-400 text-white px-4 py-2 hover:bg-blue-600"
                           >
                             옵션 변경
                           </button>
@@ -512,7 +512,7 @@ const BasketPage = () => {
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-2 px-4 border-t border-gray-300 text-sm font-bold text-gray-600 text-center">
+                    <td className="py-2 px-4 border-t border-gray-300 text-sm font-bold text-red-600 text-center">
                       ※조건부 무료배송: 50,000원 이상시 무료배송※
                     </td>
                   </tr>
