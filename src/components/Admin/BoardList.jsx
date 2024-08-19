@@ -28,17 +28,18 @@ const BoardList = () => {
   // 댓글 작성 함수 (PUT 요청)
   const handleCommentSubmit = () => {
     axiosInstance
-      .put(`/comments/${selectedInquiryId}`, {
-        content: newComment,
+      .put(`/Inquiry/comment`, {
+        id: selectedInquiryId,
+        comment: newComment,
       })
-      .then((response) => {
+      .then(() => {
         // 댓글 작성 후 게시물 데이터 업데이트
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post.id === selectedInquiryId
               ? {
                   ...post,
-                  comments: [...(post.comments || []), response.data], // 새 댓글 추가
+                  comments: [...(post.comments || []), newComment], // 새 댓글 추가
                 }
               : post
           )
