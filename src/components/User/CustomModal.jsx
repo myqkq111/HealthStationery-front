@@ -16,7 +16,7 @@ const CustomModal = ({ isOpen, onClose, children }) => {
         <div className="flex justify-end mt-4">
           <button
             onClick={onClose}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
+            className="bg-red-500 text-white px-4 py-2 hover:bg-red-600 transition duration-300"
           >
             닫기
           </button>
