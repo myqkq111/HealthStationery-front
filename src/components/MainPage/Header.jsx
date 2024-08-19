@@ -53,7 +53,7 @@ const Header = () => {
             </a>
             {isDropdownOpen && (
               <div
-                className="absolute left-0 w-44 bg-white border border-gray-300 shadow-lg rounded-md z-20"
+                className="absolute left-0 w-44 bg-white border border-gray-300 z-20"
                 style={{ top: "100%" }}
               >
                 <button
@@ -126,7 +126,7 @@ const Header = () => {
             </a>
             {isClothingDropdownOpen && (
               <div
-                className="absolute left-0 w-44 bg-white border border-gray-300 shadow-lg rounded-md z-20"
+                className="absolute left-0 w-44 bg-white border border-gray-300 z-20"
                 style={{ top: "100%" }}
               >
                 <button

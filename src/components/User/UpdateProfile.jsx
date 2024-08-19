@@ -115,7 +115,7 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-gray-700 text-lg font-semibold mb-2"
           >
             이름
           </label>
@@ -130,7 +130,7 @@ const UpdateProfile = ({ isOpen, onClose, onSave }) => {
         <div>
           <label
             htmlFor="phone"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-gray-700 text-lg font-semibold mb-2"
           >
             연락처
           </label>
