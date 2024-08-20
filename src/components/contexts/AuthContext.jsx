@@ -1,10 +1,12 @@
 // src/components/contexts/AuthContext.jsx
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -16,6 +18,7 @@ export const AuthProvider = ({ children }) => {
           if (response.data.valid) {
             const member = JSON.parse(localStorage.getItem("member"));
             if (member && member.member_type === "admin") {
+              setIsAdmin(true);
               localStorage.setItem("admin", true);
             }
           } else {
@@ -23,6 +26,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("member");
             localStorage.removeItem("bool");
             localStorage.removeItem("admin");
+            setIsAdmin(false);
           }
         })
         .catch(() => {
@@ -30,7 +34,10 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("member");
           localStorage.removeItem("bool");
           localStorage.removeItem("admin");
+          setIsAdmin(false);
         });
+    } else {
+      setIsAdmin(localStorage.getItem("admin") === "true");
     }
   }, []);
 
@@ -40,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("bool", true);
     if (member.member_type === "admin") {
       localStorage.setItem("admin", true);
+      setIsAdmin(true);
     }
   };
 
@@ -48,11 +56,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("member");
     localStorage.removeItem("bool");
     localStorage.removeItem("admin");
+    setIsAdmin(false);
     alert("로그아웃 되었습니다.");
   };
 
   return (
-    <AuthContext.Provider value={{ login, logout }}>
+    <AuthContext.Provider value={{ login, logout, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

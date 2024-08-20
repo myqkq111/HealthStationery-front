@@ -16,7 +16,7 @@ import TopBar from "./components/MainPage/TopBar";
 import MyPage from "./components/User/Mypage";
 import Payment from "./components/MainPage/ShopPage/Payment";
 import AuthCallback from "./components/callback/AuthCallback";
-import { AuthProvider } from "./components/contexts/AuthContext";
+import { AuthProvider, useAuth } from "./components/contexts/AuthContext";
 import { CartProvider } from "./components/contexts/CartContext";
 import AdminPage from "./pages/AdminPage";
 import BasketPage from "./components/MainPage/ShopPage/BasketPage";
@@ -64,11 +64,18 @@ const App = () => {
           </Routes>
           <Footer /> {/* Footer를 페이지 하단에 표시 */}
           <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
-          <ChatIcon /> {/* 채팅 아이콘을 페이지 하단에 고정 */}
+          <ChatIconWrapper /> {/* 채팅 아이콘을 페이지 하단에 고정 */}
         </Router>
       </CartProvider>
     </AuthProvider>
   );
+};
+
+const ChatIconWrapper = () => {
+  const { isAdmin } = useAuth();
+
+  // 사용자가 관리자가 아닌 경우에만 ChatIcon을 표시
+  return !isAdmin ? <ChatIcon /> : null;
 };
 
 export default App;

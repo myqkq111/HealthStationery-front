@@ -13,6 +13,7 @@ const MainHeader = () => {
   const isAdmin = member?.member_type === "admin";
   const memberId = JSON.parse(localStorage.getItem("member"))?.id;
   const { cartItemCount, updateCartItemCount, resetCart } = useCart();
+
   useEffect(() => {
     if (memberId) {
       axiosInstance
