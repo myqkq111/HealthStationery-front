@@ -92,7 +92,7 @@ const OrderList = () => {
       {/* 상단 조정 영역 */}
       <div className="flex justify-between items-center mb-4">
         {/* 왼쪽 영역: 날짜 선택 및 총 결제 금액 */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-end space-x-4">
           <div>
             <label
               htmlFor="startDate"
@@ -123,7 +123,7 @@ const OrderList = () => {
               className="mt-1 block border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2 px-4 w-52"
             />
           </div>
-          <div className="text-xl font-bold">
+          <div className="text-xl font-bold mt-1 mb-1">
             총 결제 금액: {totalAmount.toLocaleString()} 원
           </div>
         </div>
@@ -145,7 +145,7 @@ const OrderList = () => {
             })`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2 px-4 w-80"
+            className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-2 px-4 w-72"
           />
           <button
             onClick={() => setSearchQuery(searchQuery.trim())}

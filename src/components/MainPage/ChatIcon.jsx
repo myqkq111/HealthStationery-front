@@ -1,20 +1,43 @@
-// ChatIcon.jsx
-import React from "react";
-import { FaComments } from "react-icons/fa"; // react-icons를 사용하여 채팅 아이콘 추가
+import React, { useState } from "react";
+import { FaComments } from "react-icons/fa";
+import ChatWindow from "./ChatWindow";
 
 const ChatIcon = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // 로컬 스토리지에서 member 정보 가져오기
+  let memberType = "defaultUser"; // 기본값 설정
+  const memberData = localStorage.getItem("member");
+
+  if (memberData) {
+    try {
+      const parsedData = JSON.parse(memberData);
+      if (parsedData && parsedData.member_type) {
+        memberType = parsedData.member_type;
+      }
+    } catch (error) {
+      console.error("Error parsing member data from localStorage:", error);
+    }
+  }
+
   const handleClick = () => {
-    // 클릭 시 채팅 창 열기 또는 다른 동작을 여기에 구현
-    alert("채팅 창 열기");
+    setIsOpen(!isOpen);
   };
 
   return (
-    <div
-      onClick={handleClick}
-      className="fixed bottom-20 right-5 bg-blue-600 text-white p-3 rounded-full shadow-lg cursor-pointer hover:bg-blue-700 transition"
-      aria-label="채팅하기"
-    >
-      <FaComments size={24} />
+    <div>
+      <div
+        onClick={handleClick}
+        className="fixed bottom-20 right-5 bg-blue-600 text-white p-3 rounded-full shadow-lg cursor-pointer hover:bg-blue-700 transition"
+        aria-label="채팅하기"
+      >
+        <FaComments size={24} />
+      </div>
+      {isOpen && (
+        <div className="fixed bottom-0 right-0 m-5">
+          <ChatWindow user={memberType} />
+        </div>
+      )}
     </div>
   );
 };
