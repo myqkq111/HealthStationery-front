@@ -8,31 +8,31 @@ const MainHeader = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [cartItemCount, setCartItemCount] = useState(0);
-  const memberId = JSON.parse(localStorage.getItem("member"))?.id;
+  // const memberId = JSON.parse(localStorage.getItem("member")).id;
 
-  //장바구니 아이템수 가져오기
-  const fetchCartItemCount = () => {
-    axiosInstance
-      .get(`/basket/item-count?id=${memberId}`)
-      .then((response) => {
-        setCartItemCount(response.data); // 서버에서 반환된 장바구니 아이템 수를 상태에 저장
-      })
-      .catch((error) => {
-        console.error("장바구니 아이템 수를 가져오는 데 실패했습니다.", error);
-      });
-  };
+  // //장바구니 아이템수 가져오기
+  // const fetchCartItemCount = () => {
+  //   axiosInstance
+  //     .get(`/basket/item-count?id=${memberId}`)
+  //     .then((response) => {
+  //       setCartItemCount(response.data); // 서버에서 반환된 장바구니 아이템 수를 상태에 저장
+  //     })
+  //     .catch((error) => {
+  //       console.error("장바구니 아이템 수를 가져오는 데 실패했습니다.", error);
+  //     });
+  // };
 
-  // 컴포넌트가 마운트될 때 장바구니 아이템 수를 가져오고, 일정 간격으로 새로고침
-  useEffect(() => {
-    // 초기 데이터 로드
-    fetchCartItemCount();
+  // // 컴포넌트가 마운트될 때 장바구니 아이템 수를 가져오고, 일정 간격으로 새로고침
+  // useEffect(() => {
+  //   // 초기 데이터 로드
+  //   fetchCartItemCount();
 
-    // 1초마다 장바구니 아이템 수를 새로 고침
-    const intervalId = setInterval(fetchCartItemCount, 100);
+  //   // 1초마다 장바구니 아이템 수를 새로 고침
+  //   const intervalId = setInterval(fetchCartItemCount, 100);
 
-    // 클린업: 컴포넌트 언마운트 시 interval 종료
-    return () => clearInterval(intervalId);
-  }, [memberId]);
+  //   // 클린업: 컴포넌트 언마운트 시 interval 종료
+  //   return () => clearInterval(intervalId);
+  // }, [memberId]);
 
   const handleLoginClick = () => {
     navigate("/login");

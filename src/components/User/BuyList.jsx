@@ -154,6 +154,10 @@ const BuyList = () => {
                     }
                   >
                     <div className="flex items-center space-x-4">
+                      {/* 추가된 상태 표시 */}
+                      <div className="text-sm font-semibold text-gray-700">
+                        {buylist.status}
+                      </div>
                       <img
                         src={`/images/products/${buylist.cate}/${
                           buylist.strImage.split(",")[0]
