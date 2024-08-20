@@ -67,42 +67,6 @@ const App = () => {
           <ChatIcon /> {/* 채팅 아이콘을 페이지 하단에 고정 */}
         </Router>
       </CartProvider>
-      <Router>
-        <TopBar /> {/* TopBar를 페이지 상단에 표시 */}
-        <MainHeader /> {/* MainHeader를 TopBar 아래에 표시 */}
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminPage />
-              </AdminRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Register />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/forgot" element={<Forgot />} />
-          <Route path="/find-id" element={<FindID />} />
-          <Route path="/:category" element={<Shop />} />
-          <Route path="/product/:id" element={<ProductPage />} />
-          <Route path="/profile" element={<MyPage />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/oauth" element={<AuthCallback />} />
-          <Route path="/cart" element={<BasketPage />} />
-          <Route path="/fnq" element={<FNQ />} />
-          <Route path="/review" element={<HonestReview />} />
-          <Route
-            path="/payment-success/:buylistId"
-            element={<PaymentSuccess />}
-          />
-        </Routes>
-        <Footer /> {/* Footer를 페이지 하단에 표시 */}
-        <BottomPage /> {/* BottomPage를 Footer 아래에 표시 */}
-        <ChatIcon /> {/* 채팅 아이콘을 페이지 하단에 고정 */}
-      </Router>
     </AuthProvider>
   );
 };
