@@ -7,24 +7,16 @@ const BottomPage = () => {
       <div className="flex">
         {/* 왼쪽 섹션 */}
         <div className="w-1/2 px-8">
-          <div className="flex items-left relative">
-            <a href="/" className="flex items-center">
-              <img
-                src="/images/banner/Header.jpg" // 이미지 파일 경로
-                alt="헬스문방구 로고" // 이미지 대체 텍스트
-                className="w-16 h-12 object-contain" // 이미지 크기 설정
-              />
-            </a>
-          </div>
+          <div className="flex items-left relative"></div>
           <div
             className="border-b-4 border-black mb-2 "
-            style={{ width: "calc(70% - 120px)" }}
+            style={{ width: "calc(100%)" }}
           ></div>
-          <h2 className="text-2xl font-bold text-left">안심하세요.</h2>
-          <h2 className="text-2xl font-bold text-left mb-2">헬스문방구</h2>
+          <h2 className="text-2xl font-bold text-center">안심하세요.</h2>
+          <h2 className="text-2xl font-bold text-center mb-2">헬스문방구</h2>
           <div
             className="border-b-4 border-black"
-            style={{ width: "calc(70% - 120px)" }}
+            style={{ width: "calc(100%)" }}
           ></div>
         </div>
 
