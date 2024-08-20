@@ -7,6 +7,7 @@ import ScrollToTopButton from "../ScrollToTopButton";
 import axiosInstance from "../../api/AxiosInstance";
 import Swal from "sweetalert2";
 import InquiryList from "./InquiryList";
+import { useCart } from "../../contexts/CartContext";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -28,8 +29,7 @@ const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate(); // useNavigate 훅 사용
   const currentUrl = window.location.pathname + window.location.search;
-
-  console.log(id);
+  const { updateCartItemCount } = useCart();
 
   // 로그인된 유저의 uid 가져오기 (localStorage에서 가져오고, null 처리)
   const uid = localStorage.getItem("member")
@@ -319,6 +319,7 @@ const ProductPage = () => {
             .post("/basket/insert", data)
             .then(() => {
               setLoading(false);
+              updateCartItemCount((prevCount) => prevCount + quantity); // 장바구니 아이템 수 업데이트
               Swal.fire({
                 title: "상품이 장바구니에 추가되었습니다.",
                 text: "장바구니 페이지로 이동하시겠습니까?",
@@ -357,6 +358,7 @@ const ProductPage = () => {
               axiosInstance
                 .put(`/basket/countup?id=${response.data}`)
                 .then(() => {
+                  updateCartItemCount((prevCount) => prevCount + 1); // 장바구니 아이템 수 업데이트
                   Swal.fire({
                     title: "수량이 증가되었습니다.",
                     text: "장바구니 페이지로 이동하시겠습니까?",

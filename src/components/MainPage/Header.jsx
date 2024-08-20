@@ -157,7 +157,7 @@ const Header = () => {
             )}
           </div>
           <a
-            href="#review"
+            href="/review"
             className="text-black px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
           >
             솔직구매후기

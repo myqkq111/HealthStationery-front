@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../api/AxiosInstance";
 import { FaTrash } from "react-icons/fa";
+import { useCart } from "../../contexts/CartContext";
 
 const BasketPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +17,7 @@ const BasketPage = () => {
   const [outOfStockItems, setOutOfStockItems] = useState([]);
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const deliveryFee = 3000;
+  const { resetCart } = useCart();
 
   useEffect(() => {
     // 페이지가 로드될 때 장바구니 데이터를 서버에서 가져옵니다.
@@ -70,6 +71,7 @@ const BasketPage = () => {
           setCartItems((prevItems) =>
             prevItems.filter((item) => item.id !== id)
           );
+          resetCart();
         })
         .catch((error) => {
           console.error("Failed to delete product", error);
@@ -107,6 +109,7 @@ const BasketPage = () => {
       prevItems.filter((item) => !selectedItems.includes(item.id))
     );
     setSelectedItems([]);
+    resetCart();
 
     if (selectedItems.length === 0) {
       alert("선택된 상품이 없습니다.");
@@ -263,6 +266,7 @@ const BasketPage = () => {
             prevItems.filter((item) => !outOfStockIds.includes(item.id))
           );
           setOutOfStockItems([]); // 품절된 상품 목록 비우기
+          resetCart();
         })
         .catch((error) => {
           console.error("Failed to delete out of stock products", error);

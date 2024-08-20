@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 
-const ReviewModal = ({ isOpen, onClose, onSubmit, buylist_id, product_id }) => {
+const ReviewModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  buylist_id,
+  product_id,
+  buylistProductId,
+}) => {
   const [reviewContent, setReviewContent] = useState("");
   const [rating, setRating] = useState(0);
 
@@ -10,7 +17,13 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, buylist_id, product_id }) => {
       return;
     }
 
-    onSubmit({ buylist_id, product_id, score: rating, content: reviewContent });
+    onSubmit({
+      buylistProductId,
+      buylist_id,
+      product_id,
+      score: rating,
+      content: reviewContent,
+    });
     setReviewContent("");
     setRating(0);
   };
