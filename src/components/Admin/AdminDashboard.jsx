@@ -4,6 +4,7 @@ import ProductList from "./ProductList";
 import MemberList from "./MemberList";
 import OrderList from "./OrderList";
 import BoardList from "./BoardList";
+import AdminChatPage from "./AdminChatPage";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState(() => {
@@ -61,6 +62,16 @@ const AdminDashboard = () => {
           >
             게시판 관리
           </button>
+          <button
+            onClick={() => setActiveTab("AdminChat")}
+            className={`px-4 py-2 ${
+              activeTab === "AdminChat"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700"
+            } hover:bg-blue-700 transition duration-300`}
+          >
+            톡톡 관리
+          </button>
         </div>
       </div>
 
@@ -70,6 +81,7 @@ const AdminDashboard = () => {
         {activeTab === "members" && <MemberList />}
         {activeTab === "orders" && <OrderList />}
         {activeTab === "boards" && <BoardList />}
+        {activeTab === "AdminChat" && <AdminChatPage />}
       </div>
     </div>
   );
