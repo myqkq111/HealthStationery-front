@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { FaUser, FaShoppingCart, FaSearch, FaUserShield } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -13,7 +13,6 @@ const MainHeader = () => {
   const isAdmin = member?.member_type === "admin";
   const memberId = JSON.parse(localStorage.getItem("member"))?.id;
   const { cartItemCount, updateCartItemCount, resetCart } = useCart();
-
   useEffect(() => {
     if (memberId) {
       axiosInstance
@@ -119,5 +118,4 @@ const MainHeader = () => {
     </header>
   );
 };
-
 export default MainHeader;
