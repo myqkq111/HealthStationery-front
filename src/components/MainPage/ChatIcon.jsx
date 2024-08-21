@@ -6,14 +6,14 @@ const ChatIcon = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // 로컬 스토리지에서 member 정보 가져오기
-  let memberType = "defaultUser"; // 기본값 설정
+  let member = "defaultUser"; // 기본값 설정
   const memberData = localStorage.getItem("member");
 
   if (memberData) {
     try {
       const parsedData = JSON.parse(memberData);
-      if (parsedData && parsedData.member_type) {
-        memberType = parsedData.member_type;
+      if (parsedData) {
+        member = parsedData;
       }
     } catch (error) {
       console.error("Error parsing member data from localStorage:", error);
@@ -35,7 +35,7 @@ const ChatIcon = () => {
       </div>
       {isOpen && (
         <div className="fixed bottom-0 right-0 m-5">
-          <ChatWindow user={memberType} />
+          <ChatWindow user={member} />
         </div>
       )}
     </div>
