@@ -1,13 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../api/AxiosInstance";
 import ChatPage from "./ChatPage"; // ChatPage 컴포넌트를 가져옵니다.
 
 const AdminChatPage = () => {
-  const [chatRooms] = useState([
-    { id: 1, name: "User 1", lastMessage: "Hello, I need help!" },
-    { id: 2, name: "User 2", lastMessage: "Can you assist me?" },
-    { id: 3, name: "User 3", lastMessage: "I have a question about my order." },
-  ]);
+  const [chatRooms, setChatRooms] = useState([]);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
+
+  useEffect(() => {
+    // 채팅방 목록을 가져오는 API 호출
+    axiosInstance
+      .get("/api/chat/rooms") // API 엔드포인트를 실제 URL로 변경하세요.
+      .then((response) => {
+        const data = response.data;
+        const filteredMessages = filterAndProcessMessages(data);
+        setChatRooms(filteredMessages);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch chat rooms", error);
+      });
+  }, []);
+
+  const filterAndProcessMessages = (messages) => {
+    const messageMap = new Map();
+
+    messages
+      .filter((msg) => msg.memberId !== 11) // memberId가 11인 메시지는 제외
+      .forEach((msg) => {
+        const { memberId, content, timestamp, name } = msg;
+        if (
+          !messageMap.has(memberId) ||
+          messageMap.get(memberId).timestamp < timestamp
+        ) {
+          messageMap.set(memberId, { content, timestamp, name });
+        }
+      });
+
+    return Array.from(messageMap.entries()).map(
+      ([memberId, { content, timestamp, name }]) => ({
+        id: memberId,
+        name: name, // 이름은 실제 사용자 데이터로 교체해야 합니다.
+        lastMessage: content,
+        timestamp,
+      })
+    );
+  };
 
   const handleChatRoomClick = (chatRoomId) => {
     setSelectedChatRoom(chatRoomId);
