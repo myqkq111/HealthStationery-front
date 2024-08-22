@@ -8,11 +8,12 @@ import axiosInstance from "../api/AxiosInstance";
 const MainHeader = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { cartItemCount, updateCartItemCount, resetCart } = useCart();
+
   // 로그인한 사용자 정보 가져오기
   const member = JSON.parse(localStorage.getItem("member"));
   const isAdmin = member?.member_type === "admin";
-  const memberId = JSON.parse(localStorage.getItem("member"))?.id;
-  const { cartItemCount, updateCartItemCount, resetCart } = useCart();
+  const memberId = member?.id;
 
   useEffect(() => {
     if (memberId) {
@@ -30,12 +31,20 @@ const MainHeader = () => {
     }
   }, [memberId, updateCartItemCount]);
 
+  const checkLoginStatus = () => {
+    return !!JSON.parse(localStorage.getItem("member"));
+  };
+
   const handleLoginClick = () => {
     navigate("/login");
   };
 
   const handleProfileClick = () => {
-    navigate("/profile");
+    if (!checkLoginStatus()) {
+      navigate("/login");
+    } else {
+      navigate("/profile");
+    }
   };
 
   const handleLogoutClick = () => {
@@ -46,6 +55,14 @@ const MainHeader = () => {
 
   const handleAdminPageClick = () => {
     navigate("/admin"); // 관리자 페이지로 이동
+  };
+
+  const handleCartClick = () => {
+    if (!checkLoginStatus()) {
+      navigate("/login");
+    } else {
+      navigate("/cart");
+    }
   };
 
   return (
@@ -87,12 +104,12 @@ const MainHeader = () => {
             </>
           )}
           <a
-            href="/cart"
+            href="#"
+            onClick={handleCartClick} // 클릭 핸들러로 변경
             className="flex items-center text-xs hover:text-yellow-500 relative"
           >
             <FaShoppingCart className="text-sm" />
-            <span className="ml-1 text-xs">장바구니</span>{" "}
-            {/* 텍스트와 숫자 사이의 간격 조정 */}
+            <span className="ml-1 text-xs">장바구니</span>
             {cartItemCount > 0 && (
               <span className="absolute -right-4 top-[-10%] bg-red-500 text-white rounded-full text-[10px] font-bold px-1 py-0.5">
                 {cartItemCount}
@@ -102,7 +119,7 @@ const MainHeader = () => {
           <button
             onClick={handleProfileClick}
             className="flex items-center text-xs hover:text-yellow-500 bg-transparent border-none cursor-pointer"
-            style={{ marginLeft: "2rem" }} // 또는 원하는 값으로 조정
+            style={{ marginLeft: "2rem" }}
           >
             <FaUser className="mr-1 text-sm" /> 마이페이지
           </button>
@@ -119,4 +136,5 @@ const MainHeader = () => {
     </header>
   );
 };
+
 export default MainHeader;
