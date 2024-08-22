@@ -1,47 +1,13 @@
 // src/components/ReviewList.js
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../api/AxiosInstance";
 import Slider from "react-slick";
 import ReviewCard from "./ReviewCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// 샘플 리뷰 데이터
-const reviews = [
-  {
-    id: 1,
-    reviewer: "홍길동",
-    rating: 5,
-    comment: "정말 훌륭한 제품이에요! 강력히 추천합니다.",
-    productImage: "/images/A/A_1.jpg", // 제품 사진 추가
-    productName: "제품명 A",
-  },
-  {
-    id: 2,
-    reviewer: "김철수",
-    rating: 4,
-    comment: "제품이 괜찮긴 한데, 배송이 조금 늦었어요.",
-    productImage: "/images/A/A_2.jpg", // 제품 사진 추가
-    productName: "제품명 B",
-  },
-  {
-    id: 3,
-    reviewer: "이영희",
-    rating: 3,
-    comment: "평범한 제품이에요. 가격대비 그냥 그래요.",
-    productImage: "/images/A/A_3.jpg", // 제품 사진 추가
-    productName: "제품명 C",
-  },
-  {
-    id: 4,
-    reviewer: "박지민",
-    rating: 5,
-    comment: "아주 만족합니다. 다음에도 구매할게요!",
-    productImage: "/images/A/A_2.jpg", // 제품 사진 추가
-    productName: "제품명 D",
-  },
-];
-
+// 커스텀 화살표 컴포넌트 정의
 const Arrow = ({ className, onClick, icon }) => (
   <div
     className={`${className} bg-gray-700 text-white p-2 rounded-full shadow-lg hover:bg-gray-600 flex items-center justify-center`}
@@ -64,6 +30,30 @@ const settings = {
 };
 
 const ReviewList = () => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    // 리뷰 데이터 fetch
+    const fetchReviews = async () => {
+      try {
+        const response = await axiosInstance.get("/review/product");
+        setReviews(response.data);
+      } catch (err) {
+        setError("리뷰 데이터를 가져오는 데 실패했습니다.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+
   return (
     <section id="reviews" className="py-16 bg-white">
       <div className="container mx-auto px-4 flex">
@@ -81,11 +71,15 @@ const ReviewList = () => {
               {reviews.map((review) => (
                 <div key={review.id} className="px-4">
                   <ReviewCard
-                    reviewer={review.reviewer}
-                    rating={review.rating}
-                    comment={review.comment}
-                    productImage={review.productImage} // 제품 이미지 추가
-                    productName={review.productName} // 제품명 추가
+                    key={review.id} // 유니크한 키를 추가
+                    color={review.color}
+                    cate={review.cate}
+                    size={review.size}
+                    content={review.content}
+                    score={review.score}
+                    reviewerName={review.name}
+                    productImage={review.strImage}
+                    productName={review.productName}
                   />
                 </div>
               ))}

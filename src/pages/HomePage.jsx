@@ -12,9 +12,9 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       <Banner />
-      <ProductList />
-      <ProductList />
-      <ProductList />
+      <ProductList type="liketop10" />
+      <ProductList type="viewtop10" />
+      <ProductList type="purchasetop10" />
       <ReviewList />
       <VideoPage />
       <AboutUs />

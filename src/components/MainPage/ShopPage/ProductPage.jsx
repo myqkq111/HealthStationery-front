@@ -216,16 +216,18 @@ const ProductPage = () => {
     });
   };
 
-  // 제출 처리
   const handleSubmit = (event) => {
-    // event.preventDefault();
+    event.preventDefault();
     let valid = true;
+
+    // 옵션 및 색상 유효성 검사
     if (!selectedOption) {
       setOptionError(true);
       valid = false;
     } else {
       setOptionError(false);
     }
+
     if (!selectedColor) {
       setColorError(true);
       valid = false;
@@ -233,12 +235,25 @@ const ProductPage = () => {
       setColorError(false);
     }
 
+    // product 객체가 null인지 확인
+    if (!product) {
+      console.error("Product information is missing.");
+      return;
+    }
+
+    // 로컬 스토리지에서 member 정보를 안전하게 가져오기
+    const member = JSON.parse(localStorage.getItem("member"));
+    if (!member || !member.id) {
+      console.error("Member information is missing.");
+      return;
+    }
+
     let data = [
       {
         cate: product.cate,
         color: selectedColor,
         count: quantity,
-        memberId: JSON.parse(localStorage.getItem("member")).id,
+        memberId: member.id,
         name: product.name,
         price: product.price,
         productId: product.id,
@@ -247,11 +262,10 @@ const ProductPage = () => {
       },
     ];
 
-    let totalPayment = 0;
-    if (product.price * quantity < 50000) {
-      totalPayment += product.price * quantity + 3000; // 50,000원 미만인 경우 3,000원을 더함
-    } else {
-      totalPayment += product.price * quantity; // 50,000원 이상인 경우 원래 가격 사용
+    let totalPayment = product.price * quantity;
+    // 50,000원 미만인 경우 3,000원 추가
+    if (totalPayment < 50000) {
+      totalPayment += 3000;
     }
 
     if (valid) {
@@ -595,14 +609,10 @@ const ProductPage = () => {
                 >
                   <option value="">선택하세요</option>
                   {options.sizes
-                    .filter((size) => {
-                      // 선택된 색상이 있을 때만 필터링
-                      if (selectedColor) {
-                        // 선택된 색상에 대해 재고가 있는 사이즈만 필터링
-                        return stock[selectedColor]?.[size] !== undefined;
-                      }
-                      return false;
-                    })
+
+                    .filter((size) =>
+                      stock[selectedColor]?.hasOwnProperty(size)
+                    ) // 선택된 색상에 해당 사이즈가 있는지 확인
                     .map((size) => {
                       const sizeStock = stock[selectedColor]?.[size] || 0;
                       return (
@@ -838,20 +848,19 @@ const ProductPage = () => {
         </div>
 
         <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {relatedProducts.map((product) => (
             <ProductItem
               key={product.id}
-              image={product.image}
-              hoverImage={product.hoverImage}
+              cate={product.cate}
               name={product.name}
               price={product.price}
-              details={product.details}
-              reviews={product.reviews}
-              link={product.link}
+              image={product.strImage}
+              content={product.content}
+              link={`/product/${product.id}`}
             />
           ))}
-        </div>
+        </div> */}
       </div>
 
       <ScrollToTopButton />
