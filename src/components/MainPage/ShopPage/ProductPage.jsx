@@ -609,6 +609,7 @@ const ProductPage = () => {
                 >
                   <option value="">선택하세요</option>
                   {options.sizes
+
                     .filter((size) =>
                       stock[selectedColor]?.hasOwnProperty(size)
                     ) // 선택된 색상에 해당 사이즈가 있는지 확인
@@ -631,6 +632,7 @@ const ProductPage = () => {
                   </p>
                 )}
               </div>
+
               {/* Quantity Selection (수량 선택) */}
               <div className="mb-4">
                 <label
