@@ -11,9 +11,10 @@ const HonestReview = () => {
   useEffect(() => {
     const fetchReviews = () => {
       axiosInstance
-        .get("/review") // 모든 리뷰 데이터를 가져오는 API 호출
+        .get("/review/product") // 모든 리뷰 데이터를 가져오는 API 호출
         .then((response) => {
           setReviews(response.data);
+          console.log(response.data);
           setReviewCount(response.data.length); // 리뷰 수를 상태에 설정
         })
         .catch((err) => {
@@ -43,11 +44,12 @@ const HonestReview = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {reviews.map((review) => (
             <ReviewCard
-              key={review.id}
+              color={review.color}
+              size={review.size}
               content={review.content}
               score={review.score}
-              reviewerName={review.reviewerName}
-              productImage={review.productImage}
+              reviewerName={review.name}
+              productImage={review.strImage}
               productName={review.productName}
             />
           ))}
