@@ -2,6 +2,8 @@ import React from "react";
 import { FaStar } from "react-icons/fa";
 
 const ReviewCard = ({
+  color,
+  size,
   content,
   score,
   reviewerName,
@@ -22,14 +24,16 @@ const ReviewCard = ({
       <div className="mb-4 flex justify-center">
         <div
           className="w-full h-40 bg-cover bg-center border border-gray-300"
-          style={{ backgroundImage: `url(${productImage})` }}
+          style={{ backgroundImage: `url(${productImage.split(",")[0]})` }}
         ></div>
       </div>
 
       {/* 리뷰 내용 */}
       <div className="flex-1 flex flex-col text-left">
         <p className="text-gray-700 mb-4 flex-1">{content}</p>
-
+        <p className="text-gray-700 mb-4 flex-1">
+          {color}ㆍ{size}
+        </p>
         {/* 작성자 이름 */}
         <p className="text-gray-500 text-sm text-right mb-4">
           작성자: {reviewerName}
@@ -39,7 +43,7 @@ const ReviewCard = ({
         <div className="text-center">
           <h3 className="text-lg font-bold mb-2">{productName}</h3>
           <div className="flex items-center justify-center">
-            {[...Array(5)].map((star, index) => (
+            {[...Array(5)].map((score, index) => (
               <FaStar
                 key={index}
                 className={index < score ? "text-yellow-500" : "text-gray-300"}
