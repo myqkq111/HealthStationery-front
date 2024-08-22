@@ -594,18 +594,27 @@ const ProductPage = () => {
                   disabled={!selectedColor} // 색상이 선택되지 않은 경우 선택 불가
                 >
                   <option value="">선택하세요</option>
-                  {options.sizes.map((size) => {
-                    const sizeStock = stock[selectedColor]?.[size] || 0;
-                    return (
-                      <option
-                        key={size}
-                        value={size}
-                        disabled={sizeStock === 0} // 재고가 0인 경우 선택 불가
-                      >
-                        {sizeStock === 0 ? `${size} (품절)` : size}
-                      </option>
-                    );
-                  })}
+                  {options.sizes
+                    .filter((size) => {
+                      // 선택된 색상이 있을 때만 필터링
+                      if (selectedColor) {
+                        // 선택된 색상에 대해 재고가 있는 사이즈만 필터링
+                        return stock[selectedColor]?.[size] !== undefined;
+                      }
+                      return false;
+                    })
+                    .map((size) => {
+                      const sizeStock = stock[selectedColor]?.[size] || 0;
+                      return (
+                        <option
+                          key={size}
+                          value={size}
+                          disabled={sizeStock === 0} // 재고가 0인 경우 선택 불가
+                        >
+                          {sizeStock === 0 ? `${size} (품절)` : size}
+                        </option>
+                      );
+                    })}
                 </select>
                 {optionError && (
                   <p className="text-red-500 text-sm">
@@ -613,6 +622,7 @@ const ProductPage = () => {
                   </p>
                 )}
               </div>
+
               {/* Quantity Selection (수량 선택) */}
               <div className="mb-4">
                 <label
