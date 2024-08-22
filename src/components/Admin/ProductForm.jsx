@@ -364,10 +364,11 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
               className="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">사이즈 선택</option>
-              <option value=" ">없음</option>
               <option value="S">S</option>
               <option value="M">M</option>
               <option value="L">L</option>
+
+              <option value="Free">Free</option>
             </select>
           </div>
           <div className="mb-4">
