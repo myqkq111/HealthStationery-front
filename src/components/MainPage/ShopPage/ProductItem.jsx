@@ -23,9 +23,11 @@ const ProductItem = ({
       navigate(link);
     }
   };
+  const firstImage = image.split(",")[0];
+  const secondImage = image.split(",")[1];
 
-  const imageUrl = `${IMAGE_BASE_URL}/${cate}/1.JPG`;
-  const hoverImageUrl = `${IMAGE_BASE_URL}/${cate}/2.JPG`;
+  const imageUrl = `${IMAGE_BASE_URL}/${cate}/${firstImage}`;
+  const hoverImageUrl = `${IMAGE_BASE_URL}/${cate}/${secondImage}`;
 
   return (
     <div

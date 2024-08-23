@@ -44,7 +44,7 @@ const ProductReviewSection = ({ productId }) => {
   useEffect(() => {
     // 백엔드에서 리뷰 데이터와 포토 리뷰 데이터 가져오기
     axiosInstance
-      .get("/review/selectReviewByProductId", {
+      .get("/review/product", {
         params: { productId }, // productId를 쿼리 파라미터로 전달
       })
       .then((response) => {
@@ -174,7 +174,9 @@ const ProductReviewSection = ({ productId }) => {
                       ))}
                     </div>
                   </div>
-                  <div className="text-sm text-gray-600">[옵션] Option:</div>
+                  <div className="text-sm text-gray-600">
+                    [옵션] {review.color}ㆍ{review.size}
+                  </div>
                   <div className="mb-2 text-sm text-gray-600">
                     {review.content}
                   </div>
