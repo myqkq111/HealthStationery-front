@@ -4,20 +4,17 @@ import SockJS from "sockjs-client";
 import axiosInstance from "../api/AxiosInstance";
 
 const ChatPage = ({ chatRoomId }) => {
-  // 상태 관리: 채팅 메시지, 새 메시지, 현재 사용자, STOMP 클라이언트
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const messagesContainerRef = useRef(null); // 메시지 컨테이너에 대한 참조
+  const messagesContainerRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [stompClient, setStompClient] = useState(null);
 
-  // 컴포넌트가 마운트될 때 현재 사용자 정보를 로컬 스토리지에서 가져오기
   useEffect(() => {
     const member = JSON.parse(localStorage.getItem("member"));
     setCurrentUser(member);
   }, []);
 
-  // 채팅방 ID와 현재 사용자가 변경될 때 채팅 기록을 가져와 필터링
   useEffect(() => {
     if (chatRoomId && currentUser) {
       axiosInstance
@@ -39,16 +36,14 @@ const ChatPage = ({ chatRoomId }) => {
     }
   }, [chatRoomId, currentUser]);
 
-  // STOMP 클라이언트 설정 및 구독
   useEffect(() => {
     if (currentUser) {
-      const socket = new SockJS("http://localhost:8080/ws"); // WebSocket 연결
+      const socket = new SockJS("http://localhost:8080/ws");
       const client = new Client({
         webSocketFactory: () => socket,
         reconnectDelay: 5000,
         onConnect: () => {
           console.log("STOMP client connected");
-          // 사용자의 메시지 큐에 구독
           client.subscribe(`/topic/admin/${currentUser.id}`, onMessageReceived);
         },
         onStompError: (error) => {
@@ -60,18 +55,26 @@ const ChatPage = ({ chatRoomId }) => {
 
       return () => {
         if (client) {
-          client.deactivate(); // 클라이언트 비활성화
+          client.deactivate();
         }
       };
     }
   }, [currentUser]);
 
-  // 메시지 수신 처리
-  const onMessageReceived = (payload) => {
-    console.log("Received payload:", payload); // 수신된 원시 payload 확인
-    const message = JSON.parse(payload.body);
-    console.log("Parsed message:", message);
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return isNaN(date.getTime())
+      ? "Invalid Date"
+      : date.toLocaleTimeString("ko-KR", {
+          timeZone: "Asia/Seoul",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+  };
 
+  const onMessageReceived = (payload) => {
+    const message = JSON.parse(payload.body);
+    message.timestamp = formatTimestamp(message.timestamp); // Format timestamp
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
@@ -90,7 +93,7 @@ const ChatPage = ({ chatRoomId }) => {
       name: currentUser.name,
       content: newMessage,
       sns: 1,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString(), // Send UTC timestamp
       transmitMemberId: chatRoomId,
     };
 
@@ -100,7 +103,7 @@ const ChatPage = ({ chatRoomId }) => {
           destination: "/app/sendAdminMessage",
           body: JSON.stringify(newMsg),
         });
-
+        newMsg.timestamp = formatTimestamp(newMsg.timestamp); // Format timestamp for immediate display
         setMessages((prevMessages) => [...prevMessages, newMsg]);
         setNewMessage("");
       } else {
@@ -111,7 +114,6 @@ const ChatPage = ({ chatRoomId }) => {
     }
   };
 
-  // Enter 키를 누를 때 메시지 전송 처리
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -119,7 +121,6 @@ const ChatPage = ({ chatRoomId }) => {
     }
   };
 
-  // 메시지 리스트를 스크롤하여 최신 메시지가 보이도록 설정
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -130,14 +131,13 @@ const ChatPage = ({ chatRoomId }) => {
   return (
     <div className="chat-window max-w-md mx-auto bg-white flex flex-col h-[60vh]">
       <div className="flex justify-between items-center p-3 bg-[#3A1D1D] text-white rounded-t-lg">
-        <span className="text-s "> 문의 톡톡</span>
+        <span className="text-s">문의 톡톡</span>
       </div>
 
       <div
         className="chat-messages flex-1 p-3 overflow-y-auto bg-[#9bbbd4]"
         ref={messagesContainerRef}
       >
-        {/* 채팅 메시지 목록 렌더링 */}
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -149,7 +149,7 @@ const ChatPage = ({ chatRoomId }) => {
           >
             <span className="block text-sm mt-1">{msg.content}</span>
             <span className="block text-xs text-black mt-1">
-              {new Date(msg.timestamp).toLocaleTimeString()}
+              {msg.timestamp}
             </span>
           </div>
         ))}
@@ -165,7 +165,7 @@ const ChatPage = ({ chatRoomId }) => {
         />
         <button
           onClick={handleSendMessage}
-          className="ml-2 px-3 py-2 bg-[#fef01b] text-black rounded-md  transition"
+          className="ml-2 px-3 py-2 bg-[#fef01b] text-black rounded-md transition"
         >
           전송
         </button>

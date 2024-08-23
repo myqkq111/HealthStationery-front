@@ -20,7 +20,7 @@ const Header = () => {
   return (
     <nav
       style={{ borderTop: "2px solid #E5E7EB" }}
-      className="bg-white p-0 sticky top-0 z-20"
+      className="bg-white p-0 sticky top-0 z-10"
     >
       <div className="container mx-auto flex justify-between items-center">
         {/* 브랜드 이름 */}
@@ -35,7 +35,7 @@ const Header = () => {
         </div>
         <div className="flex-1 flex justify-center gap-4 relative">
           <a
-            href="/about"
+            href="https://github.com/myqkq111/HealthStationery-front"
             className="text-black px-4 whitespace-nowrap tracking-wide font-bold"
           >
             BRAND STORY

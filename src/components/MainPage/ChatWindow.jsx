@@ -21,7 +21,12 @@ const ChatWindow = ({ user }) => {
           (msg) => msg.memberId === user.id || msg.transmitMemberId === user.id
         );
 
-        setChatMessages(filteredMessages);
+        setChatMessages(
+          filteredMessages.map((msg) => ({
+            ...msg,
+            timestamp: formatDate(msg.timestamp),
+          }))
+        );
       })
       .catch((error) => {
         console.error("Failed to fetch chat history", error);
@@ -32,7 +37,6 @@ const ChatWindow = ({ user }) => {
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: () => {
-        // 올바른 경로로 구독하고 있는지 확인
         client.subscribe(`/topic/admin/${user.id}`, onMessageReceived);
         console.log("STOMP client connected");
       },
@@ -52,9 +56,14 @@ const ChatWindow = ({ user }) => {
 
   const onMessageReceived = (payload) => {
     const message = JSON.parse(payload.body);
-    console.log("들어왔냐");
     if (message.memberId === user.id || message.transmitMemberId === user.id) {
-      setChatMessages((prev) => [...prev, message]);
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          ...message,
+          timestamp: formatDate(message.timestamp), // Format timestamp here
+        },
+      ]);
     }
   };
 
@@ -65,7 +74,7 @@ const ChatWindow = ({ user }) => {
         name: user.name,
         content: message,
         sns: 0,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString(), // Send in UTC
         transmitMemberId: user.transmitMemberId || user.id,
       };
 
@@ -73,7 +82,13 @@ const ChatWindow = ({ user }) => {
         destination: `/app/sendMessage`,
         body: JSON.stringify(chatMessage),
       });
-      setChatMessages((prev) => [...prev, chatMessage]);
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          ...chatMessage,
+          timestamp: formatDate(chatMessage.timestamp), // Format timestamp here
+        },
+      ]);
       setMessage("");
     } else {
       console.error("STOMP client is not connected");
@@ -93,6 +108,17 @@ const ChatWindow = ({ user }) => {
     }
   }, [chatMessages]);
 
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return isNaN(date)
+      ? "Invalid Date"
+      : date.toLocaleTimeString("ko-KR", {
+          timeZone: "Asia/Seoul",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+  };
+
   return (
     <div className="chat-window bg-[#9bbbd4] overflow-hidden flex flex-col w-80 h-96">
       <div className="chat-messages flex-1 p-4 overflow-y-auto flex flex-col">
@@ -110,7 +136,7 @@ const ChatWindow = ({ user }) => {
             </strong>{" "}
             <span>{msg.content}</span>
             <span className="block text-xs text-black mt-1">
-              {new Date(msg.timestamp).toLocaleTimeString()}
+              {msg.timestamp}
             </span>
           </div>
         ))}
@@ -122,7 +148,7 @@ const ChatWindow = ({ user }) => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-white"
+          className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-white"
           onKeyDown={handleKeyDown}
         />
         <button
