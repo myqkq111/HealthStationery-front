@@ -112,6 +112,7 @@ const BuyList = () => {
       });
   };
 
+  // 주문 목록을 날짜별로 그룹화
   const groupedByDate = buylists.reduce((acc, buylist) => {
     const date = moment(buylist.regdt).format("YYYY-MM-DD");
     if (!acc[date]) {
@@ -120,6 +121,11 @@ const BuyList = () => {
     acc[date].push(buylist);
     return acc;
   }, {});
+
+  // 날짜별로 정렬 (내림차순)
+  const sortedDates = Object.keys(groupedByDate).sort(
+    (a, b) => new Date(b) - new Date(a)
+  );
 
   const handleToggleDetails = (id) => {
     setExpandedOrderIds((prev) => {
@@ -137,17 +143,17 @@ const BuyList = () => {
     <div className="p-6 bg-gray-50 min-h-screen flex justify-center">
       <div className="w-full max-w-4xl space-y-6">
         <h2 className="text-2xl font-semibold mb-4">주문 목록</h2>
-        {Object.keys(groupedByDate).length === 0 ? (
+        {buylists.length === 0 ? (
           <p className="text-center text-gray-500">주문목록이 없습니다.</p>
         ) : (
-          Object.entries(groupedByDate).map(([date, orders]) => (
+          sortedDates.map((date) => (
             <div key={date} className="bg-white mb-6">
               <div className="bg-orange-300 px-6 py-3 border-b border-gray-200">
                 <h3 className="text-lg font-semibold">
                   {moment(date).format("YYYY년 MM월 DD일")}
                 </h3>
               </div>
-              {orders.map((buylist) => (
+              {groupedByDate[date].map((buylist) => (
                 <div key={buylist.id}>
                   <div
                     className="flex items-center justify-between px-6 py-4 border-b border-gray-200 cursor-pointer"

@@ -1,5 +1,4 @@
-// src/components/User/Login.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../api/AxiosInstance.jsx";
 import Forgot from "./Forgot";
@@ -17,9 +16,17 @@ const Login = () => {
   const location = useLocation();
   const { login } = useAuth();
 
-  // Get redirect URL from query params
+  // Get redirect URL and email from query params
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get("redirect") || "/";
+  const emailFromQuery = queryParams.get("email");
+
+  // Use the email from the query parameter to pre-fill the email field
+  useEffect(() => {
+    if (emailFromQuery) {
+      setEmail(emailFromQuery);
+    }
+  }, [emailFromQuery]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -30,7 +37,7 @@ const Login = () => {
         password,
       })
       .then((response) => {
-        // 토큰이랑 사용자정보 추출
+        // 토큰과 사용자 정보를 추출
         const { token, member } = response.data;
 
         // 로그인 업데이트
