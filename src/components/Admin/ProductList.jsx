@@ -11,6 +11,8 @@ const ProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [showOutOfStock, setShowOutOfStock] = useState(false);
+  const [categories, setCategories] = useState([]); // 카테고리 상태
+  const [selectedCategory, setSelectedCategory] = useState(""); // 선택된 카테고리
 
   const getStock = (productId, color, size) => {
     const product = products.find((p) => p.id === productId);
@@ -25,45 +27,29 @@ const ProductList = () => {
     axiosInstance
       .get("/product/selectAll")
       .then((response) => {
-        console.log(response.data);
-        setProducts(response.data);
+        const data = response.data;
+        setProducts(data);
+        const allCategories = [...new Set(data.map((product) => product.cate))];
+        setCategories(allCategories);
       })
       .catch(() => {});
   }, []);
 
+  // 페이지네이션 및 필터링 로직
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
 
-  // 품절 상품 필터링 로직
   const filteredProducts = products
-    .map((product) => {
-      if (showOutOfStock) {
-        const colors = [...new Set(product.list.map((item) => item.color))];
-        const sizes = [...new Set(product.list.map((item) => item.size))];
-
-        const outOfStockItems = colors.flatMap((color) =>
-          sizes
-            .map((size) => ({
-              color,
-              size,
-              stock: getStock(product.id, color, size),
-            }))
-            .filter((item) => item.stock === 0)
-        );
-
-        return {
-          ...product,
-          outOfStockItems,
-          showProduct: outOfStockItems.length > 0,
-        };
-      }
-      return {
-        ...product,
-        outOfStockItems: [],
-        showProduct: true,
-      };
-    })
-    .filter((product) => product.showProduct);
+    .filter((product) =>
+      showOutOfStock
+        ? product.list.some(
+            (item) => getStock(product.id, item.color, item.size) === 0
+          )
+        : true
+    )
+    .filter((product) =>
+      selectedCategory ? product.cate === selectedCategory : true
+    );
 
   const currentProducts = filteredProducts.slice(
     indexOfFirstProduct,
@@ -75,6 +61,7 @@ const ProductList = () => {
       .get("/product/selectAll")
       .then((response) => {
         setProducts(response.data);
+        setCurrentPage(1); // 업데이트 후 페이지네이션을 첫 페이지로 리셋
       })
       .catch(() => {});
     setIsFormOpen(false);
@@ -88,7 +75,6 @@ const ProductList = () => {
   const handleEditClick = (product) => {
     setSelectedProduct(product);
     setIsFormOpen(true);
-    console.log(product);
   };
 
   const handleDeleteClick = (productId) => {
@@ -148,13 +134,31 @@ const ProductList = () => {
           상품 추가
         </button>
         <button
-          onClick={() => setShowOutOfStock(!showOutOfStock)}
+          onClick={() => {
+            setShowOutOfStock(!showOutOfStock);
+            setCurrentPage(1); // 품절 상태 변경 시 페이지를 첫 페이지로 리셋
+          }}
           className={`bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ${
             showOutOfStock ? "bg-red-700" : "bg-red-500"
           }`}
         >
           {showOutOfStock ? "모든 상품 보기" : "품절 상품 보기"}
         </button>
+        <select
+          className="ml-4 border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setCurrentPage(1); // 카테고리 변경 시 페이지를 첫 페이지로 리셋
+          }}
+        >
+          <option value="">모든 카테고리</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
       </div>
       <div>
         <h2 className="text-2xl font-semibold mb-4">상품 목록</h2>
@@ -201,46 +205,55 @@ const ProductList = () => {
               ) : (
                 currentProducts.map((product) => (
                   <React.Fragment key={product.id}>
-                    {showOutOfStock && product.outOfStockItems.length > 0 ? (
-                      product.outOfStockItems.map((item, index) => (
-                        <tr key={index} className="border-b border-gray-200">
-                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                            {product.name}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                            {product.cate}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-right text-gray-900 whitespace-nowrap">
-                            {product.price}원
-                          </td>
-                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                            {product.content}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                            {item.color}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
-                            {item.size}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap min-w-[150px] max-w-[200px] overflow-hidden text-ellipsis">
-                            {item.stock} (재고 없음)
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                            <button
-                              onClick={() => handleEditClick(product)}
-                              className="text-blue-500 hover:text-blue-700 mr-2"
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(product.id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FaTrashAlt />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
+                    {showOutOfStock &&
+                    product.list.some(
+                      (item) =>
+                        getStock(product.id, item.color, item.size) === 0
+                    ) ? (
+                      product.list
+                        .filter(
+                          (item) =>
+                            getStock(product.id, item.color, item.size) === 0
+                        )
+                        .map((item, index) => (
+                          <tr key={index} className="border-b border-gray-200">
+                            <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                              {product.name}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                              {product.cate}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-right text-gray-900 whitespace-nowrap">
+                              {product.price}원
+                            </td>
+                            <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                              {product.content}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                              {item.color}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">
+                              {item.size}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap min-w-[150px] max-w-[200px] overflow-hidden text-ellipsis">
+                              {item.stock} (재고 없음)
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                              <button
+                                onClick={() => handleEditClick(product)}
+                                className="text-blue-500 hover:text-blue-700 mr-2"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(product.id)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <FaTrashAlt />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
                     ) : (
                       <tr className="border-b border-gray-200">
                         <td className="px-4 py-4 text-sm text-center text-gray-900 whitespace-nowrap">

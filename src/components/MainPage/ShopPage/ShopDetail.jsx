@@ -126,6 +126,8 @@ const ShopDetail = () => {
                 content={product.content}
                 isSoldOut={isSoldOut} // 품절 여부 전달
                 link={`/product/${product.id}`}
+                like={product.like}
+                view={product.view}
               />
             );
           })

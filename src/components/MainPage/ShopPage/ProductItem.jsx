@@ -1,5 +1,3 @@
-// ProductItem.js
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +11,8 @@ const ProductItem = ({
   content,
   isSoldOut,
   link,
+  like,
+  view,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
@@ -23,6 +23,7 @@ const ProductItem = ({
       navigate(link);
     }
   };
+
   const firstImage = image.split(",")[0];
   const secondImage = image.split(",")[1];
 
@@ -31,19 +32,19 @@ const ProductItem = ({
 
   return (
     <div
-      className={`p-1 cursor-pointer flex flex-col max-w-xs w-full h-auto ${
+      className={`p-2 cursor-pointer flex flex-col max-w-xs w-full h-[400px] ${
         isSoldOut ? "opacity-50 pointer-events-none" : ""
-      }`} // 품절 시 흐리게 표시하고 클릭 비활성화
+      }`} // 고정된 높이
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative w-full h-64 mb-4">
+      <div className="relative w-full h-3/5 mb-4">
         {/* 기본 이미지 */}
         <img
           src={imageUrl}
           alt={name}
-          className={`absolute inset-0 object-contain w-full h-full transition-opacity duration-300 ${
+          className={`absolute inset-0 object-contain  w-full h-full transition-opacity duration-300 ${
             isHovered && image ? "opacity-0" : "opacity-100"
           }`}
         />
@@ -52,7 +53,7 @@ const ProductItem = ({
           <img
             src={hoverImageUrl}
             alt={`${name} hover`}
-            className={`absolute inset-0 object-contain w-full h-full transition-opacity duration-300 ${
+            className={`absolute inset-0 object-contain  w-full h-full transition-opacity duration-300 ${
               isHovered ? "opacity-100" : "opacity-0"
             }`}
           />
@@ -64,11 +65,19 @@ const ProductItem = ({
           </div>
         )}
       </div>
-      <h3 className="text-sm ">{name}</h3>
-      <p className="text-lg font-semibold text-gray-700 mb-6">{price}원</p>
-      <p className="text-sm font-bold text-gray-600 mb-2">{content}</p>{" "}
-      {/* 상품 설명 */}
-      <p className="text-sm text-red-600 mb-4">리뷰:</p>{" "}
+      <div className="flex flex-col flex-grow">
+        <h3 className="text-sm font-semibold mb-2 truncate">{name}</h3>
+        <p className="text-lg font-semibold text-gray-700 mb-2 truncate">
+          {price}원
+        </p>
+        <p className="text-sm text-gray-600 mb-2 flex-grow truncate">
+          {content}
+        </p>
+      </div>
+      <div className="flex justify-end text-sm text-gray-600 space-x-4">
+        <p className="text-red-600">좋아요: {like}</p>
+        <p className="text-red-600">조회수: {view}</p>
+      </div>
     </div>
   );
 };

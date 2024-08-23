@@ -9,7 +9,7 @@ const CustomModal = ({ isOpen, onClose, children }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       className="flex items-center justify-center"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
     >
       <div className="bg-white p-6 shadow-lg w-full max-w-xl max-h-screen overflow-y-auto">
         {children}

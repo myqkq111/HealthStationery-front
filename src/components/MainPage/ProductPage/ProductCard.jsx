@@ -1,9 +1,12 @@
 // src/components/ProductCard.js
 import React from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate import
 
-const ProductCard = ({ name, image, price, cate }) => {
+const ProductCard = ({ id, name, image, price, cate }) => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
+  console.log(id);
   const handleCardClick = () => {
-    // 클릭 시 동작 추가 필요
+    navigate(`/product/${id}`); // 클릭 시 상세보기 페이지로 이동
   };
 
   // strImage를 쉼표로 분리하여 이미지 배열로 변환합니다.
@@ -18,20 +21,22 @@ const ProductCard = ({ name, image, price, cate }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white cursor-pointer transition-transform transform hover:scale-105 "
-      style={{ maxWidth: "300px" }} // 카드의 최대 너비 설정
+      className="bg-white text-center cursor-pointer transition-transform transform hover:scale-105"
+      style={{ maxWidth: "300px" }}
     >
-      <div className="w-full h-64 overflow-hidden rounded-lg mb-4 bg-gray-200 flex items-center justify-center">
+      <div className="w-full h-64 overflow-hidden  mb-4 bg-gray-200 flex items-center justify-center">
         <img
           src={imagePath}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-300 transform hover:scale-110"
-          style={{ objectFit: "cover" }} // 이미지가 카드의 공간을 완전히 채우도록 설정
+          className="w-full h-full object-fill transition-transform duration-300 transform hover:scale-110"
+          style={{ objectFit: "fill" }}
         />
       </div>
-      <h3 className="text-lg  mb-2 text-gray-800 truncate">{name}</h3>
-      <div className="flex justify-between items-center">
-        <span className=" text-s text-gray-900 text-center">{price}원</span>
+      <h3 className="text-lg font-sans font-bold mb-3 text-gray-900 truncate">
+        {name}
+      </h3>
+      <div className="flex justify-center items-center">
+        <span className="text-l font-bold text-gray-800">{price}원</span>
       </div>
     </div>
   );

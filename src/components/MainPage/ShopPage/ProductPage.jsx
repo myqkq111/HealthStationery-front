@@ -8,6 +8,10 @@ import axiosInstance from "../../api/AxiosInstance";
 import Swal from "sweetalert2";
 import InquiryList from "./InquiryList";
 import { useCart } from "../../contexts/CartContext";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md"; // 새로운 아이콘 import
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -200,6 +204,56 @@ const ProductPage = () => {
     }
   };
 
+  // 커스텀 화살표 컴포넌트 정의
+  const Arrow = ({ className, onClick, icon }) => (
+    <div
+      className={`${className} absolute top-1/2 transform -translate-y-1/2 flex items-center justify-center bg-gray-800 text-white p-2 rounded-full shadow-lg cursor-pointer z-10`}
+      onClick={onClick}
+      style={{
+        backgroundColor: "gray", // 화살표 배경 색
+        border: "1px solid", // 화살표 테두리 색
+        color: "#FFFFFF", // 화살표 아이콘 색
+      }}
+    >
+      {icon}
+    </div>
+  );
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 1000,
+    slidesToShow: 5,
+    slidesToScroll: 3,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    nextArrow: <Arrow icon={<MdKeyboardArrowRight size={30} />} />,
+    prevArrow: <Arrow icon={<MdKeyboardArrowLeft size={30} />} />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   const handleQuantityChange = (change) => {
     setQuantity((prevQuantity) => {
       const newQuantity = prevQuantity + change;
@@ -217,11 +271,25 @@ const ProductPage = () => {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    if (event) {
+      event.preventDefault(); // event 객체가 있으면 preventDefault 호출
+    }
+
+    if (!checkLoginStatus()) {
+      handleLoginPrompt(); // 로그인 요청 메시지 표시 및 로그인 페이지로 리디렉션
+      return; // 로그인 상태 확인 후 함수를 종료
+    }
+
     let valid = true;
 
     // 옵션 및 색상 유효성 검사
     if (!selectedOption) {
+      Swal.fire({
+        title: "사이즈 선택 오류",
+        text: "사이즈를 선택해 주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
       setOptionError(true);
       valid = false;
     } else {
@@ -229,24 +297,35 @@ const ProductPage = () => {
     }
 
     if (!selectedColor) {
+      Swal.fire({
+        title: "색상 선택 오류",
+        text: "색상을 선택해 주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
       setColorError(true);
       valid = false;
     } else {
       setColorError(false);
     }
 
-    // product 객체가 null인지 확인
     if (!product) {
       console.error("Product information is missing.");
       return;
     }
 
-    // 로컬 스토리지에서 member 정보를 안전하게 가져오기
-    const member = JSON.parse(localStorage.getItem("member"));
-    if (!member || !member.id) {
-      console.error("Member information is missing.");
+    // 수량 검사
+    if (quantity <= 0) {
+      Swal.fire({
+        title: "수량 선택 오류",
+        text: "수량을 선택해 주세요.",
+        icon: "warning",
+        confirmButtonText: "확인",
+      });
       return;
     }
+
+    const member = JSON.parse(localStorage.getItem("member"));
 
     let data = [
       {
@@ -263,7 +342,6 @@ const ProductPage = () => {
     ];
 
     let totalPayment = product.price * quantity;
-    // 50,000원 미만인 경우 3,000원 추가
     if (totalPayment < 50000) {
       totalPayment += 3000;
     }
@@ -450,7 +528,7 @@ const ProductPage = () => {
   // 서버에서 관련 상품 데이터 가져오기
   useEffect(() => {
     axiosInstance
-      .get("/product/selectAll")
+      .get("/product/purchasetop10")
       .then((response) => {
         setRelatedProducts(response.data); // 응답 데이터를 상태에 저장
         setLoading(false); // 로딩 상태 업데이트
@@ -847,22 +925,28 @@ const ProductPage = () => {
           <InquiryList Inquiry={inquiries} product={product} />
         </div>
 
-        <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
-        {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {relatedProducts.map((product) => (
-            <ProductItem
-              key={product.id}
-              cate={product.cate}
-              name={product.name}
-              price={product.price}
-              image={product.strImage}
-              content={product.content}
-              link={`/product/${product.id}`}
-            />
-          ))}
-        </div> */}
+        <div className="p-4">
+          <div className="text-xl font-bold mb-4">함께 많이 구매한 아이템</div>
+          <div className="relative">
+            <Slider {...settings}>
+              {relatedProducts.map((product) => (
+                <div key={product.id} className="px-2">
+                  <ProductItem
+                    cate={product.cate}
+                    name={product.name}
+                    price={product.price}
+                    image={product.strImage}
+                    content={product.content}
+                    link={`/product/${product.id}`}
+                    like={product.like}
+                    view={product.view}
+                  />
+                </div>
+              ))}
+            </Slider>
+          </div>
+        </div>
       </div>
-
       <ScrollToTopButton />
     </div>
   );
