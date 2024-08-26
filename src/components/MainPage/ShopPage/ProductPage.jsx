@@ -12,6 +12,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md"; // �
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -34,6 +35,8 @@ const ProductPage = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const currentUrl = window.location.pathname + window.location.search;
   const { updateCartItemCount } = useCart();
+  const [reviews, setReviews] = useState([]); // 리뷰 상태를 빈 배열로 초기화
+  const [reviewsCount, setReviewsCount] = useState(0); // 리뷰 개수를 초기화
 
   // 로그인된 유저의 uid 가져오기 (localStorage에서 가져오고, null 처리)
   const uid = localStorage.getItem("member")
@@ -59,18 +62,20 @@ const ProductPage = () => {
           // 이미지 파일 경로를 ,로 구분된 문자열로 받아오고, 배열로 변환합니다.
           const strImage = productData.strImage.split(",");
           const defaultImage = strImage[0]
-            ? `/images/products/${productData.cate}/${strImage[0]}`
+            ? `https://project-image.s3.ap-northeast-2.amazonaws.com/${productData.cate}/${strImage[0]}`
             : "";
           setMainImage(defaultImage);
 
           const thumbnails = strImage.map(
-            (path) => `/images/products/${productData.cate}/${path}`
+            (path) =>
+              `https://project-image.s3.ap-northeast-2.amazonaws.com/${productData.cate}/${path}`
           );
           setThumbnails(thumbnails);
 
           const strContentImage = productData.strContentImage.split(",");
           const contentImages = strContentImage.map(
-            (path) => `/images/products/${productData.cate}/${path}`
+            (path) =>
+              `https://project-image.s3.ap-northeast-2.amazonaws.com/${productData.cate}/${path}`
           );
           console.log(contentImages);
           setContentImages(contentImages);
@@ -525,6 +530,24 @@ const ProductPage = () => {
         });
     }
   };
+
+  // 상품 리뷰 로드
+  useEffect(() => {
+    if (product) {
+      axiosInstance
+        .get(`/review/product`, {
+          params: { productId: product.id },
+        })
+        .then((response) => {
+          setReviews(response.data);
+          setReviewsCount(response.data.length);
+        })
+        .catch((error) => {
+          console.error("리뷰 데이터를 가져오는 데 실패했습니다:", error);
+        });
+    }
+  }, [product]);
+
   // 서버에서 관련 상품 데이터 가져오기
   useEffect(() => {
     axiosInstance
@@ -540,6 +563,18 @@ const ProductPage = () => {
   }, []); // 컴포넌트 마운트 시 데이터 요청
 
   const totalPrice = price * quantity; // 총 가격 계산
+
+  // 리뷰가 없을 경우 평균 평점 기본값 설정
+  const averageRating = reviews.length
+    ? (
+        reviews.reduce((sum, review) => sum + review.score, 0) / reviews.length
+      ).toFixed(1)
+    : 0;
+
+  // 평균 평점을 정수와 소수로 분리
+  const fullStars = Math.floor(averageRating);
+  const halfStar = averageRating % 1 >= 0.5;
+  const emptyStars = 5 - Math.ceil(averageRating);
 
   if (loading) return <p>Loading...</p>; // 로딩 중일 때 메시지
   if (error) return <p>Error: {error.message}</p>; // 오류 발생 시 메시지
@@ -601,9 +636,32 @@ const ProductPage = () => {
 
           {/* Details Section (상품 상세 정보 섹션) */}
           <div className="flex-1 px-4 sm:px-6 lg:px-0">
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-            <p className="text-lg mb-2">리뷰: {product.reviews}개</p>
-            <p className="text-lg mb-8">가격: {product.price}원</p>
+            <h1 className="text-3xl text-right font-bold mb-2">
+              {product.name}
+            </h1>
+            <div className="flex flex-col items-end text-right">
+              {/* 별 아이콘들 */}
+              <div className="flex space-x-1">
+                {/* 꽉 찬 별 */}
+                {[...Array(fullStars)].map((_, index) => (
+                  <FaStar key={`full-${index}`} className="text-yellow-500" />
+                ))}
+                {/* 반별 */}
+                {halfStar && <FaStarHalfAlt className="text-yellow-500" />}
+                {/* 비어 있는 별 */}
+                {[...Array(emptyStars)].map((_, index) => (
+                  <FaRegStar
+                    key={`empty-${index}`}
+                    className="text-yellow-500"
+                  />
+                ))}
+              </div>
+              {/* 평균 평점과 리뷰 개수 표시 */}
+              <p className="text-xs font-semibold text-red-400 mt-1">
+                평균 평점: {averageRating} ({reviews.length}개 리뷰)
+              </p>
+            </div>
+            <p className="text-lg text-right mb-8">가격: {product.price}원</p>
             <hr className="mb-6" />
             <p className="text-lg text-sm font-semibold font-serif mb-2">
               {product.content}

@@ -167,9 +167,9 @@ const BuyList = () => {
                         {buylist.status}
                       </div>
                       <img
-                        src={`/images/products/${buylist.cate}/${
-                          buylist.strImage.split(",")[0]
-                        }`}
+                        src={`https://project-image.s3.ap-northeast-2.amazonaws.com/${
+                          buylist.cate
+                        }/${buylist.strImage.split(",")[0]}`}
                         alt={buylist.productName}
                         className="w-32 h-32 object-cover rounded-md cursor-pointer"
                         onClick={(e) => {

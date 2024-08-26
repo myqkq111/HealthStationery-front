@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isClothingDropdownOpen, setIsClothingDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 상태
 
   const toggleDropdown = (isOpen) => {
     setIsDropdownOpen(isOpen);
@@ -22,21 +24,64 @@ const Header = () => {
       style={{ borderTop: "2px solid #E5E7EB" }}
       className="bg-white p-0 sticky top-0 z-10"
     >
-      <div className="container mx-auto flex justify-between items-center">
+      <div className="container mx-auto flex justify-between items-center px-4 py-2">
+        {/* 모바일 메뉴 버튼 */}
+        <button
+          className="md:hidden text-2xl"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+
         {/* 브랜드 이름 */}
         <div className="flex items-center justify-center relative">
           <a href="/" className="flex items-center">
             <img
-              src="/images/banner/Header.jpg" // 이미지 파일 경로
-              alt="헬스문방구 로고" // 이미지 대체 텍스트
-              className="w-16 h-12 object-contain" // 이미지 크기 설정
+              src="/images/banner/Header.jpg"
+              alt="헬스문방구 로고"
+              className="w-full h-full object-cover" // 이미지 크기 설정
             />
           </a>
         </div>
-        <div className="flex-1 flex justify-center gap-4 relative">
+        {/* 모바일 메뉴 */}
+        <div
+          className={`fixed inset-y-20 left-0 bg-gray-100 z-30 md:hidden transform transition-transform ${
+            isMobileMenuOpen
+              ? "translate-x-0 opacity-100"
+              : "-translate-x-full opacity-0"
+          }`}
+          style={{ transition: "transform 0.3s ease, opacity 0.3s ease" }}
+        >
+          <div className="flex flex-col p-4">
+            <a
+              href="/shop"
+              className="text-black py-2 text-lg font-semibold"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              운동장비
+            </a>
+            <a
+              href="/clothing"
+              className="text-black py-2 text-lg font-semibold"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              의류
+            </a>
+            <a
+              href="/review"
+              className="text-black py-2 text-lg font-semibold"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              솔직구매후기
+            </a>
+          </div>
+        </div>
+
+        {/* 데스크톱 메뉴 */}
+        <div className="hidden md:flex flex-1 justify-center gap-4 relative">
           <a
             href="https://github.com/myqkq111/HealthStationery-front"
-            className="text-black px-4 whitespace-nowrap tracking-wide font-bold"
+            className="text-black text-xl font-sans px-4 whitespace-nowrap tracking-wide font-bold"
           >
             BRAND STORY
           </a>
@@ -47,7 +92,7 @@ const Header = () => {
           >
             <a
               href="/shop"
-              className="text-black px-4 whitespace-nowrap tracking-wide font-bold"
+              className="text-black text-xl font-sans px-4 whitespace-nowrap tracking-wide font-bold"
             >
               운동장비
             </a>
@@ -120,7 +165,7 @@ const Header = () => {
           >
             <a
               href="/clothing"
-              className="text-black px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
+              className="text-black text-xl font-sans px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
             >
               의류
             </a>
@@ -158,7 +203,7 @@ const Header = () => {
           </div>
           <a
             href="/review"
-            className="text-black px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
+            className="text-black text-xl font-sans px-4 whitespace-nowrap tracking-wide font-semibold hover:text-gray-700 transition"
           >
             솔직구매후기
           </a>

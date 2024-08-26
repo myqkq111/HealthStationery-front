@@ -16,7 +16,7 @@ const ProductCard = ({ id, name, image, price, cate }) => {
   const firstImage = images.length > 0 ? images[0] : "default-placeholder.jpg";
 
   // 이미지 경로를 동적으로 설정합니다.
-  const imagePath = `/images/products/${cate}/${firstImage}`;
+  const imagePath = `https://project-image.s3.ap-northeast-2.amazonaws.com/${cate}/${firstImage}`;
 
   return (
     <div

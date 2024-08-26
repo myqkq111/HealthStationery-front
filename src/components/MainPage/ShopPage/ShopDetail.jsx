@@ -1,29 +1,51 @@
-// ShopDetail.js
-
 import React, { useState, useEffect } from "react";
 import ProductItem from "./ProductItem";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../api/AxiosInstance";
 
 const ShopDetail = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // 전체 상품 목록
+  const [visibleProducts, setVisibleProducts] = useState([]); // 화면에 표시되는 상품 목록
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+  const [loading, setLoading] = useState(false); // 로딩 상태
   const { category } = useParams(); // URL 파라미터로 카테고리 가져오기
+  const itemsPerPage = 20; // 한 번에 표시할 상품 개수
 
   useEffect(() => {
     const fetchProducts = async () => {
-      axiosInstance
-        .get(`/product/selectCate?cate=${category}`)
-        .then((response) => {
-          console.log(response.data);
-          setProducts(response.data);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch products:", error);
-        });
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get(
+          `/product/selectCate?cate=${category}`
+        );
+        console.log(response.data);
+        setProducts(response.data);
+        setVisibleProducts(response.data.slice(0, itemsPerPage)); // 처음 20개 상품만 표시
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchProducts();
-  }, [category]); // 카테고리가 변경될 때마다 요청
+  }, [category]);
+
+  // 총 페이지 수 계산
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  // "더보기" 버튼 클릭 시 호출될 함수
+  const loadMoreProducts = () => {
+    const nextPage = currentPage + 1;
+    const startIndex = nextPage * itemsPerPage - itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    setVisibleProducts((prevProducts) => [
+      ...prevProducts,
+      ...products.slice(startIndex, endIndex),
+    ]);
+    setCurrentPage(nextPage);
+  };
 
   const getCategoryText = (category) => {
     switch (category) {
@@ -113,8 +135,8 @@ const ShopDetail = () => {
       </div>
       {/* 상품 목록 섹션 */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {products.length > 0 ? (
-          products.map((product) => {
+        {visibleProducts.length > 0 ? (
+          visibleProducts.map((product) => {
             const isSoldOut = product.list.every((item) => item.stock === 0); // 모든 옵션의 재고가 0인지 확인
             return (
               <ProductItem
@@ -135,6 +157,18 @@ const ShopDetail = () => {
           <p className="text-center text-gray-600">상품이 없습니다.</p>
         )}
       </div>
+      {/* 더보기 버튼 */}
+      {visibleProducts.length < products.length && (
+        <div className="flex justify-center mt-8">
+          <button
+            className="px-6 py-2 bg-white text-black font-bold border border-black rounded-full"
+            onClick={loadMoreProducts}
+            disabled={loading}
+          >
+            {loading ? "로딩 중..." : `더보기 (${currentPage}/${totalPages})`}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

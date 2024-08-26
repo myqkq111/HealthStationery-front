@@ -110,7 +110,7 @@ const ChatWindow = ({ user }) => {
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
-    return isNaN(date)
+    return isNaN(date.getTime())
       ? "Invalid Date"
       : date.toLocaleTimeString("ko-KR", {
           timeZone: "Asia/Seoul",
@@ -136,7 +136,7 @@ const ChatWindow = ({ user }) => {
             </strong>{" "}
             <span>{msg.content}</span>
             <span className="block text-xs text-black mt-1">
-              {msg.timestamp}
+              {msg.timestamp} {/* Formatted timestamp */}
             </span>
           </div>
         ))}

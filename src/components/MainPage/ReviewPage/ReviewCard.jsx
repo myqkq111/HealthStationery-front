@@ -31,7 +31,7 @@ const ReviewCard = ({
         <div
           className="w-full h-full bg-contain bg-no-repeat bg-center border-b border-gray-300"
           style={{
-            backgroundImage: `url(/images/products/${cate}/${firstImage})`,
+            backgroundImage: `url(https://project-image.s3.ap-northeast-2.amazonaws.com/${cate}/${firstImage})`,
           }}
         ></div>
       </div>

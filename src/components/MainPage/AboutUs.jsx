@@ -14,7 +14,10 @@ const AboutUs = () => {
       </div>
 
       {/* 클릭 가능한 이미지 */}
-      <Link to="/about" className="relative block w-full h-full">
+      <Link
+        to="https://github.com/myqkq111/HealthStationery-front"
+        className="relative block w-full h-full"
+      >
         <img
           src="/images/AboutUs/AboutUs.JPG" // 여기에 원하는 이미지 경로를 넣으세요
           alt="쇼핑몰 소개"
@@ -31,7 +34,7 @@ const AboutUs = () => {
 
             {/* 버튼 */}
             <Link
-              to="/about"
+              to="https://github.com/myqkq111/HealthStationery-front"
               className="inline-block px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-300 transition-colors duration-300"
             >
               브랜드 스토리 보기

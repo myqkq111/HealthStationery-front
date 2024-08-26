@@ -25,6 +25,7 @@ import AdminRoute from "./components/AdminRoute.jsx";
 import PaymentSuccess from "./components/MainPage/ShopPage/PaymentSuccess.jsx";
 import ChatIcon from "./components/MainPage/ChatIcon.jsx";
 import HonestReview from "./components/MainPage/ReviewPage/HonestReview.jsx";
+import SearchPage from "./components/MainPage/SearchPage.jsx";
 
 const App = () => {
   return (
@@ -57,6 +58,7 @@ const App = () => {
             <Route path="/cart" element={<BasketPage />} />
             <Route path="/fnq" element={<FNQ />} />
             <Route path="/review" element={<HonestReview />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route
               path="/payment-success/:buylistId"
               element={<PaymentSuccess />}
