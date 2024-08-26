@@ -12,7 +12,6 @@ const ProductItem = ({
   isSoldOut,
   link,
   like,
-  view,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
@@ -68,7 +67,7 @@ const ProductItem = ({
       <div className="flex flex-col flex-grow">
         <h3 className="text-base font-bold mb-2 truncate">{name}</h3>
         <p className="text-sm text-right font-semibold text-gray-700 mb-6 truncate">
-          {price}원
+          {parseInt(price).toLocaleString()}원
         </p>
         <p className="text-sm font-semibold font-serif text-gray-600 mb-2 flex-grow truncate">
           {content}

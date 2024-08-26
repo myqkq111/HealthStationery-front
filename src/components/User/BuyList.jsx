@@ -185,7 +185,7 @@ const BuyList = () => {
                           수량: {buylist.count}
                         </p>
                         <p className="text-sm text-gray-600">
-                          가격: {buylist.price} 원
+                          가격: {parseInt(buylist.price).toLocaleString()}원
                         </p>
                         <div className="flex space-x-4">
                           <p className="text-sm text-gray-600">

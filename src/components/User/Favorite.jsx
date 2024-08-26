@@ -107,7 +107,7 @@ const Favorite = () => {
                   <div className="flex flex-col justify-between flex-grow">
                     <h3 className="text-l font-semibold mb-2">{item.name}</h3>
                     <p className="text-red-600 text-right font-bold mb-4">
-                      {item.price}원
+                      {parseInt(item.price).toLocaleString()}원
                     </p>
                     <div className="bg-yellow-300 flex items-center justify-center space-x-4 p-2 cursor-pointer">
                       <img
