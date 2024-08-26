@@ -661,7 +661,9 @@ const ProductPage = () => {
                 평균 평점: {averageRating} ({reviews.length}개 리뷰)
               </p>
             </div>
-            <p className="text-lg text-right mb-8">가격: {product.price}원</p>
+            <p className="text-lg text-right mb-8">
+              가격: {parseInt(product.price).toLocaleString()}원
+            </p>
             <hr className="mb-6" />
             <p className="text-lg text-sm font-semibold font-serif mb-2">
               {product.content}

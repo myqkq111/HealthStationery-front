@@ -36,7 +36,10 @@ const ProductCard = ({ id, name, image, price, cate }) => {
         {name}
       </h3>
       <div className="flex justify-center items-center">
-        <span className="text-l font-bold text-gray-800">{price}원</span>
+        <span className="text-l font-bold text-gray-800">
+          {" "}
+          {parseInt(price).toLocaleString()}원
+        </span>
       </div>
     </div>
   );
