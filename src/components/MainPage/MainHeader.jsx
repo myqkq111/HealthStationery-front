@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUser, FaShoppingCart, FaSearch, FaUserShield } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -9,6 +9,7 @@ const MainHeader = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { cartItemCount, updateCartItemCount, resetCart } = useCart();
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태 추가
 
   // 로그인한 사용자 정보 가져오기
   const member = JSON.parse(localStorage.getItem("member"));
@@ -65,6 +66,33 @@ const MainHeader = () => {
     }
   };
 
+  // 검색어 입력 이벤트 핸들러
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // 검색 제출 이벤트 핸들러
+  const handleSearchSubmit = (e) => {
+    e.preventDefault(); // 페이지 리로드 방지
+    if (searchTerm.trim()) {
+      console.log("검색어:", searchTerm); // 검색어 확인
+      axiosInstance
+        .get("/product/search", { params: { keyword: searchTerm } })
+        .then((response) => {
+          console.log("검색 결과:", response.data); // 응답 데이터 확인
+          navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
+        })
+        .catch((error) => {
+          console.error(
+            "검색 요청 실패:",
+            error.response?.data || error.message
+          );
+        });
+    } else {
+      console.warn("검색어가 비어 있습니다.");
+    }
+  };
+
   return (
     <header className="bg-white text-black py-2 px-3 border-b border-gray-200 top-10 inset-x-0 z-20">
       <div className="container mx-auto flex items-center justify-end space-x-3">
@@ -105,7 +133,7 @@ const MainHeader = () => {
           )}
           <a
             href="#"
-            onClick={handleCartClick} // 클릭 핸들러로 변경
+            onClick={handleCartClick}
             className="flex items-center text-xs hover:text-yellow-500 relative"
           >
             <FaShoppingCart className="text-sm" />
@@ -125,12 +153,16 @@ const MainHeader = () => {
           </button>
         </div>
         <div className="relative ml-3">
-          <input
-            type="text"
-            placeholder="검색..."
-            className="p-1 pl-6 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-xs"
-          />
-          <FaSearch className="absolute left-2 top-1 text-gray-600 text-xs" />
+          <form onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              placeholder="검색..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="p-2 pl-4 bg-gray-100 text-black text-right rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-xs"
+            />
+            <FaSearch className="absolute left-2 top-1 text-gray-600 text-xs" />
+          </form>
         </div>
       </div>
     </header>

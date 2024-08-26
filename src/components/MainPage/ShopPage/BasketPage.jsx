@@ -387,9 +387,9 @@ const BasketPage = () => {
                     >
                       <div className="flex items-center">
                         <img
-                          src={`/images/products/${item.cate}/${
-                            item.strImage.split(",")[0]
-                          }`}
+                          src={`https://project-image.s3.ap-northeast-2.amazonaws.com/${
+                            item.cate
+                          }/${item.strImage.split(",")[0]}`}
                           alt={item.name}
                           className={`w-24 h-24 object-cover cursor-pointer ${
                             item.stock === 0 ? "opacity-50" : ""

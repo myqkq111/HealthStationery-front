@@ -3,7 +3,7 @@ import axiosInstance from "../api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 
-const IMAGE_BASE_URL = "/images/products/"; // 이미지 기본 경로
+const IMAGE_BASE_URL = "https://project-image.s3.ap-northeast-2.amazonaws.com/"; // 이미지 기본 경로
 const DEFAULT_IMAGE_URL = "/images/default-image.jpg"; // 기본 이미지 경로
 
 const Favorite = () => {

@@ -28,7 +28,13 @@ const ChatPage = ({ chatRoomId }) => {
               (msg.memberId === chatRoomId &&
                 msg.transmitMemberId === currentUser.id)
           );
-          setMessages(filteredMessages);
+
+          setMessages(
+            filteredMessages.map((msg) => ({
+              ...msg,
+              timestamp: formatTimestamp(msg.timestamp), // Format timestamp for messages
+            }))
+          );
         })
         .catch((error) => {
           console.error("Failed to fetch chat history", error);
@@ -149,7 +155,7 @@ const ChatPage = ({ chatRoomId }) => {
           >
             <span className="block text-sm mt-1">{msg.content}</span>
             <span className="block text-xs text-black mt-1">
-              {msg.timestamp}
+              {msg.timestamp} {/* Formatted timestamp */}
             </span>
           </div>
         ))}
