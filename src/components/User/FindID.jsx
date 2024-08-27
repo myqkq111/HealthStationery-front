@@ -48,7 +48,8 @@ const FindID = ({ onClose }) => {
               아이디 찾기
             </h2>
             <p className="text-sm text-gray-600 mb-6 text-center">
-              휴대전화 번호를 입력하면 해당 번호에 등록된 이메일을 찾을 수 있습니다.
+              휴대전화 번호를 입력하면 해당 번호에 등록된 이메일을 찾을 수
+              있습니다.
             </p>
             <form onSubmit={handleSubmit} className="flex flex-col">
               <div className="w-full mb-4">
