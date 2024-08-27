@@ -68,9 +68,9 @@ const LeftSection = ({ product, user, setOrderInfo, setRequest, request }) => {
         {product.map((item, index) => (
           <div key={index} className="flex items-center mb-4">
             <img
-              src={`/images/products/${item.cate}/${
-                item.strImage.split(",")[0]
-              }`}
+              src={`https://project-image.s3.ap-northeast-2.amazonaws.com/${
+                item.cate
+              }/${item.strImage.split(",")[0]}`}
               alt={item.name}
               className="w-20 h-20 object-cover rounded-lg cursor-pointer"
               onClick={() => navigate(`/product/${item.productId}`)} // 제품 상세 페이지로 이동

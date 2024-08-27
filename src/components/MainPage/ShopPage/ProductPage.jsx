@@ -27,7 +27,7 @@ const ProductPage = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [optionError, setOptionError] = useState(false);
   const [colorError, setColorError] = useState(false);
-  const [quantity, setQuantity] = useState(1); // 수량 상태 추가
+  const [quantity, setQuantity] = useState(0); // 수량 상태 추가
   const [price, setPrice] = useState(0); // 가격 상태 추가
   const [stock, setStock] = useState({}); // 재고 상태 추가
   const [likeCount, setLikeCount] = useState(null);
