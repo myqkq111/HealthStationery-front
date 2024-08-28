@@ -192,12 +192,6 @@ const Header = () => {
                 >
                   하의
                 </button>
-                <button
-                  className="block w-full px-4 py-2 text-sm text-black hover:bg-gray-200 transition tracking-wide text-left"
-                  onClick={(e) => handleLinkClick(e, "other-clothing")}
-                >
-                  기타 의류
-                </button>
               </div>
             )}
           </div>
