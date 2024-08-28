@@ -12,6 +12,7 @@ const ProductItem = ({
   isSoldOut,
   link,
   like,
+  view,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
@@ -75,6 +76,7 @@ const ProductItem = ({
       </div>
       <div className="flex justify-end text-sm text-gray-600 space-x-4">
         <p className="text-red-600">좋아요: {like}</p>
+        <p className="text-red-600">조회수: {view}</p>
       </div>
     </div>
   );

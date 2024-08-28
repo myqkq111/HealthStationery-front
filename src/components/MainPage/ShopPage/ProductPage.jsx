@@ -170,6 +170,22 @@ const ProductPage = () => {
     setCurrentThumbnailIndex(index); // 현재 썸네일 인덱스 업데이트
   };
 
+  useEffect(() => {
+    const member = localStorage.getItem("member");
+    if (member) {
+      // 조회수 증가 처리
+      axiosInstance
+        .put(`/product/viewUp?id=${id}`)
+        .then(() => {
+          // 조회수가 증가했음을 sessionStorage에 저장
+        })
+        .catch((error) => {
+          console.error("조회수 증가 실패:", error);
+          setError(error);
+        });
+    }
+  }, [id]);
+
   // 디바운스된 핸들러
   const debouncedHandleMouseEnter = useCallback(
     debounce((index) => {
