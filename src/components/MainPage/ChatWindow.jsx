@@ -32,7 +32,7 @@ const ChatWindow = ({ user }) => {
         console.error("Failed to fetch chat history", error);
       });
 
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS("http://52.78.11.212:8080/ws");
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,

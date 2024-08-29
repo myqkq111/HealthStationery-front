@@ -19,7 +19,7 @@ const AboutUs = () => {
         className="relative block w-full h-full"
       >
         <img
-          src="/images/AboutUs/AboutUs.JPG" // 여기에 원하는 이미지 경로를 넣으세요
+          src="/images/AboutUs/AboutUs.jpg" // 여기에 원하는 이미지 경로를 넣으세요
           alt="쇼핑몰 소개"
           className="w-full h-full object-cover max-w-screen-lg mx-auto" // object-cover로 설정하여 이미지를 잘라냄
         />

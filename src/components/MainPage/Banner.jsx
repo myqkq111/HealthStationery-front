@@ -6,13 +6,13 @@ const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fade, setFade] = useState(true); // Fade 상태
   const slides = [
-    "/images/banner/banner1.JPG",
-    "/images/banner/banner2.JPG",
-    "/images/banner/banner3.JPG",
-    "/images/banner/banner4.JPG",
-    "/images/banner/banner5.JPG",
-    "/images/banner/banner6.JPG",
-    "/images/banner/banner7.JPG",
+    "/images/banner/banner1.jpg",
+    "/images/banner/banner2.jpg",
+    "/images/banner/banner3.jpg",
+    "/images/banner/banner4.jpg",
+    "/images/banner/banner5.jpg",
+    "/images/banner/banner6.jpg",
+    "/images/banner/banner7.jpg",
   ];
 
   const nextSlide = () => {
