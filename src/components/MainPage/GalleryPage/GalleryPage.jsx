@@ -7,7 +7,9 @@ const GalleryPage = () => {
 
   // 이미지 배열 생성: 1.jpg부터 25.jpg까지
   const images = Array.from({ length: 25 }, (_, index) => ({
-    src: `/images/gallery/${index + 1}.jpg`, // 1부터 25까지의 숫자로 이미지 경로 생성
+    src: `https://project-image.s3.ap-northeast-2.amazonaws.com/Gallery/${
+      index + 1
+    }.jpg`, // 1부터 25까지의 숫자로 이미지 경로 생성
   }));
 
   // 보이는 이미지 수 결정

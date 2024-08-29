@@ -7,7 +7,7 @@ const ShopImage = () => {
   // 카테고리별로 동적으로 이미지 경로 생성
   const images = Array.from(
     { length: 4 },
-    (_, index) => `/images/shop/${category}/${index + 1}.jpg`
+    (_, index) => `/images/shop/${category}/${index + 1}.JPG`
   );
 
   return (
