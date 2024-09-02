@@ -44,8 +44,8 @@
 
 ### 🛠기술 스택
 - Frontend: React, TailwindCSS
-- Backend: Node.js, Express
-- Database: MongoDB
+- Backend: SpringBoot, MyBatis, SpringSecurity
+- Database: MySQL
 - Deployment: AWS S3, AWS EC2
 
 ![image](https://github.com/user-attachments/assets/a37df6f4-031c-41cd-9739-954496beb8ea)
