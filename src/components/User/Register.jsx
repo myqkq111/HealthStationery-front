@@ -65,7 +65,7 @@ const Register = () => {
     if (email.trim() === "") return;
 
     axios
-      .post("http://52.79.160.8:8080/member/checkEmail", email, {
+      .post("http://43.203.197.142:8080/member/checkEmail", email, {
         headers: { "Content-Type": "text/plain" },
       })
       .then((response) => {
@@ -221,7 +221,7 @@ const Register = () => {
     formData.append("detailaddr", detailaddr);
 
     axios
-      .post("http://52.78.11.212:8080/member/signup", formData, {
+      .post("http://43.203.197.142:8080/member/signup", formData, {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {

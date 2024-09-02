@@ -70,7 +70,7 @@ const Login = () => {
   };
 
   const socialLogin = (provider) => {
-    window.location.href = `http://52.79.160.8:8080/oauth2/authorization/${provider}`;
+    window.location.href = `http://43.203.197.142:8080/oauth2/authorization/${provider}`;
   };
 
   return (

@@ -3,7 +3,7 @@ import axios from "axios";
 const token = localStorage.getItem("token");
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({
-  baseURL: "http://52.79.160.8:8080", // 기본 URL
+  baseURL: "http://43.203.197.142:8080", // 기본 URL
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,

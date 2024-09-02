@@ -44,7 +44,7 @@ const ChatPage = ({ chatRoomId }) => {
 
   useEffect(() => {
     if (currentUser) {
-      const socket = new SockJS("http://52.79.160.8:8080/ws");
+      const socket = new SockJS("http://43.203.197.142:8080/ws");
       const client = new Client({
         webSocketFactory: () => socket,
         reconnectDelay: 5000,
