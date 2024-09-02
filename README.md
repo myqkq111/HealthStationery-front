@@ -58,19 +58,30 @@
 
 | 로그인, 회원가입 기능 | 
 | --------------------- |
-| ![회원가입,로그인,로그아웃](https://github.com/jsgjsg/kitri-todo2-project-react/assets/110209803/10400707-d0f5-4e0c-bc92-7ad194016e15) |
+| ![image](https://github.com/user-attachments/assets/aa9105a1-2d0c-4092-b9b1-a961c72d4855)|
+| ![image](https://github.com/user-attachments/assets/90e357d0-3fd5-4059-ad63-acbd132a6414)|
 
-### 📋투두리스트 추가 기능
 
-| Todo리스트 추가 기능 | 기한 있는 Todo리스트 추가 기능 |
-| ---------- | ------------------------------------------------------------ |
-| ![그냥Todo추가](https://github.com/jsgjsg/kitri-todo2-project-react/assets/110209803/208b1344-26d6-44be-9de7-4696aea189f0) | ![기한있는Todo추가](https://github.com/jsgjsg/kitri-todo2-project-react/assets/110209803/b37898d8-3b51-4ab9-a32a-1e91916c2681) |
+### 📋헬스문방구 추가 기능
 
-### 📝투두리스트 부가 기능
+| 마이페이지 기능 |
+| ---------- |
+|![image](https://github.com/user-attachments/assets/a02ed147-dbd6-49ea-bfb8-d176dad7c0f1)|
 
-| ### 👨‍🏫완료 여부 체크 및 중요한 투두리스트 고정 기능 | ### 📸투두리스트 상세보기, 수정 및 삭제 기능 |
-| ------------------------------------------------ | - |
-| ![체크박스 및 고정핀](https://github.com/jsgjsg/kitri-todo2-project-react/assets/110209803/b0c7bc51-1b21-40c7-83b2-0b9c312d5422) | ![상세보기, 수정 및 삭제](https://github.com/jsgjsg/kitri-todo2-project-react/assets/110209803/85d550f2-4c41-470b-a743-7ed3f42fc451) |
+| 상품페이지 기능 |
+| ---------- |
+|![image](https://github.com/user-attachments/assets/0bf08ef3-3987-43c0-8f52-7486bb5e1183)|
+
+
+
+
+
+
+### 📝헬스문방구 부가 기능
+
+| 실시간채팅 |
+| ---------- |
+|![image](https://github.com/user-attachments/assets/1f619055-44c0-4fe6-81e7-09bd266447d2)|
 
 <br>
 
