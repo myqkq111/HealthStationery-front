@@ -150,8 +150,8 @@ const ProductForm = ({ product, onClose, onProductUpdated }) => {
     }
 
     const url = product
-      ? `http://52.78.11.212:8080/product/update/${product.id}` // 수정 요청 시 URL
-      : "http://52.78.11.212:8080/product/insert"; // 추가 요청 시 URL
+      ? `http://52.79.160.8:8080/product/update/${product.id}` // 수정 요청 시 URL
+      : "http://52.79.160.8:8080/product/insert"; // 추가 요청 시 URL
 
     console.log("URL:", url); // URL 확인
     console.log("FormData:", Array.from(data.entries())); // FormData 확인

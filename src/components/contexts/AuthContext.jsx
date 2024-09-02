@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("http://52.78.11.212:8080/member/validate-token", {
+        .get("http://52.79.160.8:8080/member/validate-token", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
