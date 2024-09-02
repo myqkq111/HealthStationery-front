@@ -48,7 +48,7 @@
 - Database: MongoDB
 - Deployment: AWS S3, AWS EC2
 
-![image](https://github.com/jsgjsg/kitri-todo2-project-react/assets/128575030/cf9cd165-7feb-4b89-a65b-2dfab76594cb)
+![image](https://github.com/user-attachments/assets/a37df6f4-031c-41cd-9739-954496beb8ea)
 
 <br>
 
