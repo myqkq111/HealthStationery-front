@@ -1,7 +1,6 @@
 # 📅투두-유(Todo-You)
 
 ![로고](https://github.com/user-attachments/assets/70c770ea-5292-446f-b7b1-1d77b969b707)
-
 <a href="http://kitri-final-project-front.s3-website.ap-northeast-2.amazonaws.com/admin" target="_blank">링크</a>
 
 
