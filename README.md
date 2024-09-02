@@ -1,23 +1,18 @@
 # 📅투두-유(Todo-You)
 
-![image](https://github.com/jsgjsg/kitri-todo2-project-react/assets/128575030/edba7ec0-69c5-44f4-ae6c-3869ef8b7e7c)
-<a href="http://ast07-todo-react.s3-website.ap-northeast-2.amazonaws.com/login" target="_blank">링크</a>
+![image](https://github.com/user-attachments/assets/d750471a-25b7-4800-b0a7-f21835736b8a)
+<a href="http://kitri-final-project-front.s3-website.ap-northeast-2.amazonaws.com/admin" target="_blank">링크</a>
+
 
 <br>
 
-## 🚀세미 프로젝트 소개
+## 🚀프로젝트 소개
 
->  #### 투두리스트 기능 구현
+>  #### 웹 쇼핑몰 구현
+"최고의 헬스용품, 건강한 삶의 시작! 
+우리 쇼핑몰은 당신의 건강과 피트니스 목표를 달성할 수 있도록 돕는 다양한 헬스용품을 제공합니다. 체중 감량부터 근력 강화까지, 우리의 제품은 전문적인 품질과 효율을 자랑합니다. 신뢰할 수 있는 브랜드와 최신 트렌드를 반영한 제품으로, 매일매일 건강한 변화를 경험하세요. 
+지금 시작하세요! 당신의 건강은 우리의 우선 순위입니다."
 
-### 🤔기획 의도
-
-일정과 투두리스트를 연관지어 같이 관리하면 더욱 일정관리를 체계적으로 할 수 있을 것 같아 기획하게 되었음
-
-### 🎯서비스 대상
-
-- 일정을 보다 체계적으로 관리하고 싶은 mbti J를 타겟
-- 계획성이 부족하여 도움을 받고 싶은 mbti P를 타겟
-- 할일을 잘 까먹거나 정리하고 싶은 사람들을 위해
 
 ### 📅일정
 
